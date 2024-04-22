@@ -9,7 +9,7 @@ import { useSelector } from "react-redux";
 import { fetchCreateChannel } from "../../../services/channels";
 import colors from "../../../styles/colors";
 
-function ChannelCreateModalContent({ toggleModal }) {
+function ChannelCreateModalContent({ closeAllModals }) {
   const initialValues = {
     name: "",
     description: "",
@@ -22,7 +22,7 @@ function ChannelCreateModalContent({ toggleModal }) {
     try {
       await fetchCreateChannel({ ...values, userId: user.id });
 
-      toggleModal();
+      closeAllModals();
       showMessage({
         message: "Oda başarıyla oluşturuldu",
         type: "info",

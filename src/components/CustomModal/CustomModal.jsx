@@ -1,17 +1,17 @@
 import {Modal, TouchableOpacity} from 'react-native';
 import styles from './CustomModal.styles';
 
-function CustomModal({children,toggleModal,modalVisible}) {
+function CustomModal({children,closeAllModals,containerModalVisible}) {
   return (
     <Modal
       animationType="fade"
       transparent={true}
-      visible={modalVisible}
-      onRequestClose={toggleModal}>
+      visible={containerModalVisible}
+      onRequestClose={closeAllModals}>
       <TouchableOpacity
         style={styles.modal.overlay}
         activeOpacity={1}
-        onPress={toggleModal}>
+        onPress={closeAllModals}>
         {children}
       </TouchableOpacity>
     </Modal>

@@ -50,6 +50,7 @@ const styles = StyleSheet.create({
       right:{
         container:{
           flex:1/10,
+          paddingLeft:10,
           flexDirection: "row",
           justifyContent:'center',
           alignItems: "center",
@@ -63,7 +64,6 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         fontSize: 20,
       }
-
     },
   },
   addChannelButton: {
