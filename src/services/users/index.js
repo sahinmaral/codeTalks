@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const fetchGetUsersByChannelId = (channelId, index = 0, size = 2) => {
+export const fetchGetUsersByChannelId = (channelId, index = 0, size = 10) => {
   const params =  {
     channelId,
     index,

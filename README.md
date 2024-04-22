@@ -19,8 +19,9 @@ https://academy.patika.dev/courses/react-native/odev_5
 - [ ] Kanala atılan isteklerin kabul ve ret işlemlerinin moderatörler tarafından sağlanması
 - [ ] Kullanıcıda yer alan token bilgilerinin süresi geçmediği taktirde giriş yap ekranına girmeden direkt olarak kanalların listelendiği kısma yönlendirilmesi
 - [ ] Bazı ekranlarda yazılan inline stillendirmelerin ayrı bir style dosyasında yazılması 
-- [ ] Kanal adının değiştirme özelliği
+- [X] Kanal adının değiştirme özelliği
 - [ ] Moderatörlerin kanaldan birini çıkartabilme özelliği
+- [ ] Kanal listesinin çok olması durumunda sayfalama özelliği eklenmesi
 
 ### Yapım Aşamasında
 

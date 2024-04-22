@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { ScrollView, TouchableOpacity, View } from "react-native";
 import { useSelector } from "react-redux";
 import colors from "../../styles/colors";
@@ -43,7 +43,8 @@ function ChannelList({ navigation }) {
         .start()
         .then(() => {
           intervalId = setInterval(() => {
-            connection.invoke("SendAllChannels", user.id);
+            connection.invoke("SendAllChannels", user.id, null, null)
+              .catch(err => console.log(err));
           }, 1000);
         })
         .catch((err) => {
@@ -60,7 +61,7 @@ function ChannelList({ navigation }) {
         clearInterval(intervalId);
       }
     };
-  }, [connection]);
+  }, [connection, user.id]);
 
 
   if (!connection || connection.state !== "Connected") {

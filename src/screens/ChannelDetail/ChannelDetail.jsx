@@ -1,7 +1,6 @@
 import { useCallback, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
-  Button,
   Image,
   ScrollView,
   Text,
@@ -14,8 +13,12 @@ import colors from "../../styles/colors";
 import Icon from "react-native-remix-icon";
 import ChannelDetailUserCard from "../../components/ChannelDetailUserCard";
 import { fetchGetUsersByChannelId } from "../../services/users";
+import { fetchGetUsersDetailAtChannelByChannelId } from "../../services/channels";
 import Loading from "../Loading";
+import { useSelector } from "react-redux";
 import { useFocusEffect } from "@react-navigation/native";
+import CustomModal from "../../components/CustomModal";
+import UpdateChannelNameModalContent from "../../components/ModalContent/UpdateChannelNameModalContent/UpdateChannelNameModalContent";
 
 function ChannelDetail({ navigation, route }) {
   const { channelId, channelName } = route.params;
@@ -24,12 +27,15 @@ function ChannelDetail({ navigation, route }) {
 
   const [fetchResult, setFetchResult] = useState({
     loading: true,
-    metaData: null,
-    users: [],
+    results: null,
     error: null,
   });
+  
+  const [modalVisible, setModalVisible] = useState(false);
   const [userName, setUserName] = useState("");
   const [visibleUserSearchInput, setVisibleUserSearchInput] = useState(false);
+
+  const { user } = useSelector((state) => state.app);
 
   const toggleVisibleUserSearchInput = () => {
     setVisibleUserSearchInput(!visibleUserSearchInput);
@@ -66,23 +72,87 @@ function ChannelDetail({ navigation, route }) {
     }
   };
 
-  const remainingUserCount = useMemo(() => {
-    if (fetchResult.metaData) {
-      if (fetchResult.metaData.count > fetchResult.users.length)
-        return fetchResult.metaData.count - fetchResult.users.length;
-      else return fetchResult.metaData.count;
+  const isUserModeratorAtThisChannel = useMemo(() => {
+    if (
+      fetchResult.results &&
+      fetchResult.results.currentUserDetailAtChannelFetch.userDetail
+    ) {
+      return (
+        fetchResult.results.currentUserDetailAtChannelFetch.userDetail.role
+          .name === "Moderator"
+      );
     }
-  }, [fetchResult.metaData]);
+  }, [fetchResult.results]);
+
+  const remainingUserCount = useMemo(() => {
+    if (fetchResult.results && fetchResult.results.usersFetch.metaData) {
+      if (
+        fetchResult.results.usersFetch.metaData.count >
+        fetchResult.results.usersFetch.users.length
+      )
+        return (
+          fetchResult.results.usersFetch.metaData.count -
+          fetchResult.results.usersFetch.users.length
+        );
+      else return fetchResult.results.usersFetch.metaData.count;
+    }
+  }, [fetchResult.results]);
 
   useFocusEffect(
     useCallback(() => {
-      fetchUsers();
+      (async () => {
+        try {
+          setFetchResult((prevState) => ({ ...prevState, loading: true }));
+
+          const promiseResult = await Promise.all([
+            fetchGetUsersByChannelId(channelId),
+            fetchGetUsersDetailAtChannelByChannelId(channelId, user.id),
+          ]);
+
+          const usersPromiseResult = promiseResult[0];
+          const currentUserDetailAtChannelPromiseResult = promiseResult[1];
+
+          setFetchResult((prevState) => ({
+            ...prevState,
+            results: {
+              usersFetch: {
+                metaData: {
+                  count: usersPromiseResult.data.count,
+                  size: usersPromiseResult.data.size,
+                  index: usersPromiseResult.data.index,
+                  pages: usersPromiseResult.data.pages,
+                  hasNext: usersPromiseResult.data.hasNext,
+                  hasPrevious: usersPromiseResult.data.hasPrevious,
+                },
+                users: usersPromiseResult.data.items,
+              },
+              currentUserDetailAtChannelFetch: {
+                userDetail: currentUserDetailAtChannelPromiseResult.data,
+              },
+            },
+          }));
+        } catch (error) {
+          setFetchResult((prevState) => ({
+            ...prevState,
+            error,
+          }));
+        } finally {
+          setFetchResult((prevState) => ({
+            ...prevState,
+            loading: false,
+          }));
+        }
+      })();
     }, [])
   );
 
-  if(fetchResult.loading && !fetchResult.metaData){
-    return <Loading text="Kanalın detayı yüklenirken lütfen bekleyiniz ..." />
+  if (fetchResult.loading && !fetchResult.metaData) {
+    return <Loading text="Kanalın detayı yüklenirken lütfen bekleyiniz ..." />;
   }
+
+  const toggleModal = () => {
+    setModalVisible(!modalVisible);
+  };
 
   return (
     <View style={styles.container}>
@@ -115,22 +185,24 @@ function ChannelDetail({ navigation, route }) {
               {channelName}
             </Text>
           </View>
-          <View
-            style={{
-              flex: 1 / 10,
-              alignSelf: "center",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <TouchableOpacity onPress={() => navigation.goBack()}>
-              <Icon name="pencil-line" size="26" color="black"></Icon>
-            </TouchableOpacity>
-          </View>
+          {isUserModeratorAtThisChannel ? (
+            <View
+              style={{
+                flex: 1 / 10,
+                alignSelf: "center",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <TouchableOpacity onPress={() => setModalVisible(true)}>
+                <Icon name="pencil-line" size="26" color="black"></Icon>
+              </TouchableOpacity>
+            </View>
+          ) : null}
         </View>
         <View style={{ flex: 1, alignItems: "center" }}>
           <Text style={{ fontSize: 16, color: colors.black }}>
-            Grup · {fetchResult.metaData.count} üye
+            Grup · {fetchResult.results.usersFetch.metaData.count} üye
           </Text>
         </View>
       </View>
@@ -186,7 +258,7 @@ function ChannelDetail({ navigation, route }) {
         </TouchableOpacity>
       </View>
       <View style={{ flex: 4.5 / 10 }}>
-        {!fetchResult.loading && fetchResult.metaData ? (
+        {!fetchResult.loading && fetchResult.results.usersFetch.metaData ? (
           <View style={{ flex: 1, gap: 10 }}>
             <ScrollView
               style={{ flex: 1 }}
@@ -195,15 +267,25 @@ function ChannelDetail({ navigation, route }) {
                 scrollViewRef.current.scrollToEnd({ animated: true })
               }
             >
-              {fetchResult.users.map((user) => {
+              {fetchResult.results.usersFetch.users.map((user) => {
                 return <ChannelDetailUserCard user={user} key={user.id} />;
               })}
 
-              {fetchResult.metaData.hasNext && (
+              {fetchResult.results.usersFetch.metaData.hasNext && (
                 <TouchableOpacity
-                  onPress={() => fetchUsers(fetchResult.metaData.index + 1)}
+                  onPress={() =>
+                    fetchUsers(
+                      fetchResult.results.usersFetch.metaData.index + 1
+                    )
+                  }
                 >
-                  <Text style={{ fontSize: 16, fontWeight: "500", color: colors.black, }}>
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      fontWeight: "500",
+                      color: colors.black,
+                    }}
+                  >
                     Tümünü gör ({remainingUserCount}) kişi daha
                   </Text>
                 </TouchableOpacity>
@@ -228,6 +310,15 @@ function ChannelDetail({ navigation, route }) {
           </View>
         )}
       </View>
+      <CustomModal toggleModal={toggleModal} modalVisible={modalVisible}>
+        <UpdateChannelNameModalContent
+          channelId={channelId}
+          channelName={channelName}
+          userId={user.id}
+          navigation={navigation}
+          toggleModal={toggleModal}
+        />
+      </CustomModal>
     </View>
   );
 }
