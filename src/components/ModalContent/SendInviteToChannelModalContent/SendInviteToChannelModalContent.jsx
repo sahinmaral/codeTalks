@@ -10,15 +10,16 @@ import {
 import styles from "./SendInviteToChannelModalContent.styles";
 import { showMessage } from "react-native-flash-message";
 import colors from "../../../styles/colors";
-import { fetchCreateMessage } from "../../../services/messages";
+import { fetchSendInviteToChannel } from "../../../services/channels";
+import translateErrorMessage from '../../../helpers/apiErrorTranslation'
 
-function SendInviteToChannelModalContent({ user, toggleModal }) {
+function SendInviteToChannelModalContent({ user, closeAllModals }) {
   const [channelId, setChannelId] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSendInvite = async () => {
-    if (message.length === 0) {
+    if (channelId.length === 0) {
       setError("Lütfen istek göndermek istediğiniz kanalın ID sini giriniz");
       return;
     }
@@ -26,22 +27,18 @@ function SendInviteToChannelModalContent({ user, toggleModal }) {
     try {
       setLoading(true);
 
-      await fetchCreateMessage({
-        userId,
-        channelId,
-        content: message,
-      });
+      await fetchSendInviteToChannel(channelId, user.accessToken);
 
       setChannelId("");
-      toggleModal();
+      closeAllModals();
       showMessage({
-        message: "İsteiğiniz başarıyla gönderildi",
+        message: "İsteğiniz başarıyla gönderildi",
         type: "info",
       });
     } catch (error) {
-      console.log(error);
+      const errorResult = error.response.data
       showMessage({
-        message: "Mesajı gönderirken hata oluştu",
+        message: translateErrorMessage(errorResult.Detail),
         type: "danger",
       });
     } finally {

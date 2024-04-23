@@ -32,7 +32,7 @@ function Login({ navigation }) {
         message: 'Başarıyla giriş yaptınız',
         type: 'info',
       });
-      navigation.navigate('ChannelList');
+      navigation.navigate('ActiveChannelList');
     } catch (error) {
       throw error;
     } finally {

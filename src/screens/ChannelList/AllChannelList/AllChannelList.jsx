@@ -1,22 +1,22 @@
 import { useEffect, useMemo, useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { useSelector } from "react-redux";
-import colors from "../../styles/colors";
+import colors from "../../../styles/colors";
 import Icon from "react-native-remix-icon";
-import CustomModal from "../../components/CustomModal";
-import ChannelCreateModalContent from "../../components/ModalContent/ChannelCreateModalContent";
-import styles from "./ActiveChannelList.styles";
-import ChannelCard from "../../components/ChannelCard";
+import CustomModal from "../../../components/CustomModal";
+import ChannelCreateModalContent from "../../../components/ModalContent/ChannelCreateModalContent";
+import styles from "../ChannelList.styles";
+import ChannelCard from "../../../components/ChannelCard";
 import * as SignalR from "@microsoft/signalr";
-import Loading from "../Loading";
-import ModalType from "../../enums/ModalType";
-import ShowChannelOptionsModalContent from "../../components/ModalContent/ShowChannelOptionsModalContent";
-import NoChannelRegisteredCard from "../../components/NoChannelRegisteredCard";
-import BubbleContentMenu from "../../components/BubbleContentMenu";
-import { default as bubbleContentMenuStyles } from "../../components/BubbleContentMenu/BubbleContentMenu.styles";
-import SendInviteToChannelModalContent from "../../components/ModalContent/SendInviteToChannelModalContent/SendInviteToChannelModalContent";
+import Loading from "../../Loading";
+import ModalType from "../../../enums/ModalType";
+import ShowChannelOptionsModalContent from "../../../components/ModalContent/ShowChannelOptionsModalContent";
+import NoChannelRegisteredCard from "../../../components/NoChannelRegisteredCard";
+import BubbleContentMenu from "../../../components/BubbleContentMenu";
+import { default as bubbleContentMenuStyles } from "../../../components/BubbleContentMenu/BubbleContentMenu.styles";
+import SendInviteToChannelModalContent from "../../../components/ModalContent/SendInviteToChannelModalContent/SendInviteToChannelModalContent";
 
-function ActiveChannelList({ navigation }) {
+function AllChannelList({ navigation }) {
   const { user } = useSelector((state) => state.app);
 
   const [connection, setConnection] = useState(null);
@@ -83,7 +83,7 @@ function ActiveChannelList({ navigation }) {
         .then(() => {
           intervalId = setInterval(() => {
             connection
-              .invoke("SendAllChannels", user.id, null, null)
+              .invoke("SendAllChannelsByUserId", user.id, null, null)
               .catch((err) => console.log(err));
           }, 1000);
         })
@@ -91,7 +91,7 @@ function ActiveChannelList({ navigation }) {
           console.log(err);
         });
 
-      connection.on("ReceiveAllChannels", (channels) => {
+      connection.on("ReceiveAllChannelsByUserId", (channels) => {
         setChannels(channels);
       });
     }
@@ -115,20 +115,17 @@ function ActiveChannelList({ navigation }) {
         </View>
       ) : (
         <ScrollView style={styles.channelListContainer}>
-          <View style={styles.channelCardContainer}>
             {channels.items.map((channel) => {
               return (
                 <ChannelCard
                   key={channel.id}
                   navigation={navigation}
                   channel={channel}
-                  styles={styles}
                   handleSelectChannel={handleSelectChannel}
                   toggleModal={() => toggleModal(ModalType.ShowChannelOptions)}
                 />
               );
             })}
-          </View>
         </ScrollView>
       )}
 
@@ -167,7 +164,7 @@ function ActiveChannelList({ navigation }) {
             <TouchableOpacity
               style={bubbleContentMenuStyles.menuItemContainer}
               onPress={() => {
-                navigation.navigate("AllChannelList")
+                navigation.navigate("AllChannelList");
               }}
             >
               <Text style={bubbleContentMenuStyles.menuItemText}>
@@ -206,4 +203,4 @@ function ActiveChannelList({ navigation }) {
   );
 }
 
-export default ActiveChannelList;
+export default AllChannelList;

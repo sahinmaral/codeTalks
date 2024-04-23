@@ -12,7 +12,8 @@ import { showMessage } from "react-native-flash-message";
 import SplashScreen from "react-native-splash-screen";
 import { useEffect } from "react";
 import useCheckInternet from "./src/hooks/useCheckInternet";
-import ActiveChannelList from "./src/screens/ActiveChannelList";
+import ActiveChannelList from "./src/screens/ChannelList/ActiveChannelList";
+import AllChannelList from "./src/screens/ChannelList/AllChannelList";
 import ChannelMessagesList from "./src/screens/ChannelMessagesList";
 import CheckInternet from "./src/screens/CheckInternet";
 import ChannelDetail from "./src/screens/ChannelDetail";
@@ -64,7 +65,7 @@ function App() {
           name="ActiveChannelList"
           component={ActiveChannelList}
           options={{
-            title: "Kanallar",
+            title: "Aktif Kanallar",
             headerRight: () => (
               <TouchableOpacity onPress={() => console.log("Logged out")}>
                 <Icon
@@ -100,6 +101,13 @@ function App() {
           component={ChannelDetail}
           options={{
             headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="AllChannelList"
+          component={AllChannelList}
+          options={{
+            title: "Bütün Kanallar"
           }}
         />
       </Stack.Navigator>

@@ -23,13 +23,21 @@ export const fetchDeleteChannel = (id, accessToken) => {
 export const fetchLeaveChannel = (id, accessToken) => {
   const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 
-  console.log(accessToken);
-
   const config = {
     headers: { Authorization: `Bearer ${accessToken}` },
   };
 
   return axios.post(`${apiUrl}/channels/leave/${id}`, null, config);
+};
+
+export const fetchSendInviteToChannel = (id, accessToken) => {
+  const apiUrl = process.env.EXPO_PUBLIC_API_URL;
+
+  const config = {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  };
+
+  return axios.post(`${apiUrl}/channels/sendinvite/${id}`, null, config);
 };
 
 export const fetchGetUsersDetailAtChannelByChannelId = (channelId, userId) => {
