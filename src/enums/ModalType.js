@@ -2,7 +2,8 @@ const ModalType = {
     ChannelCreate : "ChannelCreate",
     AddMessage : "AddMessage",
     UpdateChannelName : "UpdateChannelName",
-    ShowChannelOptions: "ShowChannelOptions"
+    ShowChannelOptions: "ShowChannelOptions",
+    SendInviteToChannel: "SendInviteToChannel"
 }
 
 export default ModalType;

@@ -43,7 +43,7 @@ function UpdateChannelNameModalContent({
         message: "Kanalın ismi başarıyla güncellendi",
         type: "info",
       });
-      navigation.navigate("ChannelList")
+      navigation.navigate("ActiveChannelList")
     } catch (error) {
       console.log(error);
       showMessage({

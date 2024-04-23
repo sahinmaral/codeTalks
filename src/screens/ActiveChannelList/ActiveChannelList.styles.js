@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
       }
     },
   },
-  addChannelButton: {
+  showBubbleContentMenuButton: {
     position: "absolute",
     bottom: 10,
     right: 10,

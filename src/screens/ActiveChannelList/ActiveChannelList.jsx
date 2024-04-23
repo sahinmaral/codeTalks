@@ -1,26 +1,32 @@
 import { useEffect, useMemo, useState } from "react";
-import { ScrollView, TouchableOpacity, View } from "react-native";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { useSelector } from "react-redux";
 import colors from "../../styles/colors";
 import Icon from "react-native-remix-icon";
 import CustomModal from "../../components/CustomModal";
 import ChannelCreateModalContent from "../../components/ModalContent/ChannelCreateModalContent";
-import styles from "./ChannelList.styles";
+import styles from "./ActiveChannelList.styles";
 import ChannelCard from "../../components/ChannelCard";
 import * as SignalR from "@microsoft/signalr";
-import Loading from "../../screens/Loading";
+import Loading from "../Loading";
 import ModalType from "../../enums/ModalType";
 import ShowChannelOptionsModalContent from "../../components/ModalContent/ShowChannelOptionsModalContent";
 import NoChannelRegisteredCard from "../../components/NoChannelRegisteredCard";
+import BubbleContentMenu from "../../components/BubbleContentMenu";
+import { default as bubbleContentMenuStyles } from "../../components/BubbleContentMenu/BubbleContentMenu.styles";
+import SendInviteToChannelModalContent from "../../components/ModalContent/SendInviteToChannelModalContent/SendInviteToChannelModalContent";
 
-function ChannelList({ navigation }) {
+function ActiveChannelList({ navigation }) {
   const { user } = useSelector((state) => state.app);
 
   const [connection, setConnection] = useState(null);
   const [channels, setChannels] = useState(null);
+  const [bubbleContentMenuVisible, setBubbleContentMenuVisible] =
+    useState(false);
   const [modalsVisible, setModalsVisible] = useState({
     ChannelCreate: false,
     ShowChannelOptions: false,
+    SendInviteToChannel: false,
   });
   const [selectedChannel, setSelectedChannel] = useState(null);
 
@@ -34,6 +40,7 @@ function ChannelList({ navigation }) {
     });
 
     setModalsVisible({ ...modalsVisible });
+    setBubbleContentMenuVisible(false);
   };
 
   const closeAllModals = () => {
@@ -103,7 +110,9 @@ function ChannelList({ navigation }) {
   return (
     <View style={styles.container}>
       {channels && channels.items.length === 0 ? (
-        <NoChannelRegisteredCard />
+        <View style={styles.container}>
+          <NoChannelRegisteredCard />
+        </View>
       ) : (
         <ScrollView style={styles.channelListContainer}>
           <View style={styles.channelCardContainer}>
@@ -124,11 +133,50 @@ function ChannelList({ navigation }) {
       )}
 
       <TouchableOpacity
-        onPress={() => toggleModal(ModalType.ChannelCreate)}
-        style={styles.addChannelButton}
+        onPress={() => setBubbleContentMenuVisible(!bubbleContentMenuVisible)}
+        style={styles.showBubbleContentMenuButton}
       >
-        <Icon name="add-line" size={24} color={colors.white} />
+        <Icon
+          name={
+            !bubbleContentMenuVisible ? "information-fill" : "information-line"
+          }
+          size={24}
+          color={colors.white}
+        />
       </TouchableOpacity>
+
+      {bubbleContentMenuVisible ? (
+        <BubbleContentMenu>
+          <View>
+            <TouchableOpacity
+              style={bubbleContentMenuStyles.menuItemContainer}
+              onPress={() => toggleModal(ModalType.ChannelCreate)}
+            >
+              <Text style={bubbleContentMenuStyles.menuItemText}>
+                Kanal oluştur
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={bubbleContentMenuStyles.menuItemContainer}
+              onPress={() => toggleModal(ModalType.SendInviteToChannel)}
+            >
+              <Text style={bubbleContentMenuStyles.menuItemText}>
+                Kanala istek at
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={bubbleContentMenuStyles.menuItemContainer}
+              onPress={() => {
+                navigation.navigate("AllChannelList")
+              }}
+            >
+              <Text style={bubbleContentMenuStyles.menuItemText}>
+                Bütün kanalları görüntüle
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </BubbleContentMenu>
+      ) : null}
 
       <CustomModal
         closeAllModals={closeAllModals}
@@ -147,9 +195,15 @@ function ChannelList({ navigation }) {
             selectedChannel={selectedChannel}
           />
         ) : null}
+        {modalsVisible.SendInviteToChannel ? (
+          <SendInviteToChannelModalContent
+            user={user}
+            closeAllModals={closeAllModals}
+          />
+        ) : null}
       </CustomModal>
     </View>
   );
 }
 
-export default ChannelList;
+export default ActiveChannelList;

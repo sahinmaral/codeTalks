@@ -6,7 +6,6 @@ import AddMessageModalContent from "../../components/ModalContent/AddMessageModa
 import styles from "./ChannelMessagesList.styles";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import Loading from "../Loading";
-import Error from "../Error";
 import { useSelector } from "react-redux";
 import MessageCard from "../../components/MessageCard";
 import ChannelCreatedMessageCard from "../../components/ChannelCreatedMessageCard";

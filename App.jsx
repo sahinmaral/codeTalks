@@ -12,7 +12,7 @@ import { showMessage } from "react-native-flash-message";
 import SplashScreen from "react-native-splash-screen";
 import { useEffect } from "react";
 import useCheckInternet from "./src/hooks/useCheckInternet";
-import ChannelList from "./src/screens/ChannelList";
+import ActiveChannelList from "./src/screens/ActiveChannelList";
 import ChannelMessagesList from "./src/screens/ChannelMessagesList";
 import CheckInternet from "./src/screens/CheckInternet";
 import ChannelDetail from "./src/screens/ChannelDetail";
@@ -61,8 +61,8 @@ function App() {
         })}
       >
         <Stack.Screen
-          name="ChannelList"
-          component={ChannelList}
+          name="ActiveChannelList"
+          component={ActiveChannelList}
           options={{
             title: "Kanallar",
             headerRight: () => (
