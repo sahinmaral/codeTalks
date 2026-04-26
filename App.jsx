@@ -6,10 +6,10 @@ import Login from "./src/screens/Login";
 import ContinueSignUp from "./src/screens/ContinueSignUp";
 import colors from "./src/styles/colors";
 import Icon from "react-native-remix-icon";
-import { Platform, TouchableOpacity } from "react-native";
+import { TouchableOpacity } from "react-native";
 import { setUser } from "./src/redux/reducers/appReducer";
 import { showMessage } from "react-native-flash-message";
-import SplashScreen from "react-native-splash-screen";
+import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import useCheckInternet from "./src/hooks/useCheckInternet";
 import ActiveChannelList from "./src/screens/ChannelList/ActiveChannelList";
@@ -28,9 +28,7 @@ function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (Platform.OS === "android") {
-      SplashScreen.hide();
-    }
+    SplashScreen.hideAsync();
   }, []);
 
   // const handleLogout = navigation => {
