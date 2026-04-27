@@ -33,7 +33,9 @@
     "yup": "^1.4.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0"
+    "@babel/core": "^7.20.0",
+    "@types/react": "^18.3.28",
+    "typescript": "^6.0.3"
   },
   "private": true
 }

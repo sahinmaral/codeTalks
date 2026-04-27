@@ -1,0 +1,32 @@
+import { formatDistance, parseISO } from 'date-fns';
+import React from 'react';
+import { Text, View } from 'react-native';
+import { tr } from 'date-fns/locale';
+import styles from './MessageCard.styles';
+import { Message } from '../../types';
+
+interface MessageCardProps {
+  messageDetail: Message;
+}
+
+function MessageCard({ messageDetail }: MessageCardProps) {
+  return (
+    <View style={styles.container}>
+      <View style={styles.topContainer}>
+        <Text style={styles.text}>{messageDetail.sender.userName}</Text>
+        <Text style={[styles.text, { fontStyle: 'italic' }]}>
+          {formatDistance(
+            parseISO(new Date(messageDetail.createdAt).toISOString()),
+            new Date(),
+            { addSuffix: true, locale: tr },
+          )}
+        </Text>
+      </View>
+      <View style={styles.bottomContainer}>
+        <Text style={[styles.text, styles.bottomText]}>{messageDetail.content}</Text>
+      </View>
+    </View>
+  );
+}
+
+export default MessageCard;
