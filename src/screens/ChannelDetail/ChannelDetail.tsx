@@ -71,20 +71,20 @@ function ChannelDetail({ navigation, route }: ChannelDetailProps) {
   const [userName, setUserName] = useState('');
   const [visibleUserSearchInput, setVisibleUserSearchInput] = useState(false);
 
-  const user = useAppSelector((state) => state.app.user);
+  const user = useAppSelector(state => state.app.user);
 
   const toggleVisibleUserSearchInput = () => {
-    setVisibleUserSearchInput((v) => !v);
+    setVisibleUserSearchInput(v => !v);
     setUserName('');
   };
 
   const fetchUsers = async (index: number) => {
     try {
-      setFetchResult((prev) => ({ ...prev, loading: true }));
+      setFetchResult(prev => ({ ...prev, loading: true }));
       const response = await fetchGetUsersByChannelId(channelId, index);
       const data: PaginatedResult<ChannelUser> = response.data;
 
-      setFetchResult((prev) => {
+      setFetchResult(prev => {
         if (!prev.results) return prev;
         return {
           ...prev,
@@ -105,9 +105,9 @@ function ChannelDetail({ navigation, route }: ChannelDetailProps) {
         };
       });
     } catch (error) {
-      setFetchResult((prev) => ({ ...prev, error: error as Error }));
+      setFetchResult(prev => ({ ...prev, error: error as Error }));
     } finally {
-      setFetchResult((prev) => ({ ...prev, loading: false }));
+      setFetchResult(prev => ({ ...prev, loading: false }));
     }
   };
 
@@ -128,7 +128,7 @@ function ChannelDetail({ navigation, route }: ChannelDetailProps) {
     useCallback(() => {
       (async () => {
         try {
-          setFetchResult((prev) => ({ ...prev, loading: true }));
+          setFetchResult(prev => ({ ...prev, loading: true }));
 
           const [usersRes, userDetailRes] = await Promise.all([
             fetchGetUsersByChannelId(channelId),
@@ -137,7 +137,7 @@ function ChannelDetail({ navigation, route }: ChannelDetailProps) {
 
           const usersData: PaginatedResult<ChannelUser> = usersRes.data;
 
-          setFetchResult((prev) => ({
+          setFetchResult(prev => ({
             ...prev,
             results: {
               usersFetch: {
@@ -157,9 +157,9 @@ function ChannelDetail({ navigation, route }: ChannelDetailProps) {
             },
           }));
         } catch (error) {
-          setFetchResult((prev) => ({ ...prev, error: error as Error }));
+          setFetchResult(prev => ({ ...prev, error: error as Error }));
         } finally {
-          setFetchResult((prev) => ({ ...prev, loading: false }));
+          setFetchResult(prev => ({ ...prev, loading: false }));
         }
       })();
     }, []),
@@ -169,7 +169,7 @@ function ChannelDetail({ navigation, route }: ChannelDetailProps) {
     return <Loading text="Kanalın detayı yüklenirken lütfen bekleyiniz ..." />;
   }
 
-  const toggleModal = () => setModalVisible((v) => !v);
+  const toggleModal = () => setModalVisible(v => !v);
 
   return (
     <View style={styles.container}>
@@ -268,19 +268,15 @@ function ChannelDetail({ navigation, route }: ChannelDetailProps) {
             <ScrollView
               style={{ flex: 1 }}
               ref={scrollViewRef}
-              onContentSizeChange={() =>
-                scrollViewRef.current?.scrollToEnd({ animated: true })
-              }
+              onContentSizeChange={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
             >
-              {fetchResult.results.usersFetch.users.map((u) => (
+              {fetchResult.results.usersFetch.users.map(u => (
                 <ChannelDetailUserCard user={u} key={u.id} />
               ))}
 
               {fetchResult.results.usersFetch.metaData.hasNext && (
                 <TouchableOpacity
-                  onPress={() =>
-                    fetchUsers(fetchResult.results!.usersFetch.metaData.index + 1)
-                  }
+                  onPress={() => fetchUsers(fetchResult.results!.usersFetch.metaData.index + 1)}
                 >
                   <Text style={{ fontSize: 16, fontWeight: '500', color: colors.black }}>
                     Tümünü gör ({remainingUserCount}) kişi daha

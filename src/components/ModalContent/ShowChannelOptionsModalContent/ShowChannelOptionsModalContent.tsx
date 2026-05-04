@@ -40,7 +40,7 @@ function ShowChannelOptionsModalContent({
     <TouchableOpacity
       style={styles.modalContainer}
       activeOpacity={1}
-      onPress={(event) => event.stopPropagation()}
+      onPress={event => event.stopPropagation()}
     >
       <View style={styles.headerContainer}>
         <Text style={styles.headerText}>{selectedChannel.name} kanalı hakkında</Text>

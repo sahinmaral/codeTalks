@@ -40,7 +40,7 @@ function AddMessageModalContent({ channelId, userId, toggleModal }: AddMessageMo
     <TouchableOpacity
       style={styles.modalContainer}
       activeOpacity={1}
-      onPress={(event) => event.stopPropagation()}
+      onPress={event => event.stopPropagation()}
     >
       <View>
         <TextInput

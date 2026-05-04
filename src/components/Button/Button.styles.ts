@@ -9,7 +9,7 @@ type ButtonThemeStyle = {
 type ButtonStyles = {
   button: {
     primary: ButtonThemeStyle;
-    secondary: ButtonThemeStyle;
+    'primary-outline': ButtonThemeStyle;
   };
 };
 
@@ -19,23 +19,25 @@ const baseContainer: ViewStyle = {
   justifyContent: 'center',
   alignItems: 'center',
   paddingVertical: 5,
-  borderRadius: 5,
-};
-
-const baseText: TextStyle = {
-  fontWeight: 'bold',
-  fontSize: 20,
+  borderRadius: 10,
 };
 
 const styles: ButtonStyles = {
   button: {
     primary: {
-      container: { ...baseContainer, backgroundColor: colors.orange[400] },
-      text: { ...baseText, color: colors.white },
+      container: { ...baseContainer, backgroundColor: colors.orange[500] },
+      text: { color: colors.white },
+      color: colors.white,
     },
-    secondary: {
-      container: { ...baseContainer, backgroundColor: colors.white },
-      text: { ...baseText, color: colors.orange[400] },
+    'primary-outline': {
+      container: {
+        ...baseContainer,
+        backgroundColor: colors.white,
+        borderWidth: 1,
+        borderColor: colors.orange[500],
+      },
+      text: { color: colors.orange[500] },
+      color: colors.orange[500],
     },
   },
 };

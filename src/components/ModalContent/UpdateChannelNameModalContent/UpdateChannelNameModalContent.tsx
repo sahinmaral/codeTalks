@@ -50,7 +50,7 @@ function UpdateChannelNameModalContent({
     <TouchableOpacity
       style={styles.modalContainer}
       activeOpacity={1}
-      onPress={(event) => event.stopPropagation()}
+      onPress={event => event.stopPropagation()}
     >
       <View style={styles.headerContainer}>
         <Text style={styles.headerText}>Kanal adı güncelleme</Text>

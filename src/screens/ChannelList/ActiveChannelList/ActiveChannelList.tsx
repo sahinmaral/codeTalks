@@ -1,22 +1,22 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useLayoutEffect, useMemo, useState } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { useAppSelector } from '../../../redux/hooks';
-import colors from '../../../styles/colors';
+import { useAppSelector } from '@/redux/hooks';
+import colors from '@/styles/colors';
 import Icon from 'react-native-remix-icon';
-import CustomModal from '../../../components/CustomModal';
-import ChannelCreateModalContent from '../../../components/ModalContent/ChannelCreateModalContent';
+import CustomModal from '@/components/CustomModal';
+import ChannelCreateModalContent from '@/components/ModalContent/ChannelCreateModalContent';
 import styles from '../ChannelList.styles';
-import ChannelCard from '../../../components/ChannelCard';
-import * as SignalR from '@microsoft/signalr';
-import Loading from '../../Loading';
-import ModalType from '../../../enums/ModalType';
-import ShowChannelOptionsModalContent from '../../../components/ModalContent/ShowChannelOptionsModalContent';
-import NoChannelRegisteredCard from '../../../components/NoChannelRegisteredCard';
-import BubbleContentMenu from '../../../components/BubbleContentMenu';
-import bubbleContentMenuStyles from '../../../components/BubbleContentMenu/BubbleContentMenu.styles';
-import SendInviteToChannelModalContent from '../../../components/ModalContent/SendInviteToChannelModalContent/SendInviteToChannelModalContent';
-import { Channel, PaginatedResult, RootStackParamList } from '../../../types';
+import ChannelCard from '@/components/ChannelCard';
+import Loading from '@/screens/Loading';
+import ModalType from '@/enums/ModalType';
+import ShowChannelOptionsModalContent from '@/components/ModalContent/ShowChannelOptionsModalContent';
+import NoChannelRegisteredCard from '@/components/NoChannelRegisteredCard';
+import BubbleContentMenu from '@/components/BubbleContentMenu';
+import bubbleContentMenuStyles from '@/components/BubbleContentMenu/BubbleContentMenu.styles';
+import SendInviteToChannelModalContent from '@/components/ModalContent/SendInviteToChannelModalContent/SendInviteToChannelModalContent';
+import { Channel, PaginatedResult, RootStackParamList } from '@/types';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import useSignalRConnection from '@/hooks/useSignalRConnection';
 
 type ModalsVisible = {
   [ModalType.ChannelCreate]: boolean;
@@ -29,10 +29,14 @@ interface ActiveChannelListProps {
 }
 
 function ActiveChannelList({ navigation }: ActiveChannelListProps) {
-  const user = useAppSelector((state) => state.app.user);
+  const user = useAppSelector(state => state.app.user);
 
-  const [connection, setConnection] = useState<SignalR.HubConnection | null>(null);
-  const [channels, setChannels] = useState<PaginatedResult<Channel> | null>(null);
+  const { data: channels, isLoading } = useSignalRConnection<PaginatedResult<Channel>>({
+    receiveEvent: 'ReceiveActiveChannelsByUserId',
+    sendMethod: 'SendActiveChannelsByUserId',
+    invokeArgs: [{ userId: user?.id, page: 1, pageSize: 10 }],
+  });
+
   const [bubbleContentMenuVisible, setBubbleContentMenuVisible] = useState(false);
   const [modalsVisible, setModalsVisible] = useState<ModalsVisible>({
     [ModalType.ChannelCreate]: false,
@@ -43,7 +47,7 @@ function ActiveChannelList({ navigation }: ActiveChannelListProps) {
 
   const toggleModal = (modalType: ModalType) => {
     const updated = { ...modalsVisible };
-    (Object.keys(updated) as ModalType[]).forEach((key) => {
+    (Object.keys(updated) as ModalType[]).forEach(key => {
       updated[key] = key === modalType ? !updated[key] : false;
     });
     setModalsVisible(updated);
@@ -52,7 +56,7 @@ function ActiveChannelList({ navigation }: ActiveChannelListProps) {
 
   const closeAllModals = () => {
     const updated = { ...modalsVisible };
-    (Object.keys(updated) as ModalType[]).forEach((key) => {
+    (Object.keys(updated) as ModalType[]).forEach(key => {
       updated[key] = false;
     });
     setModalsVisible(updated);
@@ -60,48 +64,15 @@ function ActiveChannelList({ navigation }: ActiveChannelListProps) {
 
   const handleSelectChannel = (channel: Channel) => setSelectedChannel(channel);
 
+  useLayoutEffect(() => {
+    navigation.setOptions({ headerShown: !isLoading });
+  }, [isLoading, navigation]);
+
   const containerModalVisible = useMemo(() => {
-    return Object.values(modalsVisible).some((v) => v);
+    return Object.values(modalsVisible).some(v => v);
   }, [modalsVisible]);
 
-  useEffect(() => {
-    const newConnection = new SignalR.HubConnectionBuilder()
-      .withUrl(process.env.EXPO_PUBLIC_SIGNALR_API_URL!)
-      .build();
-
-    setConnection(newConnection);
-
-    return () => {
-      newConnection.stop().catch(console.error);
-    };
-  }, []);
-
-  useEffect(() => {
-    let intervalId: ReturnType<typeof setInterval>;
-
-    if (connection) {
-      connection
-        .start()
-        .then(() => {
-          intervalId = setInterval(() => {
-            connection
-              .invoke('SendActiveChannelsByUserId', user?.id, null, null)
-              .catch(console.error);
-          }, 1000);
-        })
-        .catch(console.error);
-
-      connection.on('ReceiveActiveChannelsByUserId', (data: PaginatedResult<Channel>) => {
-        setChannels(data);
-      });
-    }
-
-    return () => {
-      if (intervalId) clearInterval(intervalId);
-    };
-  }, [connection, user?.id]);
-
-  if (!connection || connection.state !== 'Connected') {
+  if (isLoading) {
     return <Loading text="Kanallar yüklenirken lütfen bekleyiniz ..." />;
   }
 
@@ -113,7 +84,7 @@ function ActiveChannelList({ navigation }: ActiveChannelListProps) {
         </View>
       ) : (
         <ScrollView style={styles.channelListContainer}>
-          {channels?.items.map((channel) => (
+          {channels?.items.map(channel => (
             <ChannelCard
               key={channel.id}
               navigation={navigation}

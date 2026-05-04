@@ -29,7 +29,7 @@ interface AllChannelListProps {
 }
 
 function AllChannelList({ navigation }: AllChannelListProps) {
-  const user = useAppSelector((state) => state.app.user);
+  const user = useAppSelector(state => state.app.user);
 
   const [connection, setConnection] = useState<SignalR.HubConnection | null>(null);
   const [channels, setChannels] = useState<PaginatedResult<Channel> | null>(null);
@@ -43,7 +43,7 @@ function AllChannelList({ navigation }: AllChannelListProps) {
 
   const toggleModal = (modalType: ModalType) => {
     const updated = { ...modalsVisible };
-    (Object.keys(updated) as ModalType[]).forEach((key) => {
+    (Object.keys(updated) as ModalType[]).forEach(key => {
       updated[key] = key === modalType ? !updated[key] : false;
     });
     setModalsVisible(updated);
@@ -52,7 +52,7 @@ function AllChannelList({ navigation }: AllChannelListProps) {
 
   const closeAllModals = () => {
     const updated = { ...modalsVisible };
-    (Object.keys(updated) as ModalType[]).forEach((key) => {
+    (Object.keys(updated) as ModalType[]).forEach(key => {
       updated[key] = false;
     });
     setModalsVisible(updated);
@@ -61,7 +61,7 @@ function AllChannelList({ navigation }: AllChannelListProps) {
   const handleSelectChannel = (channel: Channel) => setSelectedChannel(channel);
 
   const containerModalVisible = useMemo(() => {
-    return Object.values(modalsVisible).some((v) => v);
+    return Object.values(modalsVisible).some(v => v);
   }, [modalsVisible]);
 
   useEffect(() => {
@@ -77,27 +77,29 @@ function AllChannelList({ navigation }: AllChannelListProps) {
   }, []);
 
   useEffect(() => {
+    if (!connection) return;
+
     let intervalId: ReturnType<typeof setInterval>;
 
-    if (connection) {
-      connection
-        .start()
-        .then(() => {
-          intervalId = setInterval(() => {
-            connection
-              .invoke('SendAllChannelsByUserId', user?.id, null, null)
-              .catch(console.error);
-          }, 1000);
-        })
-        .catch(console.error);
+    const handler = (data: PaginatedResult<Channel>) => setChannels(data);
+    connection.on('ReceiveAllChannelsByUserId', handler);
 
-      connection.on('ReceiveAllChannelsByUserId', (data: PaginatedResult<Channel>) => {
-        setChannels(data);
-      });
-    }
+    const startAndPoll = async () => {
+      if (connection.state === SignalR.HubConnectionState.Disconnected) {
+        await connection.start();
+      }
+      intervalId = setInterval(() => {
+        if (connection.state === SignalR.HubConnectionState.Connected) {
+          connection.invoke('SendAllChannelsByUserId', user?.id, null, null).catch(console.error);
+        }
+      }, 1000);
+    };
+
+    startAndPoll().catch(console.error);
 
     return () => {
-      if (intervalId) clearInterval(intervalId);
+      clearInterval(intervalId);
+      connection.off('ReceiveAllChannelsByUserId', handler);
     };
   }, [connection, user?.id]);
 
@@ -113,7 +115,7 @@ function AllChannelList({ navigation }: AllChannelListProps) {
         </View>
       ) : (
         <ScrollView style={styles.channelListContainer}>
-          {channels?.items.map((channel) => (
+          {channels?.items.map(channel => (
             <ChannelCard
               key={channel.id}
               navigation={navigation}

@@ -16,7 +16,7 @@ interface ChannelCreateModalContentProps {
 function ChannelCreateModalContent({ closeAllModals }: ChannelCreateModalContentProps) {
   const initialValues = { name: '', description: '' };
   const [loading, setLoading] = useState(false);
-  const user = useAppSelector((state) => state.app.user);
+  const user = useAppSelector(state => state.app.user);
 
   const handleCreateChannel = async (values: typeof initialValues) => {
     try {
@@ -44,7 +44,7 @@ function ChannelCreateModalContent({ closeAllModals }: ChannelCreateModalContent
     <TouchableOpacity
       style={styles.modalContainer}
       activeOpacity={1}
-      onPress={(event) => event.stopPropagation()}
+      onPress={event => event.stopPropagation()}
     >
       <Formik initialValues={initialValues} onSubmit={handleSubmit}>
         {({ handleChange, handleBlur, handleSubmit: formikSubmit, values, errors }) => (
@@ -70,9 +70,7 @@ function ChannelCreateModalContent({ closeAllModals }: ChannelCreateModalContent
                 value={values.description}
                 style={styles.input}
               />
-              {errors.description && (
-                <Text style={styles.inputError}>* {errors.description}</Text>
-              )}
+              {errors.description && <Text style={styles.inputError}>* {errors.description}</Text>}
             </View>
 
             <Button

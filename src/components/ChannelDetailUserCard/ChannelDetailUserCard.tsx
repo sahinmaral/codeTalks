@@ -9,7 +9,7 @@ interface ChannelDetailUserCardProps {
 }
 
 function ChannelDetailUserCard({ user }: ChannelDetailUserCardProps) {
-  const currentUser = useAppSelector((state) => state.app.user);
+  const currentUser = useAppSelector(state => state.app.user);
 
   const fullName = useMemo(() => {
     return `${user.firstName} ${user.middleName ? user.middleName + ' ' : ''}${user.lastName}`;
@@ -25,9 +25,7 @@ function ChannelDetailUserCard({ user }: ChannelDetailUserCardProps) {
       </View>
       <View style={styles.rightContainer}>
         <View style={styles.rightTopContainer}>
-          <Text style={styles.text}>
-            {currentUser?.id === user.id ? 'Siz' : fullName}
-          </Text>
+          <Text style={styles.text}>{currentUser?.id === user.id ? 'Siz' : fullName}</Text>
           <View style={styles.badgeContainer}>
             <Text style={styles.badgeText}>{user.role.name}</Text>
           </View>

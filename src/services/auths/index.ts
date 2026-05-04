@@ -7,7 +7,6 @@ interface SignUpInput {
   firstName: string;
   middleName?: string | null;
   lastName: string;
-  phoneNumber: string;
 }
 
 interface LoginInput {

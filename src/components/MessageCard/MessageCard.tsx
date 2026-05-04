@@ -15,11 +15,10 @@ function MessageCard({ messageDetail }: MessageCardProps) {
       <View style={styles.topContainer}>
         <Text style={styles.text}>{messageDetail.sender.userName}</Text>
         <Text style={[styles.text, { fontStyle: 'italic' }]}>
-          {formatDistance(
-            parseISO(new Date(messageDetail.createdAt).toISOString()),
-            new Date(),
-            { addSuffix: true, locale: tr },
-          )}
+          {formatDistance(parseISO(new Date(messageDetail.createdAt).toISOString()), new Date(), {
+            addSuffix: true,
+            locale: tr,
+          })}
         </Text>
       </View>
       <View style={styles.bottomContainer}>

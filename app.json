@@ -3,8 +3,27 @@
     "name": "codeTalks",
     "slug": "codeTalks",
     "version": "1.0.0",
-    "assetBundlePatterns": [
-      "**/*"
-    ]
+    "orientation": "portrait",
+    "icon": "./assets/images/logo.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/images/logo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.sahinmaral.codetalks"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/logo.png",
+        "backgroundColor": "#ffffff"
+      },
+      "softwareKeyboardLayoutMode": "resize",
+      "package": "com.sahinmaral.codetalks"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "plugins": ["expo-font"]
   }
 }

@@ -16,11 +16,7 @@ function CustomModal({ children, closeAllModals, containerModalVisible }: Custom
       visible={containerModalVisible}
       onRequestClose={closeAllModals}
     >
-      <TouchableOpacity
-        style={styles.overlay}
-        activeOpacity={1}
-        onPress={closeAllModals}
-      >
+      <TouchableOpacity style={styles.overlay} activeOpacity={1} onPress={closeAllModals}>
         {children}
       </TouchableOpacity>
     </Modal>

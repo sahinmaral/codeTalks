@@ -40,10 +40,7 @@ export const fetchSendInviteToChannel = (id: string, accessToken: string) => {
   return axios.post(`${apiUrl}/channels/sendinvite/${id}`, null, config);
 };
 
-export const fetchGetUsersDetailAtChannelByChannelId = (
-  channelId: string,
-  userId: string,
-) => {
+export const fetchGetUsersDetailAtChannelByChannelId = (channelId: string, userId: string) => {
   const apiUrl = process.env.EXPO_PUBLIC_API_URL;
   return axios.get(`${apiUrl}/channels/userDetail/${channelId}/${userId}`);
 };

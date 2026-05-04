@@ -1,3 +1,12 @@
+export interface ApiError {
+  detail: string;
+  extensions: Record<string, unknown>;
+  instance: string;
+  status: number;
+  title: string;
+  type: string;
+}
+
 export interface Role {
   name: string;
 }

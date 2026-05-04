@@ -1,25 +1,33 @@
-import React from 'react';
-import { SafeAreaView, Text, View } from 'react-native';
-import Input from '../../components/Input/Input';
+import React, { useState, useEffect } from 'react';
+import { Image, SafeAreaView, TouchableOpacity, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { showMessage } from 'react-native-flash-message';
-import Button from '../../components/Button/';
-import styles from './SignUp.styles';
 import { Formik } from 'formik';
-import validationSchema from '../../schemas/SignUpSchema';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import Input from '../../components/Input/Input';
+import Button from '../../components/Button/';
+import Text from '@/components/Text';
+import Footer from '@/components/Footer';
+import styles from './SignUp.styles';
+import validationSchema from '../../schemas/SignUpSchema';
+import colors from '../../styles/colors';
 import { RootStackParamList } from '../../types';
+import { ValidationError } from 'yup';
+import useKeyboardVisible from '@/hooks/useKeyboardVisible';
 
 interface SignUpProps {
   navigation: NativeStackNavigationProp<RootStackParamList, 'SignUp'>;
 }
 
+const initialValues = {
+  email: 'mehmetkesici@hotmail.com',
+  username: 'mehmetkesici',
+  password: 'Abc1234.',
+  passwordConfirm: 'Abc1234.',
+};
+
 function SignUp({ navigation }: SignUpProps) {
-  const initialValues = {
-    email: 'mehmetkesici@hotmail.com',
-    username: 'mehmetkesici',
-    password: 'Abc1234.',
-    passwordConfirm: 'Abc1234.',
-  };
+  const { isKeyboardVisible } = useKeyboardVisible();
 
   const handleSubmit = async (values: typeof initialValues) => {
     try {
@@ -30,61 +38,102 @@ function SignUp({ navigation }: SignUpProps) {
         username: values.username,
       });
     } catch (exception) {
-      showMessage({ message: String(exception), type: 'danger' });
+      if (exception instanceof ValidationError) {
+        showMessage({ message: exception.errors[0], type: 'warning' });
+      }
     }
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.headerContainer}>
-        <Text style={styles.headerText}>codetalks</Text>
-      </View>
+      <KeyboardAwareScrollView
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+        bounces={false}
+        overScrollMode="never"
+        enableOnAndroid
+        extraScrollHeight={20}
+        enableResetScrollToCoords={false}
+        enableAutomaticScroll={false}
+        scrollEnabled={isKeyboardVisible}
+      >
+        <View style={styles.headerContainer}>
+          <View style={styles.logoContainer}>
+            <Image source={require('@/assets/images/logo.png')} style={styles.logo} />
+          </View>
+        </View>
 
-      <View style={styles.formContainer}>
-        <Formik initialValues={initialValues} onSubmit={handleSubmit}>
-          {({ handleChange, handleBlur, handleSubmit: formikSubmit, values }) => (
-            <View>
-              <View style={styles.inputGroup}>
-                <Input
-                  placeholder="e-postanızı giriniz ..."
-                  onChangeText={handleChange('email')}
-                  onBlur={handleBlur('email')}
-                  value={values.email}
-                />
-                <Input
-                  placeholder="kullanıcı adınızı giriniz ..."
-                  onChangeText={handleChange('username')}
-                  onBlur={handleBlur('username')}
-                  value={values.username}
-                />
-                <Input
-                  placeholder="şifrenizi giriniz ..."
-                  onChangeText={handleChange('password')}
-                  onBlur={handleBlur('password')}
-                  value={values.password}
-                  isSecure
-                />
-                <Input
-                  placeholder="şifrenizi tekrar giriniz ..."
-                  onChangeText={handleChange('passwordConfirm')}
-                  onBlur={handleBlur('passwordConfirm')}
-                  value={values.passwordConfirm}
-                  isSecure
-                />
-              </View>
+        <View style={styles.formContainer}>
+          <View style={styles.description}>
+            <Text size="large" fontWeight="800">
+              Create Account
+            </Text>
+            <Text size="medium">Join the community and start your journey.</Text>
+          </View>
 
-              <View style={styles.buttonGroup}>
-                <Button title="Kayıt ol" theme="primary" onPress={formikSubmit} />
-                <Button
-                  title="Geri"
-                  theme="secondary"
-                  onPress={() => navigation.goBack()}
-                />
+          <Formik initialValues={initialValues} onSubmit={handleSubmit}>
+            {({ handleChange, handleBlur, handleSubmit: formikSubmit, values }) => (
+              <View style={styles.formInputsContainer}>
+                <View style={styles.inputGroup}>
+                  <Input
+                    label="E-mail Address"
+                    placeholder="name@example.com"
+                    onChangeText={handleChange('email')}
+                    onBlur={handleBlur('email')}
+                    value={values.email}
+                    icon="mail-line"
+                  />
+                  <Input
+                    label="Username"
+                    placeholder="name.example"
+                    onChangeText={handleChange('username')}
+                    onBlur={handleBlur('username')}
+                    value={values.username}
+                    icon="user-line"
+                  />
+                  <Input
+                    label="Password"
+                    placeholder="********"
+                    onChangeText={handleChange('password')}
+                    onBlur={handleBlur('password')}
+                    value={values.password}
+                    isSecure
+                    icon="lock-line"
+                  />
+                  <Input
+                    label="Confirm Password"
+                    placeholder="********"
+                    onChangeText={handleChange('passwordConfirm')}
+                    onBlur={handleBlur('passwordConfirm')}
+                    value={values.passwordConfirm}
+                    isSecure
+                    icon="lock-line"
+                  />
+                </View>
+
+                <View style={styles.buttonGroup}>
+                  <Button
+                    title="Next"
+                    icon="arrow-right-line"
+                    theme="primary"
+                    onPress={formikSubmit}
+                  />
+                  <View style={styles.signInOptionContainer}>
+                    <Text>Already have an account? </Text>
+                    <TouchableOpacity onPress={() => navigation.goBack()}>
+                      <Text color={colors.orange[500]} fontWeight="700">
+                        Sign In
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                  <Footer />
+                </View>
               </View>
-            </View>
-          )}
-        </Formik>
-      </View>
+            )}
+          </Formik>
+        </View>
+      </KeyboardAwareScrollView>
     </SafeAreaView>
   );
 }
