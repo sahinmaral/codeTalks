@@ -56,6 +56,12 @@ export interface PaginatedResult<T> {
   hasPrevious: boolean;
 }
 
+export type MainStackParamList = {
+  Channels: undefined;
+  Explore: undefined;
+  Profile: undefined;
+};
+
 export type RootStackParamList = {
   Login: undefined;
   SignUp: undefined;
@@ -65,3 +71,9 @@ export type RootStackParamList = {
   ChannelDetail: { channelId: string; channelName: string };
   AllChannelList: undefined;
 };
+
+declare module '@react-navigation/native-stack' {
+  interface NativeStackNavigationOptions {
+    headerDescription?: string;
+  }
+}

@@ -6,7 +6,7 @@ import Icon from 'react-native-remix-icon';
 import CustomModal from '../../../components/CustomModal';
 import ChannelCreateModalContent from '../../../components/ModalContent/ChannelCreateModalContent';
 import styles from '../ChannelList.styles';
-import ChannelCard from '../../../components/ChannelCard';
+import ChannelCard from '../../../components/ActiveChannelCard';
 import * as SignalR from '@microsoft/signalr';
 import Loading from '../../Loading';
 import ModalType from '../../../enums/ModalType';

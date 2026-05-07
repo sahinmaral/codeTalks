@@ -1,22 +1,8 @@
 import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { useDispatch } from 'react-redux';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import SignUp from './src/screens/SignUp';
-import Login from './src/screens/Login';
-import ContinueSignUp from './src/screens/ContinueSignUp';
-import colors from './src/styles/colors';
-import Icon from 'react-native-remix-icon';
-import { TouchableOpacity } from 'react-native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import * as SplashScreen from 'expo-splash-screen';
-import useCheckInternet from './src/hooks/useCheckInternet';
-import ActiveChannelList from './src/screens/ChannelList/ActiveChannelList';
-import AllChannelList from './src/screens/ChannelList/AllChannelList';
-import ChannelMessagesList from './src/screens/ChannelMessagesList';
-import CheckInternet from './src/screens/CheckInternet';
-import ChannelDetail from './src/screens/ChannelDetail';
-import { useAppSelector } from './src/redux/hooks';
-import { RootStackParamList } from './src/types';
 import {
   useFonts,
   Montserrat_400Regular,
@@ -29,8 +15,111 @@ import {
   Montserrat_600SemiBold,
   Montserrat_500Medium,
 } from '@expo-google-fonts/montserrat';
+import { useAppSelector } from './src/redux/hooks';
+import { RootStackParamList, MainStackParamList } from './src/types';
+import SignUp from './src/screens/SignUp';
+import Login from './src/screens/Login';
+import ContinueSignUp from './src/screens/ContinueSignUp';
+import ActiveChannelList from './src/screens/ChannelList/ActiveChannelList';
+import AllChannelList from './src/screens/ChannelList/AllChannelList';
+import ChannelMessagesList from './src/screens/ChannelMessagesList';
+import ChannelDetail from './src/screens/ChannelDetail';
+import CheckInternet from './src/screens/CheckInternet';
+import Header from '@/components/Header';
+import CustomBottomTab from '@/components/CustomBottomTab';
+import colors from './src/styles/colors';
+import useCheckInternet from './src/hooks/useCheckInternet';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
+const Tab = createBottomTabNavigator<MainStackParamList>();
+
+const AuthStack = () => (
+  <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Screen name="Login" component={Login} />
+    <Stack.Screen name="SignUp" component={SignUp} />
+    <Stack.Screen name="ContinueSignUp" component={ContinueSignUp} />
+  </Stack.Navigator>
+);
+
+const ChannelStack = () => (
+  <Stack.Navigator
+    initialRouteName="ActiveChannelList"
+    screenOptions={{
+      headerShown: true,
+      header: ({ navigation, route, options }) => {
+        const { name, params } = route;
+
+        if (name === 'ActiveChannelList') {
+          return (
+            <Header
+              title="Active Channels"
+              description={options.headerDescription}
+              showRightIcon={true}
+              rightIcon="logout-box-r-line"
+              onRightIconPress={() => console.log('Logged out')}
+            />
+          );
+        }
+
+        if (name === 'ChannelMessagesList') {
+          return (
+            <Header
+              title={(params as any)?.channelName || 'Kanal'}
+              showBackButton={true}
+              onBackPress={() => navigation.goBack()}
+              showRightIcon={true}
+              rightIcon="settings-5-line"
+              onRightIconPress={() =>
+                navigation.navigate('ChannelDetail', {
+                  channelName: (params as any)?.channelName,
+                  channelId: (params as any)?.channelId,
+                })
+              }
+            />
+          );
+        }
+
+        if (name === 'ChannelDetail') {
+          return (
+            <Header
+              title="Kanal Detayları"
+              showBackButton={true}
+              onBackPress={() => navigation.goBack()}
+            />
+          );
+        }
+
+        if (name === 'AllChannelList') {
+          return (
+            <Header
+              title="Bütün Kanallar"
+              showBackButton={true}
+              onBackPress={() => navigation.goBack()}
+            />
+          );
+        }
+
+        return <Header title="App" />;
+      },
+    }}
+  >
+    <Stack.Screen name="ActiveChannelList" component={ActiveChannelList} />
+    <Stack.Screen name="ChannelMessagesList" component={ChannelMessagesList} />
+    <Stack.Screen name="ChannelDetail" component={ChannelDetail} />
+    <Stack.Screen name="AllChannelList" component={AllChannelList} />
+  </Stack.Navigator>
+);
+
+const MainStack = () => (
+  <Tab.Navigator
+    screenOptions={{ headerShown: false }}
+    tabBar={props => <CustomBottomTab {...props} />}
+  >
+    <Tab.Screen name="Channels" component={ChannelStack} />
+    <Tab.Screen name="Explore" component={ChannelStack} />
+    <Tab.Screen name="Profile" component={ChannelStack} />
+  </Tab.Navigator>
+);
 
 function App() {
   const user = useAppSelector(state => state.app.user);
@@ -55,65 +144,6 @@ function App() {
 
   if (!fontsLoaded) return null;
 
-  const AuthStack = () => (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Login" component={Login} />
-      <Stack.Screen name="SignUp" component={SignUp} />
-      <Stack.Screen name="ContinueSignUp" component={ContinueSignUp} />
-    </Stack.Navigator>
-  );
-
-  const ChannelStack = () => (
-    <Stack.Navigator
-      screenOptions={() => ({
-        headerShown: true,
-        headerTitleStyle: { color: colors.orange[400], fontWeight: 'bold' },
-      })}
-    >
-      <Stack.Screen
-        name="ActiveChannelList"
-        component={ActiveChannelList}
-        options={{
-          title: 'Aktif Kanallar',
-          headerRight: () => (
-            <TouchableOpacity onPress={() => console.log('Logged out')}>
-              <Icon name="logout-box-r-line" color={colors.orange[400]} size={24} />
-            </TouchableOpacity>
-          ),
-        }}
-      />
-      <Stack.Screen
-        name="ChannelMessagesList"
-        component={ChannelMessagesList}
-        options={({ navigation, route }) => ({
-          title: route.params.channelName,
-          headerRight: () => (
-            <TouchableOpacity
-              onPress={() =>
-                navigation.navigate('ChannelDetail', {
-                  channelName: route.params.channelName,
-                  channelId: route.params.channelId,
-                })
-              }
-            >
-              <Icon name="settings-5-line" color={colors.black} size={24} />
-            </TouchableOpacity>
-          ),
-        })}
-      />
-      <Stack.Screen
-        name="ChannelDetail"
-        component={ChannelDetail}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="AllChannelList"
-        component={AllChannelList}
-        options={{ title: 'Bütün Kanallar' }}
-      />
-    </Stack.Navigator>
-  );
-
   if (!isConnected) {
     return (
       <CheckInternet
@@ -125,9 +155,7 @@ function App() {
     );
   }
 
-  return (
-    <NavigationContainer>{!user ? <AuthStack /> : <ChannelStack />}</NavigationContainer>
-  );
+  return <NavigationContainer>{!user ? <AuthStack /> : <MainStack />}</NavigationContainer>;
 }
 
 export default App;

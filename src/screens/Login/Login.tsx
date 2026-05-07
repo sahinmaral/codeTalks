@@ -45,8 +45,9 @@ function Login({ navigation }: LoginProps) {
         rememberMe: values.rememberMe,
       });
       dispatch(setUser(result.data));
-      showMessage({ message: 'Başarıyla giriş yaptınız', type: 'info' });
-      navigation.navigate('ActiveChannelList');
+      showMessage({ message: 'Başarıyla giriş yaptınız', type: 'success' });
+    } catch (exception) {
+      throw exception;
     } finally {
       setLoading(false);
     }

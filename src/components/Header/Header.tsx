@@ -1,0 +1,69 @@
+import React from 'react';
+import { View, TouchableOpacity, StyleSheet, Image, SafeAreaView } from 'react-native';
+import Icon from 'react-native-remix-icon';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import colors from '@/styles/colors';
+import styles from './Header.styles';
+import Text from '@/components/Text';
+
+interface HeaderProps {
+  title: string;
+  description?: string;
+  showBackButton?: boolean;
+  onBackPress?: () => void;
+  rightIcon?: string;
+  onRightIconPress?: () => void;
+  showRightIcon?: boolean;
+}
+
+const Header: React.FC<HeaderProps> = ({
+  title,
+  description,
+  showBackButton = false,
+  onBackPress,
+  rightIcon,
+  onRightIconPress,
+  showRightIcon = false,
+}) => {
+  const { top } = useSafeAreaInsets();
+
+  return (
+    <View style={[styles.container, { paddingTop: top }]}>
+      <View style={styles.content}>
+        <View style={styles.firstSection}>
+          <View>
+            {showBackButton && onBackPress ? (
+              <TouchableOpacity onPress={onBackPress} style={styles.iconButton}>
+                <Icon name="arrow-left-line" color={colors.white} size={24} />
+              </TouchableOpacity>
+            ) : (
+              <View style={styles.iconButtonContainer}>
+                <Image source={require('@/assets/images/logo.png')} style={styles.logo} />
+              </View>
+            )}
+          </View>
+          <View>
+            {rightIcon ? (
+              <TouchableOpacity onPress={onRightIconPress} style={styles.iconButtonContainer}>
+                <Icon name={rightIcon} color={colors.white} size={24} />
+              </TouchableOpacity>
+            ) : null}
+          </View>
+        </View>
+
+        <View style={styles.secondSection}>
+          <Text size="large" color={colors.white} fontWeight="700">
+            {title}
+          </Text>
+          {description ? (
+            <Text size="medium" color={colors.white} fontWeight="300">
+              {description}
+            </Text>
+          ) : null}
+        </View>
+      </View>
+    </View>
+  );
+};
+
+export default Header;
