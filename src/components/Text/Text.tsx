@@ -25,6 +25,7 @@ const sizeStyles = StyleSheet.create({
   small: { fontSize: 12 },
   medium: { fontSize: 16 },
   large: { fontSize: 20 },
+  xlarge: { fontSize: 24 },
 });
 
 const weightMap: Record<string, string> = {

@@ -2,11 +2,11 @@ import { StyleSheet } from 'react-native';
 import colors from '../../styles/colors';
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.white },
+  container: { flex: 1 },
   channelListContainer: {
     flex: 1,
     padding: 20,
-    backgroundColor: colors.white,
+    backgroundColor: colors.light,
   },
   channelListContainerContent: {
     rowGap: 15,

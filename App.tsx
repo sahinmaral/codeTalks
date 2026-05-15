@@ -29,6 +29,9 @@ import Header from '@/components/Header';
 import CustomBottomTab from '@/components/CustomBottomTab';
 import colors from './src/styles/colors';
 import useCheckInternet from './src/hooks/useCheckInternet';
+import MyProfile from '@/screens/MyProfile';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { BubbleContentMenuProvider } from '@/components/BubbleContentMenu';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<MainStackParamList>();
@@ -50,15 +53,7 @@ const ChannelStack = () => (
         const { name, params } = route;
 
         if (name === 'ActiveChannelList') {
-          return (
-            <Header
-              title="Active Channels"
-              description={options.headerDescription}
-              showRightIcon={true}
-              rightIcon="logout-box-r-line"
-              onRightIconPress={() => console.log('Logged out')}
-            />
-          );
+          return null;
         }
 
         if (name === 'ChannelMessagesList') {
@@ -110,6 +105,12 @@ const ChannelStack = () => (
   </Stack.Navigator>
 );
 
+const ProfileStack = () => (
+  <Stack.Navigator initialRouteName="MyProfile" screenOptions={{ headerShown: false }}>
+    <Stack.Screen name="MyProfile" component={MyProfile} />
+  </Stack.Navigator>
+);
+
 const MainStack = () => (
   <Tab.Navigator
     screenOptions={{ headerShown: false }}
@@ -117,7 +118,7 @@ const MainStack = () => (
   >
     <Tab.Screen name="Channels" component={ChannelStack} />
     <Tab.Screen name="Explore" component={ChannelStack} />
-    <Tab.Screen name="Profile" component={ChannelStack} />
+    <Tab.Screen name="Profile" component={ProfileStack} />
   </Tab.Navigator>
 );
 
@@ -155,7 +156,13 @@ function App() {
     );
   }
 
-  return <NavigationContainer>{!user ? <AuthStack /> : <MainStack />}</NavigationContainer>;
+  return (
+    <GestureHandlerRootView>
+      <BubbleContentMenuProvider>
+        <NavigationContainer>{!user ? <AuthStack /> : <MainStack />}</NavigationContainer>
+      </BubbleContentMenuProvider>
+    </GestureHandlerRootView>
+  );
 }
 
 export default App;

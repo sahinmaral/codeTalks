@@ -17,6 +17,7 @@ const styles = StyleSheet.create({
   },
   input: {
     width: Dimensions.get('window').width - 40,
+    fontFamily: 'Montserrat_400',
   },
   inputError: { color: colors.red[500], fontWeight: '600' },
   button: {

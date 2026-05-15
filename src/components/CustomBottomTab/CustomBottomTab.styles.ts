@@ -5,6 +5,8 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     backgroundColor: colors.white,
+    borderTopWidth: 1,
+    borderColor: colors.gray[100],
   },
   tab: {
     flex: 1,

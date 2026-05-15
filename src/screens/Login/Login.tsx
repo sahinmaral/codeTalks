@@ -64,7 +64,7 @@ function Login({ navigation }: LoginProps) {
         const apiError = exception.response?.data as ApiError;
         showMessage({ message: apiError.detail, type: 'danger' });
       } else {
-        showMessage({ message: 'Bir hata oluştu', type: 'danger' });
+        showMessage({ message: 'An error occurred', type: 'danger' });
       }
     }
   };

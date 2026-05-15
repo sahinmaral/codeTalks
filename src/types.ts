@@ -46,6 +46,12 @@ export interface Message {
   };
 }
 
+export interface UserStatusOption {
+  status: UserPresenceStatus;
+  label: string;
+  description: string;
+}
+
 export interface PaginatedResult<T> {
   items: T[];
   count: number;

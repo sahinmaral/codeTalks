@@ -52,13 +52,13 @@ function ActiveChannelCard({
             </View>
           </View>
         </View>
-        <View style={styles.unreadMessageContainer}>
+        {/* <View style={styles.unreadMessageContainer}>
           <View style={styles.unreadMessageBadge}>
             <Text size="medium" fontWeight="700" color={colors.white}>
               2
             </Text>
           </View>
-        </View>
+        </View> */}
       </View>
       <View style={styles.description}>
         <Text fontWeight="300" color={colors.gray[500]}>

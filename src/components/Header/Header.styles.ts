@@ -2,7 +2,8 @@ import colors from '@/styles/colors';
 import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
-  container: {
+  container: { backgroundColor: colors.light },
+  headerContainer: {
     backgroundColor: colors.orange[500],
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
@@ -11,12 +12,14 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     height: 150,
+    gap: 5,
     paddingHorizontal: 20,
   },
   firstSection: {
     flex: 0.4,
     width: '100%',
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
   },
   secondSection: {

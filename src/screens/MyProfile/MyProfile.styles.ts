@@ -1,0 +1,100 @@
+import colors from '@/styles/colors';
+import { StyleSheet } from 'react-native';
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: colors.light },
+  content: { paddingHorizontal: 20, backgroundColor: colors.light },
+  cardInformationContainer: {
+    backgroundColor: colors.white,
+    gap: 10,
+    marginTop: -20,
+    borderRadius: 15,
+    paddingVertical: 25,
+    paddingHorizontal: 20,
+    shadowColor: colors.gray[700],
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  avatarContainer: {
+    alignItems: 'center',
+  },
+  headerContainer: {
+    gap: 10,
+    alignItems: 'center',
+  },
+  description: {
+    textAlign: 'center',
+  },
+  avatarWrapper: {
+    height: 100,
+    width: 100,
+    borderRadius: 50,
+    marginTop: -70,
+    backgroundColor: colors.white,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 5,
+  },
+  avatarInner: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 50,
+    backgroundColor: colors.orange[500],
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  avatarInitial: {
+    color: colors.white,
+    fontSize: 28,
+    fontWeight: '700',
+  },
+  editProfileButton: { borderRadius: 20 },
+  additionalInformationContainer: {
+    flexDirection: 'row',
+    gap: 20,
+    justifyContent: 'center',
+    marginTop: 25,
+  },
+  additionalInformationCard: {
+    alignItems: 'center',
+    padding: 20,
+    gap: 5,
+    borderRadius: 20,
+    backgroundColor: 'white',
+    shadowColor: colors.gray[700],
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  additionalInformationCardHeader: {},
+  additionalInformationCardDescription: {},
+  userPresenceStatusContainer: {
+    marginTop: 25,
+    borderRadius: 30,
+    backgroundColor: 'white',
+    shadowColor: colors.gray[700],
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 2,
+    padding: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  userPresenceStatusBadgeContainer: {
+    gap: 10,
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  userPresenceStatusBadge: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+  },
+});
+
+export default styles;
