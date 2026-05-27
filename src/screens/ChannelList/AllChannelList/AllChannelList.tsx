@@ -66,7 +66,7 @@ function AllChannelList({ navigation }: AllChannelListProps) {
 
   useEffect(() => {
     const newConnection = new SignalR.HubConnectionBuilder()
-      .withUrl(process.env.EXPO_PUBLIC_SIGNALR_API_URL!)
+      .withUrl(`${process.env.EXPO_PUBLIC_API_BASE_URL}/chatHub`)
       .build();
 
     setConnection(newConnection);

@@ -22,7 +22,7 @@ function ActiveChannelCard({
   channel,
   toggleModal,
   handleSelectChannel,
-}: ChannelCardProps) {
+}: ActiveChannelCardProps) {
   return (
     <TouchableOpacity
       style={styles.container}
@@ -47,7 +47,7 @@ function ActiveChannelCard({
             <View style={styles.memberContainer}>
               <Icon name="ri-group-line" color={colors.gray[400]} size={18} />
               <Text size="medium" fontWeight="300" color={colors.gray[500]}>
-                1205 members
+                {channel.memberCount} members
               </Text>
             </View>
           </View>

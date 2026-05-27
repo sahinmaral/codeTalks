@@ -25,26 +25,22 @@ const styles = StyleSheet.create({
     color: colors.black,
     marginTop: 14,
   },
-  loadingSection: {
+  errorSection: {
+    width: '100%',
     alignItems: 'center',
     gap: 12,
     paddingHorizontal: 30,
   },
-  loadingText: {
-    fontSize: 16,
+  errorTextDescription: {
     color: colors.gray[500],
     textAlign: 'center',
   },
-  dotsRow: {
-    flexDirection: 'row',
-    gap: 8,
+  buttonGroup: {
+    marginTop: 20,
+    width: '80%',
+    gap: 15,
   },
-  dot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: colors.orange[500],
-  },
+  button: { paddingVertical: 10 },
   version: {
     fontSize: 13,
     color: colors.stone[300],

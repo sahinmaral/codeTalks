@@ -1,3 +1,5 @@
+import { UserStatusType } from '@/enums/UserStatusType';
+
 export interface ApiError {
   detail: string;
   extensions: Record<string, unknown>;
@@ -11,19 +13,53 @@ export interface Role {
   name: string;
 }
 
-export interface User {
-  id: string;
+export interface TokenResponse {
   accessToken: string;
+  refreshToken: string;
+  refreshTokenExpires: string;
+}
+
+export interface User extends TokenResponse {
+  id: string;
   userName: string;
-  firstName?: string;
+  firstName: string;
   middleName?: string | null;
-  lastName?: string;
+  lastName: string;
+  profilePhotoURL?: string | null;
+}
+
+export interface MyProfileDto {
+  id: string;
+  userName: string;
+  firstName: string;
+  middleName?: string | null;
+  lastName: string;
+  profilePhotoURL?: string | null;
+  bio?: string | null;
+  email: string;
+  joinedChannelCount: number;
+  createdAt: string;
+  userStatus: UserStatus;
+}
+
+export interface UserStatusOption {
+  status: UserStatusType;
+  statusType: number;
+  color: string;
+  label: string;
+  description: string;
+}
+
+export interface UserStatus {
+  status: UserStatusType;
+  lastUpdated: string;
 }
 
 export interface Channel {
   id: string;
   name: string;
   description: string;
+  memberCount: number;
   status: number;
   role: Role;
 }
@@ -44,12 +80,6 @@ export interface Message {
   sender: {
     userName: string;
   };
-}
-
-export interface UserStatusOption {
-  status: UserPresenceStatus;
-  label: string;
-  description: string;
 }
 
 export interface PaginatedResult<T> {

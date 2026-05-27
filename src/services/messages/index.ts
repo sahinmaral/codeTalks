@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axiosInstance from '../axiosConfig';
 
 interface CreateMessageInput {
   userId: string;
@@ -7,6 +7,5 @@ interface CreateMessageInput {
 }
 
 export const fetchCreateMessage = (input: CreateMessageInput) => {
-  const apiUrl = process.env.EXPO_PUBLIC_API_URL;
-  return axios.post(`${apiUrl}/messages`, input);
+  return axiosInstance.post('/messages', input);
 };

@@ -37,7 +37,7 @@ function BubbleContentMenu({ children, onClose }: BubbleContentMenuProps) {
     <BubbleContentMenuContext.Provider value={{ scrollTo }}>
       <BottomSheet
         android_keyboardInputMode="adjustResize"
-        keyboardBehavior="extend"
+        keyboardBehavior="interactive"
         keyboardBlurBehavior="restore"
         enableDynamicSizing
         maxDynamicContentSize={SCREEN_HEIGHT * 0.85}

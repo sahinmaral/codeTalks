@@ -1,4 +1,6 @@
-import axios from 'axios';
+import { MyProfileDto, User } from '@/types';
+import { AxiosResponse } from 'axios';
+import axiosInstance from '../axiosConfig';
 
 interface SignUpInput {
   username: string;
@@ -15,11 +17,15 @@ interface LoginInput {
 }
 
 export const fetchSignUp = (input: SignUpInput) => {
-  const apiUrl = process.env.EXPO_PUBLIC_API_URL;
-  return axios.post(`${apiUrl}/auth/register`, input);
+  return axiosInstance.post('/auth/register', input);
 };
 
-export const fetchLogin = (input: LoginInput) => {
-  const apiUrl = process.env.EXPO_PUBLIC_API_URL;
-  return axios.post(`${apiUrl}/auth/login`, input);
+export const fetchLogin: (input: LoginInput) => Promise<AxiosResponse<User, LoginInput>> = (
+  input: LoginInput,
+) => {
+  return axiosInstance.post('/auth/login', input);
+};
+
+export const fetchMe: () => Promise<AxiosResponse<MyProfileDto>> = () => {
+  return axiosInstance.get('/auth/me');
 };

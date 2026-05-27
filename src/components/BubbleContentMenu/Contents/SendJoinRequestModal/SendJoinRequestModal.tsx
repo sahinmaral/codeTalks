@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import Button from '@/components/Button';
 import Text from '@/components/Text';
 import { ActivityIndicator, View } from 'react-native';
-import { useBubbleContentMenuScroll } from '../../BubbleContentMenu.context';
+import { useBubbleContentMenuScroll } from '@/components/BubbleContentMenu/BubbleContentMenu.context';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import styles from './SendJoinRequestModal.styles';
 import { showMessage } from 'react-native-flash-message';
@@ -11,11 +11,13 @@ import validationSchema from '@/schemas/CreateChannelSchema';
 import { useAppSelector } from '@/redux/hooks';
 import { fetchCreateChannel } from '@/services/channels';
 import colors from '@/styles/colors';
+import { useBubbleContentMenu } from '@/components/BubbleContentMenu/BubbleContentMenu.provider';
 
 function SendJoinRequestModal() {
   const initialValues = { channelId: '' };
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const { hide } = useBubbleContentMenu();
 
   const { scrollTo } = useBubbleContentMenuScroll();
   const groupYPositions = useRef<Record<number, number>>({});
@@ -30,7 +32,7 @@ function SendJoinRequestModal() {
       setLoading(true);
       await fetchSendInviteToChannel(channelId, user.accessToken);
       setChannelId('');
-      closeAllModals();
+      hide();
       showMessage({ message: 'İsteğiniz başarıyla gönderildi', type: 'info' });
     } catch (err: any) {
       const errorResult = err?.response?.data;

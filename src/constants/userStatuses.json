@@ -1,0 +1,26 @@
+[
+  {
+    "status": "Online",
+    "statusType": 0,
+    "label": "Online",
+    "description": "Available and active"
+  },
+  {
+    "status": "Away",
+    "statusType": 1,
+    "label": "Away",
+    "description": "Not available"
+  },
+  {
+    "status": "Busy",
+    "statusType": 2,
+    "label": "Busy",
+    "description": "Do not disturb"
+  },
+  {
+    "status": "Invisible",
+    "statusType": 3,
+    "label": "Invisible",
+    "description": "Not visible to others"
+  }
+]

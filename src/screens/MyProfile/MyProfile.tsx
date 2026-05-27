@@ -1,31 +1,86 @@
-import { Touchable, View } from 'react-native';
+import { Image, Touchable, TouchableOpacity, View } from 'react-native';
 import Text from '@/components/Text';
+import Loading from '@/screens/Loading';
 import styles from './MyProfile.styles';
 import colors from '@/styles/colors';
 import Button from '@/components/Button';
 import Header from '@/components/Header';
-import { useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import Icon from 'react-native-remix-icon';
+import { fetchMe } from '@/services/auths';
+import { MyProfileDto } from '@/types';
+import { useFocusEffect } from '@react-navigation/native';
+import Error from '@/screens/Error';
+import { useBubbleContentMenu } from '@/components/BubbleContentMenu';
+import SetUserStatusModal from '@/components/BubbleContentMenu/Contents/SetUserStatusModal';
+import userStatusesData from '@/constants/userStatuses.json';
+import { UserStatusType } from '@/enums/UserStatusType';
 
-const userPresenceStatuses = [
-  {
-    status: 'Online',
-    color: colors.success,
-    label: 'Online',
-    description: 'Available and active',
-  },
-  { status: 'Away', color: colors.warning, label: 'Away', description: 'Not available' },
-  { status: 'Busy', color: colors.danger, label: 'Busy', description: 'Do not disturb' },
-  {
-    status: 'Invisible',
-    color: colors.gray[500],
-    label: 'Invisible',
-    description: 'Not visible to others',
-  },
-];
+const statusColors: Record<string, string> = {
+  Online: colors.success,
+  Away: colors.warning,
+  Busy: colors.danger,
+  Invisible: colors.gray[300],
+};
+
+const userPresenceStatuses: UserStatusOption[] = userStatusesData.map(item => ({
+  ...item,
+  color: statusColors[item.status],
+}));
 
 function MyProfile() {
-  const [currentStatus, setCurrentStatus] = useState(userPresenceStatuses[0]);
+  const [isLoading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [user, setUser] = useState<MyProfileDto | null>(null);
+
+  const { show } = useBubbleContentMenu();
+
+  const currentStatusOption: UserStatusOption | undefined = useMemo(() => {
+    return userPresenceStatuses.find(status => status.statusType === user?.userStatus.status);
+  }, [user?.userStatus]);
+
+  const formatMonthYear = (date: string | Date) =>
+    new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric' }).format(new Date(date));
+
+  const userFullname = useMemo(() => {
+    if (user) {
+      if (user.middleName) return `${user.firstName} ${user.middleName} ${user.lastName}`;
+      else return `${user.firstName} ${user.lastName}`;
+    }
+    return null;
+  }, [user]);
+
+  const fetchUserProfile = async () => {
+    setLoading(true);
+    try {
+      const response = await fetchMe();
+      setUser(response.data);
+    } catch (err) {
+      setError('Failed to load user profile');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpdateUserStatusSuccess = (status: UserStatusType) => {
+    setUser(prev =>
+      prev ? { ...prev, userStatus: { status, lastUpdated: new Date().toISOString() } } : prev,
+    );
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchUserProfile();
+    }, []),
+  );
+
+  if (isLoading) {
+    return <Loading text="Kullanıcı bilgileri yüklenirken lütfen bekleyiniz ..." />;
+  }
+
+  if (!isLoading && error) {
+    return <Error description={error} />;
+  }
 
   return (
     <View style={styles.container}>
@@ -40,21 +95,25 @@ function MyProfile() {
           <View style={styles.avatarContainer}>
             <View style={styles.avatarWrapper}>
               <View style={styles.avatarInner}>
-                {/* <Text style={styles.avatarInitial}>J</Text> */}
+                {user?.profilePhotoURL ? (
+                  <Image
+                    source={{ uri: user.profilePhotoURL }}
+                    style={{ width: 80, height: 80, borderRadius: 40 }}
+                  />
+                ) : null}
               </View>
             </View>
           </View>
           <View style={styles.headerContainer}>
             <View>
-              <Text size="large" fontWeight="700">
-                John Doe
+              <Text size="large" fontWeight="700" style={{ textAlign: 'center' }}>
+                {userFullname}
               </Text>
-              <Text color={colors.gray[400]}>@johndoe</Text>
+              <Text color={colors.gray[400]} style={{ textAlign: 'center' }}>
+                @{user?.userName}
+              </Text>
             </View>
-            <Text style={styles.description}>
-              Full-stack developer passionate about building scalable web applications and intuitive
-              UIs.
-            </Text>
+            <Text style={styles.description}>{user?.bio}</Text>
           </View>
           <View styles={styles.editProfileContainer}>
             <Button theme="primary-outline" title="Edit Profile" style={styles.editProfileButton} />
@@ -64,7 +123,7 @@ function MyProfile() {
         <View style={styles.additionalInformationContainer}>
           <View style={styles.additionalInformationCard}>
             <Text color={colors.orange[500]} fontWeight="700" size="large">
-              14
+              {user?.joinedChannelCount}
             </Text>
             <Text
               style={styles.additionalInformationCardDescription}
@@ -81,7 +140,7 @@ function MyProfile() {
               size="large"
               fontWeight="700"
             >
-              Jan 2024
+              {user?.createdAt ? formatMonthYear(user.createdAt) : '—'}
             </Text>
             <Text
               style={styles.additionalInformationCardDescription}
@@ -93,12 +152,25 @@ function MyProfile() {
           </View>
         </View>
 
-        <View style={styles.userPresenceStatusContainer}>
+        <TouchableOpacity
+          style={styles.userPresenceStatusContainer}
+          onPress={() => {
+            show(
+              <SetUserStatusModal
+                currentUserStatus={user?.userStatus}
+                onSuccess={status => handleUpdateUserStatusSuccess(status)}
+              />,
+            );
+          }}
+        >
           <View style={styles.userPresenceStatusBadgeContainer}>
             <View
-              style={[styles.userPresenceStatusBadge, { backgroundColor: currentStatus.color }]}
+              style={[
+                styles.userPresenceStatusBadge,
+                { backgroundColor: currentStatusOption?.color },
+              ]}
             ></View>
-            <Text fontWeight="500">{currentStatus.label}</Text>
+            <Text fontWeight="500">{currentStatusOption?.label}</Text>
           </View>
           <Icon
             name="arrow-right-s-line"
@@ -106,7 +178,7 @@ function MyProfile() {
             color={colors.gray[400]}
             style={{ marginLeft: 10 }}
           />
-        </View>
+        </TouchableOpacity>
       </View>
     </View>
   );

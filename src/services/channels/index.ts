@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axiosInstance from '../axiosConfig';
 
 interface CreateChannelInput {
   name: string;
@@ -13,34 +13,25 @@ interface UpdateChannelInput {
 }
 
 export const fetchCreateChannel = (input: CreateChannelInput) => {
-  const apiUrl = process.env.EXPO_PUBLIC_API_URL;
-  return axios.post(`${apiUrl}/channels`, input);
+  return axiosInstance.post('/channels', input);
 };
 
 export const fetchUpdateChannel = (input: UpdateChannelInput) => {
-  const apiUrl = process.env.EXPO_PUBLIC_API_URL;
-  return axios.put(`${apiUrl}/channels`, input);
+  return axiosInstance.put('/channels', input);
 };
 
-export const fetchDeleteChannel = (id: string, accessToken: string) => {
-  const apiUrl = process.env.EXPO_PUBLIC_API_URL;
-  const config = { headers: { Authorization: `Bearer ${accessToken}` } };
-  return axios.delete(`${apiUrl}/channels/${id}`, config);
+export const fetchDeleteChannel = (id: string) => {
+  return axiosInstance.delete(`/channels/${id}`);
 };
 
-export const fetchLeaveChannel = (id: string, accessToken: string) => {
-  const apiUrl = process.env.EXPO_PUBLIC_API_URL;
-  const config = { headers: { Authorization: `Bearer ${accessToken}` } };
-  return axios.post(`${apiUrl}/channels/leave/${id}`, null, config);
+export const fetchLeaveChannel = (id: string) => {
+  return axiosInstance.post(`/channels/leave/${id}`, null);
 };
 
-export const fetchSendInviteToChannel = (id: string, accessToken: string) => {
-  const apiUrl = process.env.EXPO_PUBLIC_API_URL;
-  const config = { headers: { Authorization: `Bearer ${accessToken}` } };
-  return axios.post(`${apiUrl}/channels/sendinvite/${id}`, null, config);
+export const fetchSendInviteToChannel = (id: string) => {
+  return axiosInstance.post(`/channels/sendinvite/${id}`, null);
 };
 
 export const fetchGetUsersDetailAtChannelByChannelId = (channelId: string, userId: string) => {
-  const apiUrl = process.env.EXPO_PUBLIC_API_URL;
-  return axios.get(`${apiUrl}/channels/userDetail/${channelId}/${userId}`);
+  return axiosInstance.get(`/channels/userDetail/${channelId}/${userId}`);
 };

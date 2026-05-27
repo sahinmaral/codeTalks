@@ -3,6 +3,7 @@ import Button from '@/components/Button';
 import Text from '@/components/Text';
 import { ActivityIndicator, View } from 'react-native';
 import { useBubbleContentMenuScroll } from '../../BubbleContentMenu.context';
+import { useBubbleContentMenu } from '../../BubbleContentMenu.provider';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import styles from './ChannelCreateModal.styles';
 import { showMessage } from 'react-native-flash-message';
@@ -18,12 +19,14 @@ function CreateChannelModal() {
   const [loading, setLoading] = useState(false);
   const user = useAppSelector(state => state.app.user);
   const { scrollTo } = useBubbleContentMenuScroll();
+  const { hide } = useBubbleContentMenu();
+  const formContainerScrollY = useRef(0);
   const groupYPositions = useRef<Record<number, number>>({});
 
   const handleCreateChannel = async (values: typeof initialValues) => {
     try {
       await fetchCreateChannel({ ...values, userId: user!.id });
-      closeAllModals();
+      hide();
       showMessage({ message: 'Channel created successfully', type: 'info' });
     } catch (error) {
       throw error;
@@ -59,11 +62,16 @@ function CreateChannelModal() {
 
       <Formik initialValues={initialValues} onSubmit={handleSubmit}>
         {({ handleChange, handleBlur, handleSubmit: formikSubmit, values, errors }) => (
-          <View style={styles.formContainer}>
+          <View
+            style={styles.formContainer}
+            onLayout={e => {
+              formContainerScrollY.current = e.nativeEvent.layout.y;
+            }}
+          >
             <View
               style={styles.formGroup}
               onLayout={e => {
-                groupYPositions.current[0] = e.nativeEvent.layout.y;
+                groupYPositions.current[0] = formContainerScrollY.current + e.nativeEvent.layout.y;
               }}
             >
               <Text fontWeight="600">Channel Name</Text>
@@ -82,7 +90,7 @@ function CreateChannelModal() {
               key={1}
               style={styles.formGroup}
               onLayout={e => {
-                groupYPositions.current[1] = e.nativeEvent.layout.y;
+                groupYPositions.current[1] = formContainerScrollY.current + e.nativeEvent.layout.y;
               }}
             >
               <Text fontWeight="600">Description</Text>
