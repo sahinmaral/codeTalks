@@ -1,5 +1,5 @@
-import { MyProfileDto, User } from '@/types';
-import { AxiosResponse } from 'axios';
+import { MyProfileDto, TokenResponse, User } from '@/types';
+import axios, { AxiosResponse } from 'axios';
 import axiosInstance from '../axiosConfig';
 
 interface SignUpInput {
@@ -28,4 +28,10 @@ export const fetchLogin: (input: LoginInput) => Promise<AxiosResponse<User, Logi
 
 export const fetchMe: () => Promise<AxiosResponse<MyProfileDto>> = () => {
   return axiosInstance.get('/auth/me');
+};
+
+export const fetchRefreshToken = (refreshToken: string): Promise<AxiosResponse<TokenResponse>> => {
+  return axios.post(`${process.env.EXPO_PUBLIC_API_BASE_URL}/api/auth/refresh-token`, {
+    refreshToken,
+  });
 };

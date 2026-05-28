@@ -108,6 +108,11 @@ export type RootStackParamList = {
   AllChannelList: undefined;
 };
 
+export type ProfileStackParamList = {
+  MyProfile: undefined;
+  Settings: undefined;
+};
+
 declare module '@react-navigation/native-stack' {
   interface NativeStackNavigationOptions {
     headerDescription?: string;

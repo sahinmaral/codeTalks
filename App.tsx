@@ -16,7 +16,7 @@ import {
   Montserrat_500Medium,
 } from '@expo-google-fonts/montserrat';
 import { useAppSelector } from './src/redux/hooks';
-import { RootStackParamList, MainStackParamList } from './src/types';
+import { RootStackParamList, MainStackParamList, ProfileStackParamList } from './src/types';
 import SignUp from './src/screens/SignUp';
 import Login from './src/screens/Login';
 import ContinueSignUp from './src/screens/ContinueSignUp';
@@ -32,8 +32,10 @@ import useCheckInternet from './src/hooks/useCheckInternet';
 import MyProfile from '@/screens/MyProfile';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { BubbleContentMenuProvider } from '@/components/BubbleContentMenu';
+import Settings from '@/screens/Settings';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
+const ProfileStackNav = createNativeStackNavigator<ProfileStackParamList>();
 const Tab = createBottomTabNavigator<MainStackParamList>();
 
 const AuthStack = () => (
@@ -106,9 +108,10 @@ const ChannelStack = () => (
 );
 
 const ProfileStack = () => (
-  <Stack.Navigator initialRouteName="MyProfile" screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="MyProfile" component={MyProfile} />
-  </Stack.Navigator>
+  <ProfileStackNav.Navigator initialRouteName="MyProfile" screenOptions={{ headerShown: false }}>
+    <ProfileStackNav.Screen name="MyProfile" component={MyProfile} />
+    <ProfileStackNav.Screen name="Settings" component={Settings} />
+  </ProfileStackNav.Navigator>
 );
 
 const MainStack = () => (

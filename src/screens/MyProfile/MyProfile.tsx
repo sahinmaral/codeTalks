@@ -8,13 +8,17 @@ import Header from '@/components/Header';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Icon from 'react-native-remix-icon';
 import { fetchMe } from '@/services/auths';
-import { MyProfileDto } from '@/types';
+import { MyProfileDto, ProfileStackParamList } from '@/types';
 import { useFocusEffect } from '@react-navigation/native';
 import Error from '@/screens/Error';
 import { useBubbleContentMenu } from '@/components/BubbleContentMenu';
 import SetUserStatusModal from '@/components/BubbleContentMenu/Contents/SetUserStatusModal';
 import userStatusesData from '@/constants/userStatuses.json';
 import { UserStatusType } from '@/enums/UserStatusType';
+
+type MyProfileProps = {
+  navigation: NativeStackNavigationProp<ProfileStackParamList, 'MyProfile'>;
+};
 
 const statusColors: Record<string, string> = {
   Online: colors.success,
@@ -28,7 +32,7 @@ const userPresenceStatuses: UserStatusOption[] = userStatusesData.map(item => ({
   color: statusColors[item.status],
 }));
 
-function MyProfile() {
+function MyProfile({ navigation }: MyProfileProps) {
   const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [user, setUser] = useState<MyProfileDto | null>(null);
@@ -88,7 +92,7 @@ function MyProfile() {
         title="My Profile"
         showRightIcon
         rightIcon="settings-5-line"
-        onRightIconPress={() => console.log('Settings')}
+        onRightIconPress={() => navigation.navigate('Settings')}
       />
       <View style={styles.content}>
         <View style={styles.cardInformationContainer}>
