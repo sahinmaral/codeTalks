@@ -26,6 +26,8 @@ const Settings = ({ navigation }: SettingsProps) => {
         showBackButton
         onBackPress={() => navigation.navigate('MyProfile')}
         title="Settings"
+        showRightIcon
+        rightIcon="settings-5-line"
       />
 
       <ScrollView>

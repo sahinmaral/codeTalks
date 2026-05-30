@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Icon from 'react-native-remix-icon';
 import colors from '@/styles/colors';
 import styles from './CustomBottomTab.styles';
+import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 
 const TAB_ICONS: Record<string, { active: string; inactive: string }> = {
   Channels: { active: 'chat-3-fill', inactive: 'chat-3-line' },
@@ -12,7 +13,15 @@ const TAB_ICONS: Record<string, { active: string; inactive: string }> = {
   Profile: { active: 'user-3-fill', inactive: 'user-3-line' },
 };
 
+const HIDDEN_ON_ROUTES = ['ChannelMessagesList'];
+
 const CustomBottomTab: React.FC<BottomTabBarProps> = ({ state, descriptors, navigation }) => {
+  const focusedRoute = state.routes[state.index];
+  const focusedChildName = getFocusedRouteNameFromRoute(focusedRoute);
+  if (focusedChildName && HIDDEN_ON_ROUTES.includes(focusedChildName)) {
+    return null;
+  }
+
   const { bottom } = useSafeAreaInsets();
 
   return (

@@ -30,9 +30,9 @@ const Header: React.FC<HeaderProps> = ({
       <SafeAreaView edges={['top']} style={styles.headerContainer}>
         <View style={styles.content}>
           <View style={styles.firstSection}>
-            <View>
+            <View style={{ width: 50, alignItems: 'flex-start' }}>
               {showBackButton && onBackPress ? (
-                <TouchableOpacity onPress={onBackPress} style={styles.iconButton}>
+                <TouchableOpacity onPress={onBackPress} style={styles.backButtonContainer}>
                   <Icon name="arrow-left-line" color={colors.white} size={24} />
                 </TouchableOpacity>
               ) : (
@@ -41,7 +41,19 @@ const Header: React.FC<HeaderProps> = ({
                 </View>
               )}
             </View>
-            <View>
+            <View style={{ flex: 1, paddingHorizontal: 8 }}>
+              <Text
+                style={{ textAlign: 'center' }}
+                size="large"
+                color={colors.white}
+                fontWeight="700"
+                numberOfLines={2}
+                ellipsizeMode="tail"
+              >
+                {title}
+              </Text>
+            </View>
+            <View style={{ width: 50, alignItems: 'flex-end' }}>
               {rightIcon ? (
                 <TouchableOpacity onPress={onRightIconPress} style={styles.iconButtonContainer}>
                   <Icon name={rightIcon} color={colors.white} size={24} />
@@ -51,9 +63,6 @@ const Header: React.FC<HeaderProps> = ({
           </View>
 
           <View style={styles.secondSection}>
-            <Text size="large" color={colors.white} fontWeight="700">
-              {title}
-            </Text>
             {description ? (
               <Text size="medium" color={colors.white} fontWeight="300">
                 {description}

@@ -60,6 +60,7 @@ export interface Channel {
   name: string;
   description: string;
   memberCount: number;
+  createdAt: string;
   status: number;
   role: Role;
 }
@@ -78,7 +79,9 @@ export interface Message {
   content: string;
   createdAt: string;
   sender: {
+    id: string;
     userName: string;
+    profilePhotoURL: string;
   };
 }
 

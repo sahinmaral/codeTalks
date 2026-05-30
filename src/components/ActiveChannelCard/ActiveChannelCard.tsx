@@ -13,16 +13,9 @@ import colors from '@/styles/colors';
 interface ActiveChannelCardProps {
   navigation: NativeStackNavigationProp<RootStackParamList>;
   channel: Channel;
-  toggleModal: () => void;
-  handleSelectChannel: (channel: Channel) => void;
 }
 
-function ActiveChannelCard({
-  navigation,
-  channel,
-  toggleModal,
-  handleSelectChannel,
-}: ActiveChannelCardProps) {
+function ActiveChannelCard({ navigation, channel }: ActiveChannelCardProps) {
   return (
     <TouchableOpacity
       style={styles.container}
@@ -30,6 +23,7 @@ function ActiveChannelCard({
         navigation.navigate('ChannelMessagesList', {
           channelId: channel.id,
           channelName: channel.name,
+          channelCreatedAt: channel.createdAt,
         });
       }}
     >

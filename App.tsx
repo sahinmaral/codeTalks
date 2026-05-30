@@ -59,21 +59,7 @@ const ChannelStack = () => (
         }
 
         if (name === 'ChannelMessagesList') {
-          return (
-            <Header
-              title={(params as any)?.channelName || 'Kanal'}
-              showBackButton={true}
-              onBackPress={() => navigation.goBack()}
-              showRightIcon={true}
-              rightIcon="settings-5-line"
-              onRightIconPress={() =>
-                navigation.navigate('ChannelDetail', {
-                  channelName: (params as any)?.channelName,
-                  channelId: (params as any)?.channelId,
-                })
-              }
-            />
-          );
+          return null;
         }
 
         if (name === 'ChannelDetail') {

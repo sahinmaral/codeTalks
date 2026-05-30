@@ -1,32 +1,52 @@
 import { StyleSheet } from 'react-native';
-import colors from '../../styles/colors';
+import colors from '@/styles/colors';
 
 const styles = StyleSheet.create({
-  container: {
+  container: { flex: 1, backgroundColor: colors.light },
+  textInputContainer: {
     flex: 1,
-    backgroundColor: colors.orange[400],
+    justifyContent: 'center',
   },
-  messagesContainer: {
-    flex: 1,
-    padding: 10,
-    marginBottom: 70,
-    backgroundColor: colors.orange[400],
+  textInput: {
+    backgroundColor: colors.gray[200],
+    borderRadius: 20,
+    paddingHorizontal: 20,
+    paddingTop: 10,
+    paddingBottom: 10,
+    fontFamily: 'Montserrat_400',
+    minHeight: 44,
+    maxHeight: 120,
+    textAlignVertical: 'center',
   },
-  addMessageButton: {
-    position: 'absolute',
-    bottom: 10,
-    right: 10,
+  sendMessageButtonContainer: {
+    justifyContent: 'center',
+    alignItems: 'flex-end',
+  },
+  sendMessageButton: {
     width: 50,
     height: 50,
     borderRadius: 25,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.orange[500],
+    backgroundColor: colors.orange[400],
   },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'flex-end',
+  sendMessageButtonDisabled: {
+    backgroundColor: colors.gray[400],
+  },
+  dateSeparatorContainer: {
+    alignItems: 'center',
+    marginVertical: 4,
+  },
+  dateSeparatorPill: {
+    backgroundColor: colors.gray[200],
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  dateSeparatorText: {
+    fontFamily: 'Montserrat_400',
+    fontSize: 12,
+    color: colors.gray[700],
   },
 });
 

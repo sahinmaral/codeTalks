@@ -2,17 +2,36 @@ import { StyleSheet } from 'react-native';
 import colors from '../../styles/colors';
 
 const styles = StyleSheet.create({
-  text: { color: colors.black, fontSize: 15 },
-  container: {
-    borderRadius: 10,
-    marginVertical: 10,
-    backgroundColor: colors.white,
-    padding: 10,
-    gap: 15,
+  container: { flexDirection: 'row' },
+  senderContainer: { flexDirection: 'row', justifyContent: 'flex-end' },
+  userProfilePhotoContainer: { flex: 0.2 },
+  userProfilePhoto: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  topContainer: { flexDirection: 'row', justifyContent: 'space-between' },
-  bottomContainer: { alignContent: 'space-between' },
-  bottomText: { fontSize: 17, fontWeight: 'bold' },
+  contentContainer: { flex: 0.8 },
+  senderContentContainer: { flex: 1, alignItems: 'flex-end' },
+  messageContainer: {
+    width: '90%',
+    backgroundColor: colors.white,
+    borderWidth: 1,
+    borderColor: colors.gray[300],
+    padding: 15,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+    borderTopEndRadius: 20,
+  },
+  senderMessageContainer: {
+    width: '70%',
+    backgroundColor: colors.orange[400],
+    padding: 15,
+    borderBottomLeftRadius: 20,
+    borderTopLeftRadius: 20,
+    borderBottomRightRadius: 20,
+  },
 });
 
 export default styles;

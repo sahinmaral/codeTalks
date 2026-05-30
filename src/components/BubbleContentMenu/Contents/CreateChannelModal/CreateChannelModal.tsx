@@ -27,7 +27,7 @@ function CreateChannelModal() {
     try {
       await fetchCreateChannel({ ...values, userId: user!.id });
       hide();
-      showMessage({ message: 'Channel created successfully', type: 'info' });
+      showMessage({ message: 'Channel created successfully', type: 'success' });
     } catch (error) {
       throw error;
     }

@@ -50,13 +50,7 @@ function ActiveChannelList({ navigation }: ActiveChannelListProps) {
           contentContainerStyle={styles.channelListContainerContent}
         >
           {channels?.items.map(channel => (
-            <ActiveChannelCard
-              key={channel.id}
-              navigation={navigation}
-              channel={channel}
-              handleSelectChannel={() => {}}
-              toggleModal={() => {}}
-            />
+            <ActiveChannelCard key={channel.id} navigation={navigation} channel={channel} />
           ))}
         </ScrollView>
       )}

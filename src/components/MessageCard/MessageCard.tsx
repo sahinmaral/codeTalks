@@ -1,31 +1,50 @@
 import { formatDistance, parseISO } from 'date-fns';
 import React from 'react';
-import { Text, View } from 'react-native';
+import { Image, View } from 'react-native';
 import { tr } from 'date-fns/locale';
 import styles from './MessageCard.styles';
-import { Message } from '../../types';
+import { Message } from '@/types';
+import Text from '@/components/Text';
+import { useAppSelector } from '@/redux/hooks';
+import colors from '@/styles/colors';
 
 interface MessageCardProps {
   messageDetail: Message;
 }
 
 function MessageCard({ messageDetail }: MessageCardProps) {
-  return (
-    <View style={styles.container}>
-      <View style={styles.topContainer}>
-        <Text style={styles.text}>{messageDetail.sender.userName}</Text>
-        <Text style={[styles.text, { fontStyle: 'italic' }]}>
-          {formatDistance(parseISO(new Date(messageDetail.createdAt).toISOString()), new Date(), {
-            addSuffix: true,
-            locale: tr,
-          })}
-        </Text>
+  const user = useAppSelector(state => state.app.user);
+
+  if (messageDetail.sender.id !== user.id) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.userProfilePhotoContainer}>
+          <Image
+            style={styles.userProfilePhoto}
+            source={{ uri: messageDetail.sender.profilePhotoURL }}
+          />
+        </View>
+        <View style={styles.contentContainer}>
+          <View>
+            <Text fontWeight="700">{messageDetail.sender.userName}</Text>
+          </View>
+          <View style={styles.messageContainer}>
+            <Text>{messageDetail.content}</Text>
+          </View>
+        </View>
       </View>
-      <View style={styles.bottomContainer}>
-        <Text style={[styles.text, styles.bottomText]}>{messageDetail.content}</Text>
+    );
+  } else {
+    return (
+      <View style={styles.senderContainer}>
+        <View style={styles.senderContentContainer}>
+          <View style={styles.senderMessageContainer}>
+            <Text color={colors.white}>{messageDetail.content}</Text>
+          </View>
+        </View>
       </View>
-    </View>
-  );
+    );
+  }
 }
 
 export default MessageCard;

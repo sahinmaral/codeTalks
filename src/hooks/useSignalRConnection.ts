@@ -50,7 +50,6 @@ function useSignalRConnection<T>({
           console.log('SignalR Connected');
         }
 
-        // Now invoke after connection is established
         await connection.invoke(sendMethod, ...args);
 
         intervalId = setInterval(() => {

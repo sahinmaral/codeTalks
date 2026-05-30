@@ -7,7 +7,7 @@ const styles = StyleSheet.create({
   cardInformationContainer: {
     backgroundColor: colors.white,
     gap: 10,
-    marginTop: -20,
+    marginTop: -10,
     borderRadius: 15,
     paddingVertical: 25,
     paddingHorizontal: 20,
