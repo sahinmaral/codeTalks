@@ -58,10 +58,21 @@ export interface UserStatus {
 export interface Channel {
   id: string;
   name: string;
-  description: string;
+  description?: string;
+  inviteCode: string;
   memberCount: number;
   createdAt: string;
   status: number;
+  role: Role;
+}
+
+export interface ChannelDetailDto {
+  id: string;
+  name: string;
+  description?: string;
+  inviteCode: string;
+  memberCount: number;
+  createdAt: string;
   role: Role;
 }
 

@@ -3,52 +3,30 @@ import {
   ActivityIndicator,
   Image,
   ScrollView,
-  Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
 import styles from './ChannelDetail.styles';
-import colors from '../../styles/colors';
+import colors from '@/styles/colors';
 import Icon from 'react-native-remix-icon';
-import ChannelDetailUserCard from '../../components/ChannelDetailUserCard';
-import { fetchGetUsersByChannelId } from '../../services/users';
-import { fetchGetUsersDetailAtChannelByChannelId } from '../../services/channels';
+import ChannelDetailUserCard from '@/components/ChannelDetailUserCard';
+import { fetchGetChannelById } from '@/services/channels';
 import Loading from '../Loading';
-import { useAppSelector } from '../../redux/hooks';
+import { useAppSelector } from '@/redux/hooks';
 import { useFocusEffect } from '@react-navigation/native';
-import CustomModal from '../../components/CustomModal';
-import UpdateChannelNameModalContent from '../../components/ModalContent/UpdateChannelNameModalContent/UpdateChannelNameModalContent';
-import { ChannelUser, PaginatedResult, RootStackParamList } from '../../types';
+import { ChannelDetailDto, ChannelUser, PaginatedResult, RootStackParamList } from '@/types';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
-
-interface PaginationMeta {
-  count: number;
-  size: number;
-  index: number;
-  pages: number;
-  hasNext: boolean;
-  hasPrevious: boolean;
-}
-
-interface UsersFetch {
-  metaData: PaginationMeta;
-  users: ChannelUser[];
-}
-
-interface CurrentUserDetailFetch {
-  userDetail: { role: { name: string } };
-}
-
-interface FetchResults {
-  usersFetch: UsersFetch;
-  currentUserDetailAtChannelFetch: CurrentUserDetailFetch;
-}
+import Text from '@/components/Text';
+import { format } from 'date-fns';
+import Divider from '@/components/Divider';
+import Header from '@/components/Header';
+import CustomToggleSwitch from '@/components/CustomToggleSwitch';
 
 interface FetchState {
   loading: boolean;
-  results: FetchResults | null;
+  data: ChannelDetailDto;
   error: Error | null;
 }
 
@@ -58,71 +36,18 @@ interface ChannelDetailProps {
 }
 
 function ChannelDetail({ navigation, route }: ChannelDetailProps) {
-  const { channelId, channelName } = route.params;
+  const { channelId, channelName, channelDescription, channelInviteCode, channelCreatedAt } =
+    route.params;
+
   const scrollViewRef = useRef<ScrollView>(null);
 
   const [fetchResult, setFetchResult] = useState<FetchState>({
     loading: true,
-    results: null,
+    data: null,
     error: null,
   });
 
-  const [modalVisible, setModalVisible] = useState(false);
-  const [userName, setUserName] = useState('');
-  const [visibleUserSearchInput, setVisibleUserSearchInput] = useState(false);
-
   const user = useAppSelector(state => state.app.user);
-
-  const toggleVisibleUserSearchInput = () => {
-    setVisibleUserSearchInput(v => !v);
-    setUserName('');
-  };
-
-  const fetchUsers = async (index: number) => {
-    try {
-      setFetchResult(prev => ({ ...prev, loading: true }));
-      const response = await fetchGetUsersByChannelId(channelId, index);
-      const data: PaginatedResult<ChannelUser> = response.data;
-
-      setFetchResult(prev => {
-        if (!prev.results) return prev;
-        return {
-          ...prev,
-          results: {
-            ...prev.results,
-            usersFetch: {
-              metaData: {
-                count: data.count,
-                size: data.size,
-                index: data.index,
-                pages: data.pages,
-                hasNext: data.hasNext,
-                hasPrevious: data.hasPrevious,
-              },
-              users: [...prev.results.usersFetch.users, ...data.items],
-            },
-          },
-        };
-      });
-    } catch (error) {
-      setFetchResult(prev => ({ ...prev, error: error as Error }));
-    } finally {
-      setFetchResult(prev => ({ ...prev, loading: false }));
-    }
-  };
-
-  const isUserModeratorAtThisChannel = useMemo(() => {
-    return (
-      fetchResult.results?.currentUserDetailAtChannelFetch.userDetail.role.name === 'Moderator'
-    );
-  }, [fetchResult.results]);
-
-  const remainingUserCount = useMemo(() => {
-    const meta = fetchResult.results?.usersFetch.metaData;
-    const users = fetchResult.results?.usersFetch.users;
-    if (!meta || !users) return 0;
-    return meta.count > users.length ? meta.count - users.length : meta.count;
-  }, [fetchResult.results]);
 
   useFocusEffect(
     useCallback(() => {
@@ -130,32 +55,8 @@ function ChannelDetail({ navigation, route }: ChannelDetailProps) {
         try {
           setFetchResult(prev => ({ ...prev, loading: true }));
 
-          const [usersRes, userDetailRes] = await Promise.all([
-            fetchGetUsersByChannelId(channelId),
-            fetchGetUsersDetailAtChannelByChannelId(channelId, user!.id),
-          ]);
-
-          const usersData: PaginatedResult<ChannelUser> = usersRes.data;
-
-          setFetchResult(prev => ({
-            ...prev,
-            results: {
-              usersFetch: {
-                metaData: {
-                  count: usersData.count,
-                  size: usersData.size,
-                  index: usersData.index,
-                  pages: usersData.pages,
-                  hasNext: usersData.hasNext,
-                  hasPrevious: usersData.hasPrevious,
-                },
-                users: usersData.items,
-              },
-              currentUserDetailAtChannelFetch: {
-                userDetail: userDetailRes.data,
-              },
-            },
-          }));
+          const response = await fetchGetChannelById(channelId);
+          setFetchResult(prev => ({ ...prev, data: response.data }));
         } catch (error) {
           setFetchResult(prev => ({ ...prev, error: error as Error }));
         } finally {
@@ -165,145 +66,180 @@ function ChannelDetail({ navigation, route }: ChannelDetailProps) {
     }, []),
   );
 
-  if (fetchResult.loading && !fetchResult.results) {
+  const isUserModeratorAtThisChannel = useMemo(() => {
+    return fetchResult.data?.role?.name === 'Moderator';
+  }, [fetchResult.data]);
+
+  if (fetchResult.loading && !fetchResult.data) {
     return <Loading text="Kanalın detayı yüklenirken lütfen bekleyiniz ..." />;
   }
 
-  const toggleModal = () => setModalVisible(v => !v);
-
   return (
     <View style={styles.container}>
-      <View style={{ flex: 1 / 10 }}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Icon name="arrow-left-line" size={26} color="black" />
-        </TouchableOpacity>
-      </View>
+      <Header title={channelName} showBackButton onBackPress={() => navigation.goBack()} />
 
-      <View style={{ alignItems: 'center', flex: 2 / 10 }}>
-        <Image
-          style={styles.photoContainer}
-          source={{ uri: 'https://reactnative.dev/img/tiny_logo.png' }}
-        />
-      </View>
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+        <View style={[styles.card, styles.infoCard]}>
+          <View style={styles.identitySection}>
+            <View style={styles.thumbnailContainer}>
+              <View style={styles.thumbnailRing}>
+                <View style={styles.thumbnail}>
+                  <Text size="xxlarge" fontWeight="800" color={colors.white}>
+                    #
+                  </Text>
+                  {/* {user?.profilePhotoURL ? (
+                  <Image
+                    source={{ uri: user.profilePhotoURL }}
+                    style={{ width: 80, height: 80, borderRadius: 40 }}
+                  />
+                ) : null} */}
+                </View>
+              </View>
+            </View>
+            <View style={styles.nameSection}>
+              <Text size="large" fontWeight="700" style={styles.centerText}>
+                {channelName}
+              </Text>
 
-      <View style={{ flex: 1.5 / 10 }}>
-        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center' }}>
-          <View style={{ flex: 9 / 10, alignSelf: 'center' }}>
-            <Text
-              style={{ fontSize: 20, color: colors.black, textAlign: 'center', fontWeight: 'bold' }}
-            >
-              {channelName}
-            </Text>
+              <Text size="medium" color={colors.gray[400]} style={styles.centerText}>
+                {channelDescription}
+              </Text>
+            </View>
           </View>
-          {isUserModeratorAtThisChannel ? (
-            <View
-              style={{
-                flex: 1 / 10,
-                alignSelf: 'center',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            >
-              <TouchableOpacity onPress={() => setModalVisible(true)}>
-                <Icon name="pencil-line" size={26} color="black" />
+          <Divider />
+          <View style={styles.metaSection}>
+            <View style={styles.metaRow}>
+              <Text color={colors.gray[400]}>Channel ID</Text>
+              <Text>#{channelInviteCode}</Text>
+            </View>
+            <View style={styles.metaRow}>
+              <Text color={colors.gray[400]}>Created</Text>
+              <Text>{format(new Date(channelCreatedAt), 'MMM yyyy')}</Text>
+            </View>
+            <View style={styles.metaRow}>
+              <Text color={colors.gray[400]}>Members</Text>
+              <Text>{fetchResult.data.memberCount}</Text>
+            </View>
+          </View>
+        </View>
+
+        <View>
+          <Text size="medium" fontWeight="700" color={colors.gray[400]}>
+            MEMBERS
+          </Text>
+          <View style={styles.card}>
+            <TouchableOpacity style={styles.row} onPress={() => {}}>
+              <View style={styles.rowLeading}>
+                <Icon name="ri-group-line" color={colors.gray[400]} />
+                <Text fontWeight="700">View All Members</Text>
+              </View>
+              <View>
+                <Icon name="ri-arrow-right-s-line" size={24} color={colors.gray[400]} />
+              </View>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <View>
+          <Text size="medium" fontWeight="700" color={colors.gray[400]}>
+            NOTIFICATIONS
+          </Text>
+          <View style={styles.card}>
+            <View style={[styles.row, styles.rowBordered]}>
+              <View style={styles.rowLeading}>
+                <Icon name="ri-notification-line" color={colors.gray[400]} />
+                <Text fontWeight="700">Mute this Channel</Text>
+              </View>
+              <View>
+                <CustomToggleSwitch value={true} onValueChange={() => {}} />
+              </View>
+            </View>
+            <View style={styles.row}>
+              <View style={styles.rowLeading}>
+                <Icon name="ri-music-2-line" color={colors.gray[400]} />
+                <Text fontWeight="700">Notification Sound</Text>
+              </View>
+              <View>
+                <CustomToggleSwitch value={false} onValueChange={() => {}} />
+              </View>
+            </View>
+          </View>
+        </View>
+
+        {isUserModeratorAtThisChannel ? (
+          <View>
+            <Text size="medium" fontWeight="700" color={colors.orange[400]}>
+              ADMIN PANEL
+            </Text>
+            <View style={[styles.card, styles.adminCard]}>
+              <TouchableOpacity style={[styles.row, styles.rowBordered]} onPress={() => {}}>
+                <View style={styles.rowLeading}>
+                  <Icon name="ri-edit-box-line" color={colors.gray[400]} />
+                  <Text fontWeight="700">Edit Channel Name</Text>
+                </View>
+                <View>
+                  <Icon name="ri-arrow-right-s-line" size={24} color={colors.gray[400]} />
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.row, styles.rowBordered]} onPress={() => {}}>
+                <View style={styles.rowLeading}>
+                  <Icon name="ri-image-edit-line" color={colors.gray[400]} />
+                  <Text fontWeight="700">Set/Change Thumbnail Image</Text>
+                </View>
+                <View>
+                  <Icon name="ri-arrow-right-s-line" size={24} color={colors.gray[400]} />
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.row, styles.rowBordered]} onPress={() => {}}>
+                <View style={styles.rowLeading}>
+                  <Icon name="ri-list-check" color={colors.gray[400]} />
+                  <Text fontWeight="700">Edit Description</Text>
+                </View>
+                <View>
+                  <Icon name="ri-arrow-right-s-line" size={24} color={colors.gray[400]} />
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.row, styles.rowBordered]} onPress={() => {}}>
+                <View style={styles.rowLeading}>
+                  <Icon name="ri-user-add-line" color={colors.gray[400]} />
+                  <Text fontWeight="700">Pending Join Requests</Text>
+                </View>
+                <View>
+                  <Icon name="ri-arrow-right-s-line" size={24} color={colors.gray[400]} />
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.row} onPress={() => {}}>
+                <View style={styles.rowLeading}>
+                  <Icon name="ri-user-unfollow-line" color={colors.gray[400]} />
+                  <Text fontWeight="700">Remove a Member</Text>
+                </View>
+                <View>
+                  <Icon name="ri-arrow-right-s-line" size={24} color={colors.gray[400]} />
+                </View>
               </TouchableOpacity>
             </View>
-          ) : null}
+          </View>
+        ) : null}
+
+        <View style={styles.card}>
+          <TouchableOpacity style={[styles.row, styles.rowBordered]} onPress={() => {}}>
+            <View style={styles.rowLeading}>
+              <Icon name="logout-box-r-line" color={colors.warning} />
+              <Text fontWeight="700" color={colors.warning}>
+                Leave Channel
+              </Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.row} onPress={() => {}}>
+            <View style={styles.rowLeading}>
+              <Icon name="ri-delete-bin-line" color={colors.danger} />
+              <Text fontWeight="700" color={colors.danger}>
+                Delete Channel
+              </Text>
+            </View>
+          </TouchableOpacity>
         </View>
-        <View style={{ flex: 1, alignItems: 'center' }}>
-          <Text style={{ fontSize: 16, color: colors.black }}>
-            Grup · {fetchResult.results?.usersFetch.metaData.count} üye
-          </Text>
-        </View>
-      </View>
-
-      <View
-        style={{
-          flex: 1 / 10,
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'flex-start',
-        }}
-      >
-        {visibleUserSearchInput ? (
-          <View style={{ flex: 9 / 10, height: '100%' }}>
-            <TextInput
-              value={userName}
-              onChangeText={setUserName}
-              placeholderTextColor={colors.black}
-              style={{
-                backgroundColor: colors.stone[300],
-                borderRadius: 10,
-                paddingLeft: 10,
-              }}
-              placeholder="Kullanıcı adı giriniz ..."
-            />
-          </View>
-        ) : (
-          <View style={{ height: '100%', flex: 9 / 10, justifyContent: 'center' }}>
-            <Text style={{ color: colors.black, fontWeight: 'bold' }}>
-              {fetchResult.results?.usersFetch.metaData.count} üye
-            </Text>
-          </View>
-        )}
-        <TouchableOpacity
-          onPress={toggleVisibleUserSearchInput}
-          style={{
-            height: '100%',
-            flex: 1 / 10,
-            paddingTop: 10,
-            paddingRight: 10,
-            paddingLeft: 10,
-            alignItems: 'flex-end',
-            justifyContent: 'flex-start',
-          }}
-        >
-          <Icon name="search-line" size={26} color="black" />
-        </TouchableOpacity>
-      </View>
-
-      <View style={{ flex: 4.5 / 10 }}>
-        {!fetchResult.loading && fetchResult.results ? (
-          <View style={{ flex: 1, gap: 10 }}>
-            <ScrollView
-              style={{ flex: 1 }}
-              ref={scrollViewRef}
-              onContentSizeChange={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
-            >
-              {fetchResult.results.usersFetch.users.map(u => (
-                <ChannelDetailUserCard user={u} key={u.id} />
-              ))}
-
-              {fetchResult.results.usersFetch.metaData.hasNext && (
-                <TouchableOpacity
-                  onPress={() => fetchUsers(fetchResult.results!.usersFetch.metaData.index + 1)}
-                >
-                  <Text style={{ fontSize: 16, fontWeight: '500', color: colors.black }}>
-                    Tümünü gör ({remainingUserCount}) kişi daha
-                  </Text>
-                </TouchableOpacity>
-              )}
-            </ScrollView>
-          </View>
-        ) : (
-          <View style={{ flex: 1, gap: 10, justifyContent: 'center', alignItems: 'center' }}>
-            <ActivityIndicator size={42} />
-            <Text style={{ fontSize: 20, textAlign: 'center', fontWeight: 'bold' }}>
-              Kullanıcılar yüklenirken lütfen bekleyiniz ...
-            </Text>
-          </View>
-        )}
-      </View>
-
-      <CustomModal closeAllModals={toggleModal} containerModalVisible={modalVisible}>
-        <UpdateChannelNameModalContent
-          channelId={channelId}
-          channelName={channelName}
-          userId={user!.id}
-          navigation={navigation}
-          toggleModal={toggleModal}
-        />
-      </CustomModal>
+      </ScrollView>
     </View>
   );
 }

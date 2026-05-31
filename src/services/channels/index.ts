@@ -1,3 +1,4 @@
+import { ChannelDetailDto } from '@/types';
 import axiosInstance from '../axiosConfig';
 
 interface CreateChannelInput {
@@ -11,6 +12,10 @@ interface UpdateChannelInput {
   name: string;
   userId: string;
 }
+
+export const fetchGetChannelById = (id: string): Promise<AxiosResponse<ChannelDetailDto>> => {
+  return axiosInstance.get(`/channels/${id}`);
+};
 
 export const fetchCreateChannel = (input: CreateChannelInput) => {
   return axiosInstance.post('/channels', input);
@@ -29,9 +34,9 @@ export const fetchLeaveChannel = (id: string) => {
 };
 
 export const fetchSendInviteToChannel = (id: string) => {
-  return axiosInstance.post(`/channels/sendinvite/${id}`, null);
+  return axiosInstance.post(`/channels/send-invite/${id}`, null);
 };
 
 export const fetchGetUsersDetailAtChannelByChannelId = (channelId: string, userId: string) => {
-  return axiosInstance.get(`/channels/userDetail/${channelId}/${userId}`);
+  return axiosInstance.get(`/channels/${channelId}/users/${userId}`);
 };

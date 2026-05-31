@@ -63,13 +63,7 @@ const ChannelStack = () => (
         }
 
         if (name === 'ChannelDetail') {
-          return (
-            <Header
-              title="Kanal Detayları"
-              showBackButton={true}
-              onBackPress={() => navigation.goBack()}
-            />
-          );
+          return null;
         }
 
         if (name === 'AllChannelList') {

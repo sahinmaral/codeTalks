@@ -10,13 +10,19 @@ type DividerProps = {
 function Divider({ text, fontWeight }: DividerProps) {
   return (
     <View style={styles.dividerContainer}>
-      <View style={styles.line} />
       {text ? (
-        <Text uppercase size="small" color={colors.gray[500]} style={styles.text}>
-          {text}
-        </Text>
-      ) : null}
-      <View style={styles.line} />
+        <>
+          <View style={styles.line} />
+          <Text uppercase size="small" color={colors.gray[500]} style={styles.text}>
+            {text}
+          </Text>
+          <View style={styles.line} />
+        </>
+      ) : (
+        <>
+          <View style={styles.line} />
+        </>
+      )}
     </View>
   );
 }

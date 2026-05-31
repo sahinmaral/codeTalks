@@ -23,7 +23,9 @@ function ActiveChannelCard({ navigation, channel }: ActiveChannelCardProps) {
         navigation.navigate('ChannelMessagesList', {
           channelId: channel.id,
           channelName: channel.name,
+          channelDescription: channel.description,
           channelCreatedAt: channel.createdAt,
+          channelInviteCode: channel.inviteCode,
         });
       }}
     >

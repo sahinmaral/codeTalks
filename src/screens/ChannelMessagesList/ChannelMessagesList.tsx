@@ -48,7 +48,8 @@ const DateSeparator = ({ label }: { label: string }) => (
 );
 
 function ChannelMessagesList({ navigation, route }: ChannelMessagesListProps) {
-  const { channelId, channelName, channelCreatedAt } = route.params;
+  const { channelId, channelName, channelDescription, channelCreatedAt, channelInviteCode } =
+    route.params;
   const scrollViewRef = useRef<ScrollView>(null);
   const user = useAppSelector(state => state.app.user);
 
@@ -147,6 +148,9 @@ function ChannelMessagesList({ navigation, route }: ChannelMessagesListProps) {
           navigation.navigate('ChannelDetail', {
             channelName,
             channelId,
+            channelInviteCode,
+            channelDescription,
+            channelCreatedAt,
           })
         }
       />

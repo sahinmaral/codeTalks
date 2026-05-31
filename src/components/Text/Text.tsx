@@ -4,7 +4,7 @@ import styles from './Text.styles';
 import colors from '@/styles/colors';
 
 type AppTextProps = TextProps & {
-  size?: 'small' | 'medium' | 'large';
+  size?: 'small' | 'medium' | 'large' | 'xlarge' | 'xxlarge';
   color?: string;
   uppercase?: boolean;
   fontWeight?:
@@ -26,6 +26,7 @@ const sizeStyles = StyleSheet.create({
   medium: { fontSize: 16 },
   large: { fontSize: 20 },
   xlarge: { fontSize: 24 },
+  xxlarge: { fontSize: 28 },
 });
 
 const weightMap: Record<string, string> = {
