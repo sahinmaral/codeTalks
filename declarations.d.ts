@@ -3,7 +3,8 @@ declare module 'react-native-remix-icon' {
   interface IconProps {
     name: string;
     size?: number | string;
-    color?: string;
+    color?: import('react-native').ColorValue;
+    style?: import('react-native').StyleProp<import('react-native').TextStyle>;
   }
   const Icon: React.FC<IconProps>;
   export default Icon;

@@ -27,7 +27,6 @@ const styles: ButtonStyles = {
     primary: {
       container: { ...baseContainer, backgroundColor: colors.orange[500] },
       text: { color: colors.white },
-      color: colors.white,
     },
     'primary-outline': {
       container: {
@@ -37,7 +36,6 @@ const styles: ButtonStyles = {
         borderColor: colors.orange[500],
       },
       text: { color: colors.orange[500] },
-      color: colors.orange[500],
     },
   },
 };

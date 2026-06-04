@@ -18,6 +18,9 @@ const styles = StyleSheet.create({
     paddingBottom: 15,
   },
   input: inputBase,
+  inputFocused: {
+    borderColor: colors.orange[400],
+  },
   textArea: {
     ...inputBase,
     backgroundColor: colors.stone[100],

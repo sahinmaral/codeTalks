@@ -45,6 +45,7 @@ function BubbleContentMenu({ children, onClose }: BubbleContentMenuProps) {
         style={styles.container}
         bottomInset={bottom}
         backdropComponent={renderBackdrop}
+        onClose={onClose}
       >
         <BottomSheetScrollView ref={scrollViewRef}>
           <View style={styles.contentContainer}>{children}</View>

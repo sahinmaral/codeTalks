@@ -18,6 +18,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.orange[200],
   },
   contentContainer: { gap: 20 },
+  header: { alignItems: 'center' },
+  description: { alignItems: 'center' },
   channelCreatedAtContainer: {
     alignItems: 'center',
     justifyContent: 'center',

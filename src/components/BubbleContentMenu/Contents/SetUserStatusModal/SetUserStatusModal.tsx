@@ -1,23 +1,17 @@
-import React, { useMemo, useRef, useState } from 'react';
-import Button from '@/components/Button';
-import Text from '@/components/Text';
-import { ActivityIndicator, View } from 'react-native';
 import { useBubbleContentMenuScroll } from '@/components/BubbleContentMenu/BubbleContentMenu.context';
 import { useBubbleContentMenu } from '@/components/BubbleContentMenu/BubbleContentMenu.provider';
-import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
-import styles from './SetUserStatusModal.styles';
-import { showMessage } from 'react-native-flash-message';
-import { Formik } from 'formik';
-import validationSchema from '@/schemas/CreateChannelSchema';
-import { useAppSelector } from '@/redux/hooks';
-import { fetchCreateChannel } from '@/services/channels';
+import Text from '@/components/Text';
+import userStatusesData from '@/constants/userStatuses.json';
+import { UserStatusType } from '@/enums/UserStatusType';
+import translateErrorMessage from '@/helpers/apiErrorTranslation';
+import { fetchUpdateUserStatus } from '@/services/users';
 import colors from '@/styles/colors';
 import { UserStatus, UserStatusOption } from '@/types';
-import { UserStatusType } from '@/enums/UserStatusType';
-import userStatusesData from '@/constants/userStatuses.json';
+import React, { useMemo, useRef, useState } from 'react';
+import { View } from 'react-native';
+import { showMessage } from 'react-native-flash-message';
+import styles from './SetUserStatusModal.styles';
 import UserStatusTypeList from './UserStatusTypeList';
-import { fetchUpdateUserStatus } from '@/services/users';
-import translateErrorMessage from '@/helpers/apiErrorTranslation';
 
 type SetUserStatusModalProps = {
   currentUserStatus: UserStatus;
@@ -77,7 +71,7 @@ function SetUserStatusModal({ currentUserStatus, onSuccess }: SetUserStatusModal
       <View style={styles.description}>
         <Text color={colors.gray[400]}>Currently: </Text>
         <Text size="medium" fontWeight="700" color={currentUserStatusOption?.color}>
-          {currentUserStatusOption.label}
+          {currentUserStatusOption?.label}
         </Text>
       </View>
 

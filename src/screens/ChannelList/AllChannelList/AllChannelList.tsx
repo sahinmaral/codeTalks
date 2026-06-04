@@ -43,7 +43,7 @@ function AllChannelList({ navigation }: AllChannelListProps) {
 
   const toggleModal = (modalType: ModalType) => {
     const updated = { ...modalsVisible };
-    (Object.keys(updated) as ModalType[]).forEach(key => {
+    (Object.keys(updated) as (keyof ModalsVisible)[]).forEach(key => {
       updated[key] = key === modalType ? !updated[key] : false;
     });
     setModalsVisible(updated);
@@ -52,7 +52,7 @@ function AllChannelList({ navigation }: AllChannelListProps) {
 
   const closeAllModals = () => {
     const updated = { ...modalsVisible };
-    (Object.keys(updated) as ModalType[]).forEach(key => {
+    (Object.keys(updated) as (keyof ModalsVisible)[]).forEach(key => {
       updated[key] = false;
     });
     setModalsVisible(updated);
@@ -116,13 +116,7 @@ function AllChannelList({ navigation }: AllChannelListProps) {
       ) : (
         <ScrollView style={styles.channelListContainer}>
           {channels?.items.map(channel => (
-            <ChannelCard
-              key={channel.id}
-              navigation={navigation}
-              channel={channel}
-              handleSelectChannel={handleSelectChannel}
-              toggleModal={() => toggleModal(ModalType.ShowChannelOptions)}
-            />
+            <ChannelCard key={channel.id} navigation={navigation} channel={channel} />
           ))}
         </ScrollView>
       )}
@@ -139,7 +133,7 @@ function AllChannelList({ navigation }: AllChannelListProps) {
       </TouchableOpacity>
 
       {bubbleContentMenuVisible ? (
-        <BubbleContentMenu>
+        <BubbleContentMenu onClose={() => setBubbleContentMenuVisible(false)}>
           <View>
             <TouchableOpacity
               style={bubbleContentMenuStyles.menuItemContainer}

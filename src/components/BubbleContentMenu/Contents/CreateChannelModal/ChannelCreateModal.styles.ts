@@ -1,5 +1,5 @@
-import { StyleSheet } from 'react-native';
 import colors from '@/styles/colors';
+import { StyleSheet } from 'react-native';
 
 const inputBase = {
   borderRadius: 20,
@@ -13,6 +13,7 @@ const styles = StyleSheet.create({
   formContainer: {
     gap: 20,
   },
+  formGroup: {},
   input: inputBase,
   textArea: {
     ...inputBase,
@@ -22,6 +23,7 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
   },
   inputError: { color: colors.red[500], fontWeight: '600' },
+  button: {},
 });
 
 export default styles;

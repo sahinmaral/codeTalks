@@ -43,7 +43,7 @@ export interface MyProfileDto {
 }
 
 export interface UserStatusOption {
-  status: UserStatusType;
+  status: string;
   statusType: number;
   color: string;
   label: string;
@@ -82,6 +82,7 @@ export interface ChannelUser {
   middleName?: string | null;
   lastName: string;
   userName: string;
+  profilePhotoURL?: string | null;
   role: Role;
 }
 
@@ -94,6 +95,10 @@ export interface Message {
     userName: string;
     profilePhotoURL: string;
   };
+}
+
+export interface UsersAtChannelListModel extends PaginatedResult<ChannelUser> {
+  admins: ChannelUser[];
 }
 
 export interface PaginatedResult<T> {
@@ -117,18 +122,13 @@ export type RootStackParamList = {
   SignUp: undefined;
   ContinueSignUp: { email: string; password: string; username: string };
   ActiveChannelList: undefined;
-  ChannelMessagesList: { channelId: string; channelName: string };
-  ChannelDetail: { channelId: string; channelName: string };
+  ChannelMessagesList: { channelId: string };
+  ChannelDetail: { channelId: string };
   AllChannelList: undefined;
+  ChannelMembersList: { channelId: string };
 };
 
 export type ProfileStackParamList = {
   MyProfile: undefined;
   Settings: undefined;
 };
-
-declare module '@react-navigation/native-stack' {
-  interface NativeStackNavigationOptions {
-    headerDescription?: string;
-  }
-}

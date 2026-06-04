@@ -1,12 +1,10 @@
-import { formatDistance, parseISO } from 'date-fns';
-import React from 'react';
-import { Image, View } from 'react-native';
-import { tr } from 'date-fns/locale';
-import styles from './MessageCard.styles';
-import { Message } from '@/types';
 import Text from '@/components/Text';
 import { useAppSelector } from '@/redux/hooks';
 import colors from '@/styles/colors';
+import { Message } from '@/types';
+import React from 'react';
+import { Image, View } from 'react-native';
+import styles from './MessageCard.styles';
 
 interface MessageCardProps {
   messageDetail: Message;
@@ -15,7 +13,7 @@ interface MessageCardProps {
 function MessageCard({ messageDetail }: MessageCardProps) {
   const user = useAppSelector(state => state.app.user);
 
-  if (messageDetail.sender.id !== user.id) {
+  if (messageDetail.sender.id !== user!.id) {
     return (
       <View style={styles.container}>
         <View style={styles.userProfilePhotoContainer}>

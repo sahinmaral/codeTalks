@@ -7,7 +7,7 @@ type DividerProps = {
   text?: string;
 };
 
-function Divider({ text, fontWeight }: DividerProps) {
+function Divider({ text }: DividerProps) {
   return (
     <View style={styles.dividerContainer}>
       {text ? (

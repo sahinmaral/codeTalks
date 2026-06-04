@@ -4,7 +4,7 @@ import { StyleSheet } from 'react-native';
 const baseListItemContainer = {
   gap: 10,
   padding: 10,
-  flexDirection: 'row',
+  flexDirection: 'row' as const,
 };
 
 const styles = StyleSheet.create({

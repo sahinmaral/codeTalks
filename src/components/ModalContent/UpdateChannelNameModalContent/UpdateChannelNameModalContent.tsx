@@ -4,7 +4,7 @@ import { ActivityIndicator, Text, TextInput, TouchableOpacity, View } from 'reac
 import styles from './UpdateChannelNameModalContent.styles';
 import { showMessage } from 'react-native-flash-message';
 import colors from '../../../styles/colors';
-import { fetchUpdateChannel } from '../../../services/channels';
+import { fetchPatchChannel } from '../../../services/channels';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../../types';
 
@@ -35,7 +35,7 @@ function UpdateChannelNameModalContent({
 
     try {
       setLoading(true);
-      await fetchUpdateChannel({ userId, id: channelId, name: updatedChannelName });
+      await fetchPatchChannel(channelId, { name: updatedChannelName });
       toggleModal();
       showMessage({ message: 'Kanalın ismi başarıyla güncellendi', type: 'info' });
       navigation.navigate('ActiveChannelList');
@@ -70,7 +70,7 @@ function UpdateChannelNameModalContent({
         title="Güncelle"
         style={styles.button}
         disabled={loading}
-        icon={loading && <ActivityIndicator size="small" color={colors.white} />}
+        loading={loading}
         onPress={handleUpdateChannelName}
       />
     </TouchableOpacity>

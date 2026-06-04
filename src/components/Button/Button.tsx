@@ -1,15 +1,14 @@
+import Text from '@/components/Text';
 import React from 'react';
 import { ActivityIndicator, TouchableOpacity, ViewStyle } from 'react-native';
-import styles from './Button.styles';
-import Text from '@/components/Text';
-import colors from '@/styles/colors';
 import Icon from 'react-native-remix-icon';
+import styles from './Button.styles';
 
 type ButtonTheme = 'primary' | 'primary-outline';
 
 interface ButtonProps {
   title: string;
-  icon?: React.ReactNode;
+  icon?: string;
   style?: ViewStyle;
   disabled?: boolean;
   onPress?: () => void;

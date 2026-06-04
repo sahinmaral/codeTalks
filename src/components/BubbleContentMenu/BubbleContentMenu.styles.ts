@@ -15,6 +15,13 @@ const styles = StyleSheet.create({
     paddingBottom: 36,
     paddingTop: 8,
   },
+  menuItemContainer: {
+    paddingVertical: 12,
+  },
+  menuItemText: {
+    fontSize: 16,
+    color: colors.black,
+  },
 });
 
 export default styles;

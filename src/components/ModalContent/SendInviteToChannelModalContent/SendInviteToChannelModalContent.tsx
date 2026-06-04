@@ -29,7 +29,7 @@ function SendInviteToChannelModalContent({
 
     try {
       setLoading(true);
-      await fetchSendInviteToChannel(channelId, user.accessToken);
+      await fetchSendInviteToChannel(channelId);
       setChannelId('');
       closeAllModals();
       showMessage({ message: 'İsteğiniz başarıyla gönderildi', type: 'info' });
@@ -68,7 +68,7 @@ function SendInviteToChannelModalContent({
         title="Gönder"
         style={styles.submitButton}
         disabled={loading}
-        icon={loading && <ActivityIndicator size="small" color={colors.white} />}
+        loading={loading}
         onPress={handleSendInvite}
       />
     </TouchableOpacity>

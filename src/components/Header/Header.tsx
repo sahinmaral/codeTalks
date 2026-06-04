@@ -62,13 +62,13 @@ const Header: React.FC<HeaderProps> = ({
             </View>
           </View>
 
-          <View style={styles.secondSection}>
-            {description ? (
+          {description ? (
+            <View style={styles.secondSection}>
               <Text size="medium" color={colors.white} fontWeight="300">
                 {description}
               </Text>
-            ) : null}
-          </View>
+            </View>
+          ) : null}
         </View>
       </SafeAreaView>
     </View>

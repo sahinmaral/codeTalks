@@ -1,20 +1,21 @@
-import { Image, Touchable, TouchableOpacity, View } from 'react-native';
-import Text from '@/components/Text';
-import Loading from '@/screens/Loading';
-import styles from './MyProfile.styles';
-import colors from '@/styles/colors';
-import Button from '@/components/Button';
-import Header from '@/components/Header';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import Icon from 'react-native-remix-icon';
-import { fetchMe } from '@/services/auths';
-import { MyProfileDto, ProfileStackParamList } from '@/types';
-import { useFocusEffect } from '@react-navigation/native';
-import Error from '@/screens/Error';
 import { useBubbleContentMenu } from '@/components/BubbleContentMenu';
 import SetUserStatusModal from '@/components/BubbleContentMenu/Contents/SetUserStatusModal';
+import Button from '@/components/Button';
+import Header from '@/components/Header';
+import Text from '@/components/Text';
 import userStatusesData from '@/constants/userStatuses.json';
 import { UserStatusType } from '@/enums/UserStatusType';
+import Error from '@/screens/Error';
+import Loading from '@/screens/Loading';
+import { fetchMe } from '@/services/auths';
+import colors from '@/styles/colors';
+import { MyProfileDto, ProfileStackParamList, UserStatusOption } from '@/types';
+import { useFocusEffect } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useCallback, useMemo, useState } from 'react';
+import { Image, TouchableOpacity, View } from 'react-native';
+import Icon from 'react-native-remix-icon';
+import styles from './MyProfile.styles';
 
 type MyProfileProps = {
   navigation: NativeStackNavigationProp<ProfileStackParamList, 'MyProfile'>;
@@ -119,7 +120,7 @@ function MyProfile({ navigation }: MyProfileProps) {
             </View>
             <Text style={styles.description}>{user?.bio}</Text>
           </View>
-          <View styles={styles.editProfileContainer}>
+          <View style={styles.editProfileContainer}>
             <Button theme="primary-outline" title="Edit Profile" style={styles.editProfileButton} />
           </View>
         </View>
@@ -159,9 +160,10 @@ function MyProfile({ navigation }: MyProfileProps) {
         <TouchableOpacity
           style={styles.userPresenceStatusContainer}
           onPress={() => {
+            if (!user) return;
             show(
               <SetUserStatusModal
-                currentUserStatus={user?.userStatus}
+                currentUserStatus={user.userStatus}
                 onSuccess={status => handleUpdateUserStatusSuccess(status)}
               />,
             );

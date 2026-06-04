@@ -48,10 +48,13 @@ const DateSeparator = ({ label }: { label: string }) => (
 );
 
 function ChannelMessagesList({ navigation, route }: ChannelMessagesListProps) {
-  const { channelId, channelName, channelDescription, channelCreatedAt, channelInviteCode } =
-    route.params;
+  const { channelId } = route.params;
   const scrollViewRef = useRef<ScrollView>(null);
   const user = useAppSelector(state => state.app.user);
+
+  const activeChannel = useAppSelector(state => state.activeChannel.channel);
+  const channelName = activeChannel?.name ?? '';
+  const channelCreatedAt = activeChannel?.createdAt ?? '';
 
   const [message, setMessage] = useState('');
 
@@ -144,15 +147,7 @@ function ChannelMessagesList({ navigation, route }: ChannelMessagesListProps) {
         onBackPress={() => navigation.goBack()}
         showRightIcon
         rightIcon="settings-5-line"
-        onRightIconPress={() =>
-          navigation.navigate('ChannelDetail', {
-            channelName,
-            channelId,
-            channelInviteCode,
-            channelDescription,
-            channelCreatedAt,
-          })
-        }
+        onRightIconPress={() => navigation.navigate('ChannelDetail', { channelId })}
       />
 
       <View style={{ flex: 1, padding: 20 }}>
@@ -200,7 +195,7 @@ function ChannelMessagesList({ navigation, route }: ChannelMessagesListProps) {
           <SendMessageInput
             channelName={channelName}
             channelId={channelId}
-            userId={user.id}
+            userId={user?.id ?? ''}
             message={message}
             onMessageChange={setMessage}
           />

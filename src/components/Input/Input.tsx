@@ -1,9 +1,9 @@
+import Text from '@/components/Text';
 import React, { useState } from 'react';
 import { TextInput, TouchableOpacity, View } from 'react-native';
+import Icon from 'react-native-remix-icon';
 import colors from '../../styles/colors';
 import styles from './Input.styles';
-import Icon from 'react-native-remix-icon';
-import Text from '@/components/Text';
 
 interface InputProps {
   placeholder?: string;
@@ -14,6 +14,8 @@ interface InputProps {
   isSecure?: boolean;
   icon?: string;
   label?: string;
+  style?: any;
+  containerStyle?: any;
 }
 
 function Input({
@@ -25,6 +27,7 @@ function Input({
   isSecure,
   icon,
   label,
+  containerStyle,
 }: InputProps) {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [focused, setFocused] = useState(false);
@@ -36,7 +39,9 @@ function Input({
           {label}
         </Text>
       ) : null}
-      <View style={[styles.inputContainer, focused && styles.inputContainerFocused]}>
+      <View
+        style={[styles.inputContainer, focused && styles.inputContainerFocused, containerStyle]}
+      >
         {icon ? <Icon name={icon} color={colors.gray[500]} size={20} /> : null}
         <TextInput
           placeholder={placeholder}

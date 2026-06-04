@@ -14,6 +14,7 @@ interface SignUpInput {
 interface LoginInput {
   usernameOrEmail: string;
   password: string;
+  rememberMe?: boolean;
 }
 
 export const fetchSignUp = (input: SignUpInput) => {

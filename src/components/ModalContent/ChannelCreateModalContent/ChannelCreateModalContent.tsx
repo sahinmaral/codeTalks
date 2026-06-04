@@ -20,7 +20,7 @@ function ChannelCreateModalContent({ closeAllModals }: ChannelCreateModalContent
 
   const handleCreateChannel = async (values: typeof initialValues) => {
     try {
-      await fetchCreateChannel({ ...values, userId: user!.id });
+      await fetchCreateChannel({ ...values });
       closeAllModals();
       showMessage({ message: 'Oda başarıyla oluşturuldu', type: 'info' });
     } catch (error) {
@@ -75,7 +75,7 @@ function ChannelCreateModalContent({ closeAllModals }: ChannelCreateModalContent
 
             <Button
               title={loading ? 'Kanal oluşturuluyor ...' : 'Oluştur'}
-              icon={loading && <ActivityIndicator size="small" color={colors.white} />}
+              loading={loading}
               disabled={loading}
               style={styles.button}
               onPress={formikSubmit}

@@ -1,18 +1,18 @@
-import React from 'react';
-import { ScrollView, TouchableOpacity, View } from 'react-native';
-import { useAppSelector } from '@/redux/hooks';
-import colors from '@/styles/colors';
-import Icon from 'react-native-remix-icon';
-import styles from '../ChannelList.styles';
 import ActiveChannelCard from '@/components/ActiveChannelCard';
-import Loading from '@/screens/Loading';
-import { Channel, RootStackParamList } from '@/types';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useBubbleContentMenu } from '@/components/BubbleContentMenu/BubbleContentMenu.provider';
 import HomepageActionList from '@/components/BubbleContentMenu/Contents/HomepageActionList';
 import Header from '@/components/Header';
-import useSignalRConnection from '@/hooks/useSignalRConnection';
 import NoChannelRegisteredCard from '@/components/NoChannelRegisteredCard';
-import { useBubbleContentMenu } from '@/components/BubbleContentMenu/BubbleContentMenu.provider';
+import useSignalRConnection from '@/hooks/useSignalRConnection';
+import { useAppSelector } from '@/redux/hooks';
+import Loading from '@/screens/Loading';
+import colors from '@/styles/colors';
+import { Channel, PaginatedResult, RootStackParamList } from '@/types';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import React from 'react';
+import { ScrollView, TouchableOpacity, View } from 'react-native';
+import Icon from 'react-native-remix-icon';
+import styles from '../ChannelList.styles';
 
 interface ActiveChannelListProps {
   navigation: NativeStackNavigationProp<RootStackParamList, 'ActiveChannelList'>;
@@ -20,7 +20,7 @@ interface ActiveChannelListProps {
 
 function ActiveChannelList({ navigation }: ActiveChannelListProps) {
   const user = useAppSelector(state => state.app.user);
-  const { show, hide, visible } = useBubbleContentMenu();
+  const { show, visible } = useBubbleContentMenu();
 
   const { data: channels, isLoading } = useSignalRConnection<PaginatedResult<Channel>>({
     receiveEvent: 'ReceiveActiveChannelsByUserId',

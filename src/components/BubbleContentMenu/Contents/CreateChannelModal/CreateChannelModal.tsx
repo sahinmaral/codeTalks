@@ -1,18 +1,20 @@
-import React, { useRef, useState } from 'react';
 import Button from '@/components/Button';
 import Text from '@/components/Text';
-import { ActivityIndicator, View } from 'react-native';
-import { useBubbleContentMenuScroll } from '../../BubbleContentMenu.context';
-import { useBubbleContentMenu } from '../../BubbleContentMenu.provider';
-import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
-import styles from './ChannelCreateModal.styles';
-import { showMessage } from 'react-native-flash-message';
-import { Formik } from 'formik';
-import validationSchema from '@/schemas/CreateChannelSchema';
 import { useAppSelector } from '@/redux/hooks';
+import validationSchema from '@/schemas/CreateChannelSchema';
 import { fetchCreateChannel } from '@/services/channels';
 import colors from '@/styles/colors';
+import { ApiError } from '@/types';
+import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
+import { AxiosError } from 'axios';
+import { Formik } from 'formik';
+import React, { useRef, useState } from 'react';
+import { View } from 'react-native';
+import { showMessage } from 'react-native-flash-message';
 import * as Yup from 'yup';
+import { useBubbleContentMenuScroll } from '../../BubbleContentMenu.context';
+import { useBubbleContentMenu } from '../../BubbleContentMenu.provider';
+import styles from './ChannelCreateModal.styles';
 
 function CreateChannelModal() {
   const initialValues = { name: '', description: '' };
@@ -25,7 +27,7 @@ function CreateChannelModal() {
 
   const handleCreateChannel = async (values: typeof initialValues) => {
     try {
-      await fetchCreateChannel({ ...values, userId: user!.id });
+      await fetchCreateChannel({ ...values });
       hide();
       showMessage({ message: 'Channel created successfully', type: 'success' });
     } catch (error) {

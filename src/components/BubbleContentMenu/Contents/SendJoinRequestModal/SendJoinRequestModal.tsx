@@ -1,17 +1,16 @@
-import React, { useRef, useState } from 'react';
+import { useBubbleContentMenuScroll } from '@/components/BubbleContentMenu/BubbleContentMenu.context';
+import { useBubbleContentMenu } from '@/components/BubbleContentMenu/BubbleContentMenu.provider';
 import Button from '@/components/Button';
 import Text from '@/components/Text';
-import { ActivityIndicator, View } from 'react-native';
-import { useBubbleContentMenuScroll } from '@/components/BubbleContentMenu/BubbleContentMenu.context';
-import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
-import styles from './SendJoinRequestModal.styles';
-import { showMessage } from 'react-native-flash-message';
-import { Formik } from 'formik';
-import validationSchema from '@/schemas/CreateChannelSchema';
-import { useAppSelector } from '@/redux/hooks';
-import { fetchCreateChannel } from '@/services/channels';
+import translateErrorMessage from '@/helpers/apiErrorTranslation';
+import { fetchSendInviteToChannel } from '@/services/channels';
 import colors from '@/styles/colors';
-import { useBubbleContentMenu } from '@/components/BubbleContentMenu/BubbleContentMenu.provider';
+import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
+import { Formik } from 'formik';
+import React, { useRef, useState } from 'react';
+import { ActivityIndicator, View } from 'react-native';
+import { showMessage } from 'react-native-flash-message';
+import styles from './SendJoinRequestModal.styles';
 
 function SendJoinRequestModal() {
   const initialValues = { channelId: '' };
@@ -22,7 +21,7 @@ function SendJoinRequestModal() {
   const { scrollTo } = useBubbleContentMenuScroll();
   const groupYPositions = useRef<Record<number, number>>({});
 
-  const handleSendInvite = async () => {
+  const handleSendInvite = async ({ channelId }: typeof initialValues) => {
     if (channelId.length === 0) {
       setError('Lütfen istek göndermek istediğiniz kanalın ID sini giriniz');
       return;
@@ -30,8 +29,7 @@ function SendJoinRequestModal() {
 
     try {
       setLoading(true);
-      await fetchSendInviteToChannel(channelId, user.accessToken);
-      setChannelId('');
+      await fetchSendInviteToChannel(channelId);
       hide();
       showMessage({ message: 'İsteğiniz başarıyla gönderildi', type: 'info' });
     } catch (err: any) {
@@ -83,7 +81,7 @@ function SendJoinRequestModal() {
 
             <Button
               title={loading ? 'Sending request...' : 'Send Join Request'}
-              icon={loading && <ActivityIndicator size="small" color={colors.white} />}
+              loading={loading}
               disabled={loading}
               style={styles.button}
               onPress={formikSubmit}

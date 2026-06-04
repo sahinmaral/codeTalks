@@ -14,7 +14,7 @@ import styles from './ContinueSignUp.styles';
 import validationSchema from '../../schemas/ContinueSignUpSchema';
 import { fetchSignUp } from '../../services/auths';
 import colors from '../../styles/colors';
-import { RootStackParamList } from '../../types';
+import { ApiError, RootStackParamList } from '../../types';
 import { AxiosError } from 'axios';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import useKeyboardVisible from '@/hooks/useKeyboardVisible';

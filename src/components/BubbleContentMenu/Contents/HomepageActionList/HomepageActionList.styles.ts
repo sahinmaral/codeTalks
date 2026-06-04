@@ -17,6 +17,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  optionHeader: {},
+  optionDescription: {},
   optionIconContainer: { flex: 0.2, marginRight: 10 },
   optionTextContainer: { flex: 0.7 },
   optionArrowContainer: { flex: 0.1 },

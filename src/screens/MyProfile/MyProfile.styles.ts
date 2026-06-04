@@ -7,7 +7,7 @@ const styles = StyleSheet.create({
   cardInformationContainer: {
     backgroundColor: colors.white,
     gap: 10,
-    marginTop: -10,
+    marginTop: 25,
     borderRadius: 15,
     paddingVertical: 25,
     paddingHorizontal: 20,
@@ -50,6 +50,7 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: '700',
   },
+  editProfileContainer: {},
   editProfileButton: { borderRadius: 20 },
   additionalInformationContainer: {
     flexDirection: 'row',

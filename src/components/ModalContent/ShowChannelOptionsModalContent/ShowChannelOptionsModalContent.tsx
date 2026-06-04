@@ -1,9 +1,9 @@
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import styles from './ShowChannelOptionsModalContent.styles';
-import { fetchDeleteChannel, fetchLeaveChannel } from '../../../services/channels';
 import { showMessage } from 'react-native-flash-message';
+import { fetchDeleteChannel, fetchLeaveChannel } from '../../../services/channels';
 import { Channel, User } from '../../../types';
+import styles from './ShowChannelOptionsModalContent.styles';
 
 interface ShowChannelOptionsModalContentProps {
   selectedChannel: Channel;
@@ -18,7 +18,7 @@ function ShowChannelOptionsModalContent({
 }: ShowChannelOptionsModalContentProps) {
   const handleLeaveChannel = async () => {
     try {
-      await fetchLeaveChannel(selectedChannel.id, user.accessToken);
+      await fetchLeaveChannel(selectedChannel.id);
       closeAllModals();
       showMessage({ message: 'Kanal başarıyla silindi', type: 'info' });
     } catch (err: any) {
@@ -28,7 +28,7 @@ function ShowChannelOptionsModalContent({
 
   const handleDeleteChannel = async () => {
     try {
-      await fetchDeleteChannel(selectedChannel.id, user.accessToken);
+      await fetchDeleteChannel(selectedChannel.id);
       closeAllModals();
       showMessage({ message: 'Kanal başarıyla silindi', type: 'info' });
     } catch {

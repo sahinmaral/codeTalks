@@ -9,24 +9,31 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../types';
 import Text from '@/components/Text';
 import colors from '@/styles/colors';
+import { useAppDispatch } from '@/redux/hooks';
+import { setActiveChannel } from '@/redux/reducers/activeChannelReducer';
 
 interface ActiveChannelCardProps {
-  navigation: NativeStackNavigationProp<RootStackParamList>;
+  navigation: NativeStackNavigationProp<RootStackParamList, keyof RootStackParamList>;
   channel: Channel;
 }
 
 function ActiveChannelCard({ navigation, channel }: ActiveChannelCardProps) {
+  const dispatch = useAppDispatch();
+
   return (
     <TouchableOpacity
       style={styles.container}
       onPress={() => {
-        navigation.navigate('ChannelMessagesList', {
-          channelId: channel.id,
-          channelName: channel.name,
-          channelDescription: channel.description,
-          channelCreatedAt: channel.createdAt,
-          channelInviteCode: channel.inviteCode,
-        });
+        dispatch(
+          setActiveChannel({
+            id: channel.id,
+            name: channel.name,
+            description: channel.description,
+            createdAt: channel.createdAt,
+            inviteCode: channel.inviteCode,
+          }),
+        );
+        navigation.navigate('ChannelMessagesList', { channelId: channel.id });
       }}
     >
       <View style={styles.firstSection}>

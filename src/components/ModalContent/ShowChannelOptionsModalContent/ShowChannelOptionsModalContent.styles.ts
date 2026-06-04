@@ -17,13 +17,13 @@ const styles = StyleSheet.create({
   },
   headerContainer: { gap: 6, paddingBottom: 10 },
   headerText: { fontSize: 20, textAlign: 'center', color: 'black', fontWeight: 'bold' },
-  description: { fontSize: 14, textAlign: 'center', color: colors.stone[500] },
+  description: { fontSize: 14, textAlign: 'center', color: colors.gray[500] },
   tooltipContainer: { gap: 8 },
   menuItemContainer: {
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderRadius: 8,
-    backgroundColor: colors.stone[200],
+    backgroundColor: colors.stone[100],
   },
   menuItemText: { fontSize: 16, color: 'black' },
 });

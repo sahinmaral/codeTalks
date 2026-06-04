@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
     gap: 15,
   },
   titleContainer: { flexDirection: 'column' },
-  memberContainer: { flexDirection: 'row', justifyContent: 'flex-end', gap: 5 },
+  memberContainer: { flexDirection: 'row', alignItems: 'center', gap: 5 },
   unreadMessageContainer: { flex: 1 / 10 },
   unreadMessageBadge: {
     width: 30,

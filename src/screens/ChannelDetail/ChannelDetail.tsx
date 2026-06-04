@@ -1,32 +1,27 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
-import {
-  ActivityIndicator,
-  Image,
-  ScrollView,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import styles from './ChannelDetail.styles';
-import colors from '@/styles/colors';
-import Icon from 'react-native-remix-icon';
-import ChannelDetailUserCard from '@/components/ChannelDetailUserCard';
-import { fetchGetChannelById } from '@/services/channels';
-import Loading from '../Loading';
-import { useAppSelector } from '@/redux/hooks';
-import { useFocusEffect } from '@react-navigation/native';
-import { ChannelDetailDto, ChannelUser, PaginatedResult, RootStackParamList } from '@/types';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RouteProp } from '@react-navigation/native';
-import Text from '@/components/Text';
-import { format } from 'date-fns';
+import { useBubbleContentMenu } from '@/components/BubbleContentMenu';
+import UpdateChannelDescriptionModal from '@/components/BubbleContentMenu/Contents/UpdateChannelDescriptionModal';
+import UpdateChannelNameModal from '@/components/BubbleContentMenu/Contents/UpdateChannelNameModal';
+import CustomToggleSwitch from '@/components/CustomToggleSwitch';
 import Divider from '@/components/Divider';
 import Header from '@/components/Header';
-import CustomToggleSwitch from '@/components/CustomToggleSwitch';
+import Text from '@/components/Text';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { setActiveChannel } from '@/redux/reducers/activeChannelReducer';
+import { fetchGetChannelById } from '@/services/channels';
+import colors from '@/styles/colors';
+import { ChannelDetailDto, RootStackParamList } from '@/types';
+import { RouteProp, useFocusEffect } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { format } from 'date-fns';
+import React, { useCallback, useMemo, useState } from 'react';
+import { ScrollView, TouchableOpacity, View } from 'react-native';
+import Icon from 'react-native-remix-icon';
+import Loading from '../Loading';
+import styles from './ChannelDetail.styles';
 
 interface FetchState {
   loading: boolean;
-  data: ChannelDetailDto;
+  data: ChannelDetailDto | null;
   error: Error | null;
 }
 
@@ -36,10 +31,9 @@ interface ChannelDetailProps {
 }
 
 function ChannelDetail({ navigation, route }: ChannelDetailProps) {
-  const { channelId, channelName, channelDescription, channelInviteCode, channelCreatedAt } =
-    route.params;
+  const { channelId } = route.params;
 
-  const scrollViewRef = useRef<ScrollView>(null);
+  const { show } = useBubbleContentMenu();
 
   const [fetchResult, setFetchResult] = useState<FetchState>({
     loading: true,
@@ -47,7 +41,13 @@ function ChannelDetail({ navigation, route }: ChannelDetailProps) {
     error: null,
   });
 
-  const user = useAppSelector(state => state.app.user);
+  const dispatch = useAppDispatch();
+
+  const activeChannel = useAppSelector(state => state.activeChannel.channel);
+  const channelName = activeChannel?.name ?? '';
+  const channelDescription = activeChannel?.description;
+  const channelInviteCode = activeChannel?.inviteCode ?? '';
+  const channelCreatedAt = activeChannel?.createdAt ?? '';
 
   useFocusEffect(
     useCallback(() => {
@@ -57,6 +57,15 @@ function ChannelDetail({ navigation, route }: ChannelDetailProps) {
 
           const response = await fetchGetChannelById(channelId);
           setFetchResult(prev => ({ ...prev, data: response.data }));
+          dispatch(
+            setActiveChannel({
+              id: response.data.id,
+              name: response.data.name,
+              description: response.data.description,
+              inviteCode: response.data.inviteCode,
+              createdAt: response.data.createdAt,
+            }),
+          );
         } catch (error) {
           setFetchResult(prev => ({ ...prev, error: error as Error }));
         } finally {
@@ -73,6 +82,12 @@ function ChannelDetail({ navigation, route }: ChannelDetailProps) {
   if (fetchResult.loading && !fetchResult.data) {
     return <Loading text="Kanalın detayı yüklenirken lütfen bekleyiniz ..." />;
   }
+
+  if (!fetchResult.data) {
+    return null;
+  }
+
+  const channel = fetchResult.data;
 
   return (
     <View style={styles.container}>
@@ -118,7 +133,7 @@ function ChannelDetail({ navigation, route }: ChannelDetailProps) {
             </View>
             <View style={styles.metaRow}>
               <Text color={colors.gray[400]}>Members</Text>
-              <Text>{fetchResult.data.memberCount}</Text>
+              <Text>{channel.memberCount}</Text>
             </View>
           </View>
         </View>
@@ -128,7 +143,12 @@ function ChannelDetail({ navigation, route }: ChannelDetailProps) {
             MEMBERS
           </Text>
           <View style={styles.card}>
-            <TouchableOpacity style={styles.row} onPress={() => {}}>
+            <TouchableOpacity
+              style={styles.row}
+              onPress={() => {
+                navigation.navigate('ChannelMembersList', { channelId: channel.id });
+              }}
+            >
               <View style={styles.rowLeading}>
                 <Icon name="ri-group-line" color={colors.gray[400]} />
                 <Text fontWeight="700">View All Members</Text>
@@ -172,7 +192,17 @@ function ChannelDetail({ navigation, route }: ChannelDetailProps) {
               ADMIN PANEL
             </Text>
             <View style={[styles.card, styles.adminCard]}>
-              <TouchableOpacity style={[styles.row, styles.rowBordered]} onPress={() => {}}>
+              <TouchableOpacity
+                style={[styles.row, styles.rowBordered]}
+                onPress={() => {
+                  show(
+                    <UpdateChannelNameModal
+                      selectedChannelId={channel.id}
+                      currentChannelName={channel.name}
+                    />,
+                  );
+                }}
+              >
                 <View style={styles.rowLeading}>
                   <Icon name="ri-edit-box-line" color={colors.gray[400]} />
                   <Text fontWeight="700">Edit Channel Name</Text>
@@ -190,7 +220,17 @@ function ChannelDetail({ navigation, route }: ChannelDetailProps) {
                   <Icon name="ri-arrow-right-s-line" size={24} color={colors.gray[400]} />
                 </View>
               </TouchableOpacity>
-              <TouchableOpacity style={[styles.row, styles.rowBordered]} onPress={() => {}}>
+              <TouchableOpacity
+                style={[styles.row, styles.rowBordered]}
+                onPress={() => {
+                  show(
+                    <UpdateChannelDescriptionModal
+                      selectedChannelId={channel.id}
+                      currentChannelDescription={channel.description ?? ''}
+                    />,
+                  );
+                }}
+              >
                 <View style={styles.rowLeading}>
                   <Icon name="ri-list-check" color={colors.gray[400]} />
                   <Text fontWeight="700">Edit Description</Text>

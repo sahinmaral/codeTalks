@@ -31,6 +31,10 @@ const styles = StyleSheet.create({
     gap: 12,
     paddingHorizontal: 30,
   },
+  errorText: {
+    color: colors.black,
+    textAlign: 'center',
+  },
   errorTextDescription: {
     color: colors.gray[500],
     textAlign: 'center',

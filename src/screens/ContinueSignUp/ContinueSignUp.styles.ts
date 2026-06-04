@@ -6,6 +6,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.orange[500],
   },
+  scrollView: {
+    flex: 1,
+  },
   scrollContent: {
     flexGrow: 1,
   },
