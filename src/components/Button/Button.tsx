@@ -12,7 +12,8 @@ type ButtonTheme =
   | 'danger'
   | 'danger-outline'
   | 'warning'
-  | 'warning-outline';
+  | 'warning-outline'
+  | 'dark';
 
 interface ButtonProps {
   title: string;

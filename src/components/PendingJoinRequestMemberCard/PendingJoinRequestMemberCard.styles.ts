@@ -38,7 +38,6 @@ const styles = StyleSheet.create({
     flex: 3 / 10,
     alignItems: 'flex-end',
   },
-  actionButton: { flex: 1, borderRadius: 20 },
 });
 
 export default styles;

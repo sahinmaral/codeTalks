@@ -16,6 +16,7 @@ type ButtonStyles = {
     'danger-outline': ButtonThemeStyle;
     warning: ButtonThemeStyle;
     'warning-outline': ButtonThemeStyle;
+    dark: ButtonThemeStyle;
   };
 };
 
@@ -81,6 +82,10 @@ const styles: ButtonStyles = {
         borderColor: colors.yellow[500],
       },
       text: { color: colors.yellow[500] },
+    },
+    dark: {
+      container: { ...baseContainer, backgroundColor: colors.dark },
+      text: { color: colors.white },
     },
   },
 };

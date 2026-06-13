@@ -2,14 +2,16 @@ import { useBubbleContentMenuScroll } from '@/components/BubbleContentMenu/Bubbl
 import { useBubbleContentMenu } from '@/components/BubbleContentMenu/BubbleContentMenu.provider';
 import Button from '@/components/Button';
 import Text from '@/components/Text';
-import translateErrorMessage from '@/helpers/apiErrorTranslation';
 import { fetchSendInviteToChannel } from '@/services/channels';
 import colors from '@/styles/colors';
+import { getApiErrorMessage } from '@/utils/getApiErrorMessage';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
+import { AxiosError } from 'axios';
 import { Formik } from 'formik';
 import React, { useRef, useState } from 'react';
 import { View } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
+import * as Yup from 'yup';
 import styles from './SendJoinRequestModal.styles';
 
 function SendJoinRequestModal() {
@@ -32,12 +34,14 @@ function SendJoinRequestModal() {
       await fetchSendInviteToChannel(channelId);
       hide();
       showMessage({ message: 'İsteğiniz başarıyla gönderildi', type: 'success' });
-    } catch (err: any) {
-      const errorResult = err?.response?.data;
-      showMessage({
-        message: translateErrorMessage(errorResult?.Detail ?? ''),
-        type: 'danger',
-      });
+    } catch (exception) {
+      if (exception instanceof Yup.ValidationError) {
+        showMessage({ message: exception.errors[0], type: 'warning' });
+      } else if (exception instanceof AxiosError) {
+        showMessage({ message: getApiErrorMessage(exception), type: 'danger' });
+      } else {
+        showMessage({ message: 'An error occurred', type: 'danger' });
+      }
     } finally {
       setLoading(false);
     }

@@ -3,9 +3,9 @@ import colors from '@/styles/colors';
 import { ChannelUser } from '@/types';
 import formatRelativeTime from '@/utils/formatRelativeTime';
 import React from 'react';
-import { Image, View } from 'react-native';
-import Button from '../Button';
-import Divider from '../Divider';
+import { Image, TouchableOpacity, View } from 'react-native';
+import { useBubbleContentMenu } from '../BubbleContentMenu';
+import PendingJoinRequestActionList from '../BubbleContentMenu/Contents/PendingJoinRequestActionList';
 import Text from '../Text';
 import styles from './PendingJoinRequestMemberCard.styles';
 
@@ -17,8 +17,15 @@ type PendingJoinRequestMemberCardProps = {
 const PendingJoinRequestMemberCard = ({ user, onSubmit }: PendingJoinRequestMemberCardProps) => {
   const fullName = [user.firstName, user.middleName, user.lastName].filter(Boolean).join(' ');
 
+  const { show } = useBubbleContentMenu();
+
   return (
-    <View style={styles.container}>
+    <TouchableOpacity
+      style={styles.container}
+      onPress={() =>
+        show(<PendingJoinRequestActionList user={user} onSelect={status => onSubmit(status)} />)
+      }
+    >
       <View style={styles.userInformationsContainer}>
         <View style={styles.avatarContainer}>
           {user.profilePhotoURL && (
@@ -35,24 +42,7 @@ const PendingJoinRequestMemberCard = ({ user, onSubmit }: PendingJoinRequestMemb
           </Text>
         </View>
       </View>
-      <Divider />
-      <View style={styles.actionsContainer}>
-        <Button
-          theme="success-outline"
-          icon="ri-check-line"
-          title="Accept"
-          style={styles.actionButton}
-          onPress={() => onSubmit(ChannelUserStatus.Accepted)}
-        />
-        <Button
-          theme="danger-outline"
-          icon="ri-close-line"
-          title="Reject"
-          style={styles.actionButton}
-          onPress={() => onSubmit(ChannelUserStatus.Denied)}
-        />
-      </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 

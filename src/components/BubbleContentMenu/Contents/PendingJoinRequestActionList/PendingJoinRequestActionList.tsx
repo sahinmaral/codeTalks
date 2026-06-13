@@ -1,0 +1,73 @@
+import { useBubbleContentMenu } from '@/components/BubbleContentMenu/BubbleContentMenu.provider';
+import Button from '@/components/Button';
+import Text from '@/components/Text';
+import ChannelUserStatus from '@/enums/ChannelUserStatus';
+import colors from '@/styles/colors';
+import { ChannelUser } from '@/types';
+import formatRelativeTime from '@/utils/formatRelativeTime';
+import React from 'react';
+import { Image, View } from 'react-native';
+import styles from './PendingJoinRequestActionList.styles';
+
+type PendingJoinRequestActionListProps = {
+  user: ChannelUser;
+  onSelect: (status: ChannelUserStatus) => void;
+};
+
+function PendingJoinRequestActionList({ user, onSelect }: PendingJoinRequestActionListProps) {
+  const { hide } = useBubbleContentMenu();
+
+  const fullName = [user.firstName, user.middleName, user.lastName].filter(Boolean).join(' ');
+
+  const handleSelect = (status: ChannelUserStatus) => {
+    hide();
+    onSelect(status);
+  };
+
+  return (
+    <View>
+      <View style={styles.headerContainer}>
+        <View style={styles.avatarContainer}>
+          {user.profilePhotoURL && (
+            <Image style={styles.avatarProfilePhoto} source={{ uri: user.profilePhotoURL }} />
+          )}
+        </View>
+        <Text fontWeight="700" size="large">
+          {fullName}
+        </Text>
+        <Text color={colors.gray[400]}>@{user.userName}</Text>
+        <View style={styles.requestedAtPill}>
+          <Text size="small" color={colors.gray[400]}>
+            Requested {formatRelativeTime(user.statusCreatedAt)}
+          </Text>
+        </View>
+      </View>
+
+      <View style={styles.actionListContainer}>
+        <Button
+          theme="success"
+          icon="ri-check-line"
+          title="Accept Request"
+          onPress={() => handleSelect(ChannelUserStatus.Accepted)}
+        />
+        <Button
+          theme="danger-outline"
+          icon="ri-close-line"
+          title="Reject Request"
+          onPress={() => handleSelect(ChannelUserStatus.Denied)}
+        />
+        <Button
+          theme="dark"
+          icon="ri-forbid-line"
+          title="Block User"
+          onPress={() => handleSelect(ChannelUserStatus.Blocked)}
+        />
+        <Text size="small" color={colors.gray[400]} style={styles.blockHelperText}>
+          Blocked users cannot send join requests or see your profile.
+        </Text>
+      </View>
+    </View>
+  );
+}
+
+export default PendingJoinRequestActionList;

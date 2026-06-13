@@ -149,7 +149,8 @@ const ChannelPendingJoinRequestsList = ({ navigation }: ChannelPendingJoinReques
         <View style={styles.descriptionContainer}>
           <Icon name="ri-information-line" color={colors.orange[500]} size={20} />
           <Text color={colors.orange[500]} size="small" style={styles.descriptionText}>
-            Review and manage join requests for #{channelName}
+            Review and manage join requests for #{channelName}. Tap a request to accept, reject, or
+            block the user
           </Text>
         </View>
 
