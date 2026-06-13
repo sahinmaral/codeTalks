@@ -4,7 +4,15 @@ import { ActivityIndicator, TouchableOpacity, ViewStyle } from 'react-native';
 import Icon from 'react-native-remix-icon';
 import styles from './Button.styles';
 
-type ButtonTheme = 'primary' | 'primary-outline';
+type ButtonTheme =
+  | 'primary'
+  | 'primary-outline'
+  | 'success'
+  | 'success-outline'
+  | 'danger'
+  | 'danger-outline'
+  | 'warning'
+  | 'warning-outline';
 
 interface ButtonProps {
   title: string;

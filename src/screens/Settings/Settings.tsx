@@ -1,13 +1,13 @@
-import { ScrollView, TouchableOpacity, View } from 'react-native';
-import React, { useState } from 'react';
-import Text from '@/components/Text';
-import styles from './Settings.styles';
-import Header from '@/components/Header';
 import CustomToggleSwitch from '@/components/CustomToggleSwitch';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { ProfileStackParamList } from '@/types';
+import Header from '@/components/Header';
+import Text from '@/components/Text';
 import colors from '@/styles/colors';
+import { ProfileStackParamList } from '@/types';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import React, { useState } from 'react';
+import { ScrollView, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-remix-icon';
+import styles from './Settings.styles';
 
 type SettingsProps = {
   navigation: NativeStackNavigationProp<ProfileStackParamList, 'Settings'>;
@@ -23,10 +23,8 @@ const Settings = ({ navigation }: SettingsProps) => {
   return (
     <View style={styles.container}>
       <Header
-        showBackButton
         onBackPress={() => navigation.navigate('MyProfile')}
         title="Settings"
-        showRightIcon
         rightIcon="settings-5-line"
       />
 
@@ -106,7 +104,12 @@ const Settings = ({ navigation }: SettingsProps) => {
             PRIVACY & SECURITY
           </Text>
           <View style={styles.listContainer}>
-            <TouchableOpacity style={styles.listTopItemContainer}>
+            <TouchableOpacity
+              style={styles.listTopItemContainer}
+              onPress={() => {
+                navigation.navigate('ChangePassword');
+              }}
+            >
               <View style={styles.listItemContentContainer}>
                 <Text fontWeight="700">Change Password</Text>
               </View>

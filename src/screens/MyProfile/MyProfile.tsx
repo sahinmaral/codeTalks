@@ -57,6 +57,7 @@ function MyProfile({ navigation }: MyProfileProps) {
 
   const fetchUserProfile = async () => {
     setLoading(true);
+    setError(null);
     try {
       const response = await fetchMe();
       setUser(response.data);
@@ -91,7 +92,6 @@ function MyProfile({ navigation }: MyProfileProps) {
     <View style={styles.container}>
       <Header
         title="My Profile"
-        showRightIcon
         rightIcon="settings-5-line"
         onRightIconPress={() => navigation.navigate('Settings')}
       />

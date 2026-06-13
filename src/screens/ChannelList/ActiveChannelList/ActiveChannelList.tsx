@@ -4,7 +4,8 @@ import HomepageActionList from '@/components/BubbleContentMenu/Contents/Homepage
 import Header from '@/components/Header';
 import NoChannelRegisteredCard from '@/components/NoChannelRegisteredCard';
 import useSignalRConnection from '@/hooks/useSignalRConnection';
-import { useAppSelector } from '@/redux/hooks';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { setUser } from '@/redux/reducers/appReducer';
 import Loading from '@/screens/Loading';
 import colors from '@/styles/colors';
 import { Channel, PaginatedResult, RootStackParamList } from '@/types';
@@ -22,10 +23,16 @@ function ActiveChannelList({ navigation }: ActiveChannelListProps) {
   const user = useAppSelector(state => state.app.user);
   const { show, visible } = useBubbleContentMenu();
 
+  const dispatch = useAppDispatch();
+
+  const handleLogout = () => {
+    dispatch(setUser(null));
+  };
+
   const { data: channels, isLoading } = useSignalRConnection<PaginatedResult<Channel>>({
     receiveEvent: 'ReceiveActiveChannelsByUserId',
     sendMethod: 'SendActiveChannelsByUserId',
-    invokeArgs: [{ userId: user?.id, page: 1, pageSize: 10 }],
+    invokeArgs: [{ page: 1, pageSize: 10 }],
   });
 
   if (isLoading) {
@@ -37,9 +44,8 @@ function ActiveChannelList({ navigation }: ActiveChannelListProps) {
       <Header
         title="Active Channels"
         description="Welcome back!"
-        showRightIcon={true}
         rightIcon="logout-box-r-line"
-        onRightIconPress={() => console.log('Logged out')}
+        onRightIconPress={handleLogout}
       />
 
       {channels?.items.length === 0 ? (

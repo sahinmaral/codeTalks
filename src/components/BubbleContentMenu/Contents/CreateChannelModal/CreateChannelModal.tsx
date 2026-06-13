@@ -4,7 +4,7 @@ import { useAppSelector } from '@/redux/hooks';
 import validationSchema from '@/schemas/CreateChannelSchema';
 import { fetchCreateChannel } from '@/services/channels';
 import colors from '@/styles/colors';
-import { ApiError } from '@/types';
+import { getApiErrorMessage } from '@/utils/getApiErrorMessage';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { AxiosError } from 'axios';
 import { Formik } from 'formik';
@@ -44,8 +44,7 @@ function CreateChannelModal() {
       if (exception instanceof Yup.ValidationError) {
         showMessage({ message: exception.errors[0], type: 'warning' });
       } else if (exception instanceof AxiosError) {
-        const apiError = exception.response?.data as ApiError;
-        showMessage({ message: apiError.detail, type: 'danger' });
+        showMessage({ message: getApiErrorMessage(exception), type: 'danger' });
       } else {
         showMessage({ message: 'An error occurred', type: 'danger' });
       }

@@ -1,42 +1,53 @@
+import Text from '@/components/Text';
+import colors from '@/styles/colors';
 import React from 'react';
-import { View, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-remix-icon';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import colors from '@/styles/colors';
 import styles from './Header.styles';
-import Text from '@/components/Text';
 
 interface HeaderProps {
   title: string;
+  theme?: 'primary' | 'danger';
   description?: string;
-  showBackButton?: boolean;
   onBackPress?: () => void;
   rightIcon?: string;
   onRightIconPress?: () => void;
-  showRightIcon?: boolean;
 }
 
 const Header: React.FC<HeaderProps> = ({
   title,
   description,
-  showBackButton = false,
   onBackPress,
   rightIcon,
   onRightIconPress,
-  showRightIcon = false,
+  theme = 'primary',
 }) => {
+  const backgroundColorStyles = StyleSheet.create({
+    primary: { backgroundColor: colors.orange[500] },
+    danger: { backgroundColor: colors.red[600] },
+  });
+
+  const iconButtonBackgroundColorStyles = StyleSheet.create({
+    primary: { backgroundColor: colors.orange[400] },
+    danger: { backgroundColor: colors.red[500] },
+  });
+
   return (
     <View style={styles.container}>
-      <SafeAreaView edges={['top']} style={styles.headerContainer}>
+      <SafeAreaView edges={['top']} style={[styles.headerContainer, backgroundColorStyles[theme]]}>
         <View style={styles.content}>
           <View style={styles.firstSection}>
             <View style={{ width: 50, alignItems: 'flex-start' }}>
-              {showBackButton && onBackPress ? (
-                <TouchableOpacity onPress={onBackPress} style={styles.backButtonContainer}>
+              {onBackPress ? (
+                <TouchableOpacity
+                  onPress={onBackPress}
+                  style={[styles.backButtonContainer, iconButtonBackgroundColorStyles[theme]]}
+                >
                   <Icon name="arrow-left-line" color={colors.white} size={24} />
                 </TouchableOpacity>
               ) : (
-                <View style={styles.iconButtonContainer}>
+                <View style={[styles.iconButtonContainer, iconButtonBackgroundColorStyles[theme]]}>
                   <Image source={require('@/assets/images/logo.png')} style={styles.logo} />
                 </View>
               )}
@@ -55,7 +66,10 @@ const Header: React.FC<HeaderProps> = ({
             </View>
             <View style={{ width: 50, alignItems: 'flex-end' }}>
               {rightIcon ? (
-                <TouchableOpacity onPress={onRightIconPress} style={styles.iconButtonContainer}>
+                <TouchableOpacity
+                  onPress={onRightIconPress}
+                  style={[styles.iconButtonContainer, iconButtonBackgroundColorStyles[theme]]}
+                >
                   <Icon name={rightIcon} color={colors.white} size={24} />
                 </TouchableOpacity>
               ) : null}

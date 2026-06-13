@@ -4,7 +4,6 @@ import { StyleSheet } from 'react-native';
 const styles = StyleSheet.create({
   container: { backgroundColor: colors.light },
   headerContainer: {
-    backgroundColor: colors.orange[500],
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
   },
@@ -30,7 +29,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
   },
   backButtonContainer: {
-    backgroundColor: colors.orange[400],
     width: 50,
     height: 50,
     borderRadius: 25,
@@ -38,7 +36,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   iconButtonContainer: {
-    backgroundColor: colors.orange[400],
     width: 50,
     height: 50,
     borderRadius: 25,

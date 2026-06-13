@@ -46,6 +46,18 @@ export const fetchSendInviteToChannel = (id: string) => {
   return axiosInstance.post(`/channels/send-invite/${id}`, null);
 };
 
+export const fetchRemoveMemberFromChannel = (id: string, userId: string) => {
+  return axiosInstance.delete(`/channels/${id}/users/${userId}`);
+};
+
+export const fetchPatchUserStatus = (
+  channelId: string,
+  userId: string,
+  status: ChannelUserStatus,
+) => {
+  return axiosInstance.patch(`/channels/${channelId}/users/${userId}/status`, { status });
+};
+
 export const fetchGetUsersByChannelId = (
   id: string,
   {

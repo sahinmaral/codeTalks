@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import { store } from '@/redux/store';
 import * as SignalR from '@microsoft/signalr';
+import { useEffect, useMemo, useState } from 'react';
 
 interface UseSignalRConnectionOptions {
   receiveEvent: string;
@@ -24,7 +25,9 @@ function useSignalRConnection<T>({
 
   useEffect(() => {
     const newConnection = new SignalR.HubConnectionBuilder()
-      .withUrl(`${process.env.EXPO_PUBLIC_API_BASE_URL}/chatHub`)
+      .withUrl(`${process.env.EXPO_PUBLIC_API_BASE_URL}/chatHub`, {
+        accessTokenFactory: () => store.getState().app.user?.accessToken ?? '',
+      })
       .build();
 
     setConnection(newConnection);

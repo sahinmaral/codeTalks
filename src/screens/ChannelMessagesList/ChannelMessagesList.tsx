@@ -1,32 +1,27 @@
-import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import Header from '@/components/Header';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { format, isToday, isYesterday, parseISO } from 'date-fns';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
   Text,
-  TouchableOpacity,
   View,
 } from 'react-native';
-import { format, isToday, isYesterday, parseISO } from 'date-fns';
-import colors from '../../styles/colors';
-import Icon from 'react-native-remix-icon';
-import CustomModal from '../../components/CustomModal';
-import styles from './ChannelMessagesList.styles';
-import Loading from '../Loading';
-import { useAppSelector } from '../../redux/hooks';
-import MessageCard from '../../components/MessageCard';
 import ChannelCreatedMessageCard from '../../components/ChannelCreatedMessageCard';
-import { Message, PaginatedResult, RootStackParamList } from '../../types';
+import MessageCard from '../../components/MessageCard';
 import useSignalRConnection from '../../hooks/useSignalRConnection';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RouteProp } from '@react-navigation/native';
-import Header from '@/components/Header';
+import { useAppSelector } from '../../redux/hooks';
+import colors from '../../styles/colors';
+import { Message, PaginatedResult, RootStackParamList } from '../../types';
+import Loading from '../Loading';
+import styles from './ChannelMessagesList.styles';
 import SendMessageInput from './SendMessageInput';
 
 interface ChannelMessagesListProps {
   navigation: NativeStackNavigationProp<RootStackParamList, 'ChannelMessagesList'>;
-  route: RouteProp<RootStackParamList, 'ChannelMessagesList'>;
 }
 
 type GroupedItem =
@@ -47,12 +42,12 @@ const DateSeparator = ({ label }: { label: string }) => (
   </View>
 );
 
-function ChannelMessagesList({ navigation, route }: ChannelMessagesListProps) {
-  const { channelId } = route.params;
+function ChannelMessagesList({ navigation }: ChannelMessagesListProps) {
   const scrollViewRef = useRef<ScrollView>(null);
   const user = useAppSelector(state => state.app.user);
 
   const activeChannel = useAppSelector(state => state.activeChannel.channel);
+  const channelId = activeChannel?.id ?? '';
   const channelName = activeChannel?.name ?? '';
   const channelCreatedAt = activeChannel?.createdAt ?? '';
 
@@ -143,11 +138,9 @@ function ChannelMessagesList({ navigation, route }: ChannelMessagesListProps) {
     >
       <Header
         title={channelName}
-        showBackButton
         onBackPress={() => navigation.goBack()}
-        showRightIcon
         rightIcon="settings-5-line"
-        onRightIconPress={() => navigation.navigate('ChannelDetail', { channelId })}
+        onRightIconPress={() => navigation.navigate('ChannelDetail')}
       />
 
       <View style={{ flex: 1, padding: 20 }}>

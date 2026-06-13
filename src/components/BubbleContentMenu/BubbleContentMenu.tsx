@@ -1,14 +1,14 @@
-import React, { useCallback, useRef } from 'react';
-import { Dimensions, ScrollView, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import styles from './BubbleContentMenu.styles';
 import BottomSheet, {
   BottomSheetBackdrop,
   BottomSheetBackdropProps,
   BottomSheetScrollView,
 } from '@gorhom/bottom-sheet';
+import React, { useCallback, useRef } from 'react';
+import { Dimensions, ScrollView, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Button from '../Button';
 import { BubbleContentMenuContext } from './BubbleContentMenu.context';
+import styles from './BubbleContentMenu.styles';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 

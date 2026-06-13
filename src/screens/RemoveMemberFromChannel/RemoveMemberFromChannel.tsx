@@ -1,14 +1,18 @@
 import ChannelMemberCard from '@/components/ChannelMemberCard';
+import { ChannelMemberCardType } from '@/components/ChannelMemberCard/ChannelMemberCard';
+import { useConfirmationDialog } from '@/components/ConfirmationDialog';
 import Header from '@/components/Header';
 import Input from '@/components/Input';
 import Text from '@/components/Text';
 import useDebounce from '@/hooks/useDebounce';
 import { useAppSelector } from '@/redux/hooks';
-import { fetchGetUsersByChannelId } from '@/services/channels';
+import { fetchGetUsersByChannelId, fetchRemoveMemberFromChannel } from '@/services/channels';
 import colors from '@/styles/colors';
 import { ChannelUser, RootStackParamList, UsersAtChannelListModel } from '@/types';
+import { getApiErrorMessage } from '@/utils/getApiErrorMessage';
 import { useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { AxiosError } from 'axios';
 import React, { useCallback, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
@@ -17,11 +21,12 @@ import {
   ScrollView,
   View,
 } from 'react-native';
+import { showMessage } from 'react-native-flash-message';
 import Loading from '../Loading';
-import styles from './ChannelMembersList.styles';
+import styles from './RemoveMemberFromChannel.styles';
 
-type ChannelMembersListProps = {
-  navigation: NativeStackNavigationProp<RootStackParamList, 'ChannelMembersList'>;
+type RemoveMemberFromChannelProps = {
+  navigation: NativeStackNavigationProp<RootStackParamList, 'RemoveMemberFromChannel'>;
 };
 
 const PAGE_SIZE = 5;
@@ -37,7 +42,7 @@ const matchesSearch = (user: ChannelUser, term: string) => {
   return fullName.includes(term) || user.userName.toLowerCase().includes(term);
 };
 
-const ChannelMembersList = ({ navigation }: ChannelMembersListProps) => {
+const RemoveMemberFromChannel = ({ navigation }: RemoveMemberFromChannelProps) => {
   const channelId = useAppSelector(state => state.activeChannel.channel?.id ?? '');
 
   const [admins, setAdmins] = useState<ChannelUser[]>([]);
@@ -48,8 +53,27 @@ const ChannelMembersList = ({ navigation }: ChannelMembersListProps) => {
   const [hasLoaded, setHasLoaded] = useState(false);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
 
+  const { confirm } = useConfirmationDialog();
+
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search.trim(), 400);
+
+  const handleRemoveMemberFromChannel = async (userIdIsBeingRemoved: string) => {
+    try {
+      setLoading(true);
+      await fetchRemoveMemberFromChannel(channelId, userIdIsBeingRemoved);
+      setPageIndex(0);
+      await fetchPage(0);
+    } catch (exception) {
+      if (exception instanceof AxiosError) {
+        showMessage({ message: getApiErrorMessage(exception), type: 'danger' });
+      } else {
+        showMessage({ message: 'An error occurred', type: 'danger' });
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const fetchPage = useCallback(
     async (index: number) => {
@@ -126,7 +150,7 @@ const ChannelMembersList = ({ navigation }: ChannelMembersListProps) => {
 
   return (
     <View style={styles.container}>
-      <Header title={'Members'} onBackPress={() => navigation.goBack()} />
+      <Header theme="danger" title={'Remove Member'} onBackPress={() => navigation.goBack()} />
 
       <View style={styles.searchContainer}>
         <Input
@@ -153,7 +177,11 @@ const ChannelMembersList = ({ navigation }: ChannelMembersListProps) => {
             </View>
             <View style={styles.adminMembersList}>
               {filteredAdmins.map(admin => (
-                <ChannelMemberCard key={admin.id} user={admin} />
+                <ChannelMemberCard
+                  key={admin.id}
+                  user={admin}
+                  cardType={ChannelMemberCardType.Locked}
+                />
               ))}
             </View>
           </View>
@@ -168,7 +196,21 @@ const ChannelMembersList = ({ navigation }: ChannelMembersListProps) => {
             </View>
             <View style={styles.adminMembersList}>
               {members.map(member => (
-                <ChannelMemberCard key={member.id} user={member} />
+                <ChannelMemberCard
+                  key={member.id}
+                  user={member}
+                  onPress={member =>
+                    confirm({
+                      theme: 'danger',
+                      icon: 'ri-user-unfollow-line',
+                      title: 'Remove Member?',
+                      description: `Are you sure you want to remove @${member.userName} from this channel? They will need to send a new join request to return.`,
+                      confirmTitle: 'Remove Member',
+                      onConfirm: () => handleRemoveMemberFromChannel(member.id),
+                    })
+                  }
+                  cardType={ChannelMemberCardType.RemoveUser}
+                />
               ))}
             </View>
           </View>
@@ -190,4 +232,4 @@ const ChannelMembersList = ({ navigation }: ChannelMembersListProps) => {
   );
 };
 
-export default ChannelMembersList;
+export default RemoveMemberFromChannel;

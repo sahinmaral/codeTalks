@@ -7,6 +7,13 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     flexDirection: 'row',
     alignItems: 'center',
+    overflow: 'hidden',
+  },
+  lockOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.6)',
   },
   avatarContainer: {
     width: 50,
@@ -14,7 +21,7 @@ const styles = StyleSheet.create({
     borderRadius: 25,
   },
   infoContainer: { flex: 1, marginLeft: 10 },
-  actionsContainer: { marginRight: 10 },
+  actionsContainer: { marginRight: 10, justifyContent: 'center' },
   rolePill: {
     paddingHorizontal: 10,
     alignSelf: 'flex-start',

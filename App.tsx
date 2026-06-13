@@ -1,7 +1,11 @@
 import { BubbleContentMenuProvider } from '@/components/BubbleContentMenu';
+import { ConfirmationDialogProvider } from '@/components/ConfirmationDialog';
 import CustomBottomTab from '@/components/CustomBottomTab';
 import ChannelMembersList from '@/screens/ChannelMembersList';
+import ChangePassword from '@/screens/ChangePassword';
+import ChannelPendingJoinRequestsList from '@/screens/ChannelPendingJoinRequestsList';
 import MyProfile from '@/screens/MyProfile';
+import RemoveMemberFromChannel from '@/screens/RemoveMemberFromChannel';
 import Settings from '@/screens/Settings';
 import {
   Montserrat_100Thin,
@@ -51,6 +55,11 @@ const ChannelStack = () => (
     <Stack.Screen name="ChannelMessagesList" component={ChannelMessagesList} />
     <Stack.Screen name="ChannelDetail" component={ChannelDetail} />
     <Stack.Screen name="ChannelMembersList" component={ChannelMembersList} />
+    <Stack.Screen
+      name="ChannelPendingJoinRequestsList"
+      component={ChannelPendingJoinRequestsList}
+    />
+    <Stack.Screen name="RemoveMemberFromChannel" component={RemoveMemberFromChannel} />
   </Stack.Navigator>
 );
 
@@ -58,6 +67,7 @@ const ProfileStack = () => (
   <ProfileStackNav.Navigator initialRouteName="MyProfile" screenOptions={{ headerShown: false }}>
     <ProfileStackNav.Screen name="MyProfile" component={MyProfile} />
     <ProfileStackNav.Screen name="Settings" component={Settings} />
+    <ProfileStackNav.Screen name="ChangePassword" component={ChangePassword} />
   </ProfileStackNav.Navigator>
 );
 
@@ -107,9 +117,11 @@ function App() {
   }
 
   return (
-    <GestureHandlerRootView>
+    <GestureHandlerRootView style={{ flex: 1 }}>
       <BubbleContentMenuProvider>
-        <NavigationContainer>{!user ? <AuthStack /> : <MainStack />}</NavigationContainer>
+        <ConfirmationDialogProvider>
+          <NavigationContainer>{!user ? <AuthStack /> : <MainStack />}</NavigationContainer>
+        </ConfirmationDialogProvider>
       </BubbleContentMenuProvider>
     </GestureHandlerRootView>
   );

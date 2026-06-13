@@ -1,25 +1,26 @@
-import React, { useState } from 'react';
-import { Image, SafeAreaView, TouchableOpacity, View } from 'react-native';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { showMessage } from 'react-native-flash-message';
-import { Formik } from 'formik';
-import * as Yup from 'yup';
-import { AxiosError } from 'axios';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import Input from '../../components/Input/Input';
-import Button from '../../components/Button/';
-import Text from '@/components/Text';
-import Footer from '@/components/Footer';
+import Button from '@/components/Button/';
 import Checkbox from '@/components/Checkbox';
 import Divider from '@/components/Divider';
-import styles from './Login.styles';
-import validationSchema from '../../schemas/LoginSchema';
-import { useAppDispatch } from '../../redux/hooks';
-import { setUser } from '../../redux/reducers/appReducer';
-import colors from '../../styles/colors';
-import { fetchLogin } from '../../services/auths';
-import { ApiError, RootStackParamList } from '../../types';
+import Footer from '@/components/Footer';
+import Input from '@/components/Input/Input';
+import Text from '@/components/Text';
 import useKeyboardVisible from '@/hooks/useKeyboardVisible';
+import { useAppDispatch } from '@/redux/hooks';
+import { setUser } from '@/redux/reducers/appReducer';
+import validationSchema from '@/schemas/LoginSchema';
+import { fetchLogin } from '@/services/auths';
+import colors from '@/styles/colors';
+import { RootStackParamList } from '@/types';
+import { getApiErrorMessage } from '@/utils/getApiErrorMessage';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { AxiosError } from 'axios';
+import { Formik } from 'formik';
+import React, { useState } from 'react';
+import { Image, SafeAreaView, TouchableOpacity, View } from 'react-native';
+import { showMessage } from 'react-native-flash-message';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import * as Yup from 'yup';
+import styles from './Login.styles';
 
 interface LoginProps {
   navigation: NativeStackNavigationProp<RootStackParamList, 'Login'>;
@@ -61,8 +62,7 @@ function Login({ navigation }: LoginProps) {
       if (exception instanceof Yup.ValidationError) {
         showMessage({ message: exception.errors[0], type: 'warning' });
       } else if (exception instanceof AxiosError) {
-        const apiError = exception.response?.data as ApiError;
-        showMessage({ message: apiError.detail, type: 'danger' });
+        showMessage({ message: getApiErrorMessage(exception), type: 'danger' });
       } else {
         showMessage({ message: 'An error occurred', type: 'danger' });
       }

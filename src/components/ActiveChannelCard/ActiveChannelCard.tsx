@@ -1,16 +1,13 @@
-import React, { useMemo } from 'react';
-import { Image, TouchableOpacity, View } from 'react-native';
-import Icon from 'react-native-remix-icon';
-import ChannelUserStatus from '../../enums/ChannelUserStatus';
-import Badge from '../Badge/Badge';
-import styles from './ActiveChannelCard.styles';
-import { Channel } from '../../types';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../../types';
 import Text from '@/components/Text';
-import colors from '@/styles/colors';
 import { useAppDispatch } from '@/redux/hooks';
 import { setActiveChannel } from '@/redux/reducers/activeChannelReducer';
+import colors from '@/styles/colors';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import React from 'react';
+import { TouchableOpacity, View } from 'react-native';
+import Icon from 'react-native-remix-icon';
+import { Channel, RootStackParamList } from '../../types';
+import styles from './ActiveChannelCard.styles';
 
 interface ActiveChannelCardProps {
   navigation: NativeStackNavigationProp<RootStackParamList, keyof RootStackParamList>;
@@ -33,7 +30,7 @@ function ActiveChannelCard({ navigation, channel }: ActiveChannelCardProps) {
             inviteCode: channel.inviteCode,
           }),
         );
-        navigation.navigate('ChannelMessagesList', { channelId: channel.id });
+        navigation.navigate('ChannelMessagesList');
       }}
     >
       <View style={styles.firstSection}>

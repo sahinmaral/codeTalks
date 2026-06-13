@@ -1,7 +1,15 @@
 import { UserStatusType } from '@/enums/UserStatusType';
 
+export interface ApiValidationError {
+  propertyName: string;
+  errorMessage: string;
+  attemptedValue: unknown;
+  errorCode: string;
+}
+
 export interface ApiError {
   detail: string;
+  errors?: ApiValidationError[];
   extensions: Record<string, unknown>;
   instance: string;
   status: number;
@@ -82,8 +90,9 @@ export interface ChannelUser {
   middleName?: string | null;
   lastName: string;
   userName: string;
-  profilePhotoURL?: string | null;
+  profilePhotoURL?: string;
   role: Role;
+  statusCreatedAt: string;
 }
 
 export interface Message {
@@ -98,7 +107,7 @@ export interface Message {
 }
 
 export interface UsersAtChannelListModel extends PaginatedResult<ChannelUser> {
-  admins: ChannelUser[];
+  admins?: ChannelUser[];
 }
 
 export interface PaginatedResult<T> {
@@ -122,13 +131,16 @@ export type RootStackParamList = {
   SignUp: undefined;
   ContinueSignUp: { email: string; password: string; username: string };
   ActiveChannelList: undefined;
-  ChannelMessagesList: { channelId: string };
-  ChannelDetail: { channelId: string };
   AllChannelList: undefined;
-  ChannelMembersList: { channelId: string };
+  ChannelMessagesList: undefined;
+  ChannelDetail: undefined;
+  ChannelMembersList: undefined;
+  ChannelPendingJoinRequestsList: undefined;
+  RemoveMemberFromChannel: undefined;
 };
 
 export type ProfileStackParamList = {
   MyProfile: undefined;
   Settings: undefined;
+  ChangePassword: undefined;
 };

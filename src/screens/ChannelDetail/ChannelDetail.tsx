@@ -1,20 +1,28 @@
 import { useBubbleContentMenu } from '@/components/BubbleContentMenu';
 import UpdateChannelDescriptionModal from '@/components/BubbleContentMenu/Contents/UpdateChannelDescriptionModal';
 import UpdateChannelNameModal from '@/components/BubbleContentMenu/Contents/UpdateChannelNameModal';
+import { useConfirmationDialog } from '@/components/ConfirmationDialog';
 import CustomToggleSwitch from '@/components/CustomToggleSwitch';
 import Divider from '@/components/Divider';
 import Header from '@/components/Header';
 import Text from '@/components/Text';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { setActiveChannel } from '@/redux/reducers/activeChannelReducer';
-import { fetchGetChannelById } from '@/services/channels';
+import {
+  fetchDeleteChannel,
+  fetchGetChannelById,
+  fetchRemoveMemberFromChannel,
+} from '@/services/channels';
 import colors from '@/styles/colors';
 import { ChannelDetailDto, RootStackParamList } from '@/types';
-import { RouteProp, useFocusEffect } from '@react-navigation/native';
+import { getApiErrorMessage } from '@/utils/getApiErrorMessage';
+import { useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { AxiosError } from 'axios';
 import { format } from 'date-fns';
 import React, { useCallback, useMemo, useState } from 'react';
 import { ScrollView, TouchableOpacity, View } from 'react-native';
+import { showMessage } from 'react-native-flash-message';
 import Icon from 'react-native-remix-icon';
 import Loading from '../Loading';
 import styles from './ChannelDetail.styles';
@@ -27,12 +35,9 @@ interface FetchState {
 
 interface ChannelDetailProps {
   navigation: NativeStackNavigationProp<RootStackParamList, 'ChannelDetail'>;
-  route: RouteProp<RootStackParamList, 'ChannelDetail'>;
 }
 
-function ChannelDetail({ navigation, route }: ChannelDetailProps) {
-  const { channelId } = route.params;
-
+function ChannelDetail({ navigation }: ChannelDetailProps) {
   const { show } = useBubbleContentMenu();
 
   const [fetchResult, setFetchResult] = useState<FetchState>({
@@ -42,8 +47,11 @@ function ChannelDetail({ navigation, route }: ChannelDetailProps) {
   });
 
   const dispatch = useAppDispatch();
+  const { confirm } = useConfirmationDialog();
 
+  const user = useAppSelector(state => state.app.user);
   const activeChannel = useAppSelector(state => state.activeChannel.channel);
+  const channelId = activeChannel?.id ?? '';
   const channelName = activeChannel?.name ?? '';
   const channelDescription = activeChannel?.description;
   const channelInviteCode = activeChannel?.inviteCode ?? '';
@@ -75,6 +83,34 @@ function ChannelDetail({ navigation, route }: ChannelDetailProps) {
     }, []),
   );
 
+  const handleRemoveFromChannel = async () => {
+    try {
+      await fetchRemoveMemberFromChannel(channelId, user!.id);
+      navigation.navigate('ActiveChannelList');
+      showMessage({ message: 'You successfully removed from this channel', type: 'success' });
+    } catch (exception) {
+      if (exception instanceof AxiosError) {
+        showMessage({ message: getApiErrorMessage(exception), type: 'danger' });
+      } else {
+        showMessage({ message: 'An error occurred', type: 'danger' });
+      }
+    }
+  };
+
+  const handleDeleteChannel = async () => {
+    try {
+      await fetchDeleteChannel(channelId);
+      navigation.navigate('ActiveChannelList');
+      showMessage({ message: 'You successfully deleted this channel', type: 'success' });
+    } catch (exception) {
+      if (exception instanceof AxiosError) {
+        showMessage({ message: getApiErrorMessage(exception), type: 'danger' });
+      } else {
+        showMessage({ message: 'An error occurred', type: 'danger' });
+      }
+    }
+  };
+
   const isUserModeratorAtThisChannel = useMemo(() => {
     return fetchResult.data?.role?.name === 'Moderator';
   }, [fetchResult.data]);
@@ -91,7 +127,7 @@ function ChannelDetail({ navigation, route }: ChannelDetailProps) {
 
   return (
     <View style={styles.container}>
-      <Header title={channelName} showBackButton onBackPress={() => navigation.goBack()} />
+      <Header title={channelName} onBackPress={() => navigation.goBack()} />
 
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
         <View style={[styles.card, styles.infoCard]}>
@@ -146,7 +182,7 @@ function ChannelDetail({ navigation, route }: ChannelDetailProps) {
             <TouchableOpacity
               style={styles.row}
               onPress={() => {
-                navigation.navigate('ChannelMembersList', { channelId: channel.id });
+                navigation.navigate('ChannelMembersList');
               }}
             >
               <View style={styles.rowLeading}>
@@ -239,7 +275,12 @@ function ChannelDetail({ navigation, route }: ChannelDetailProps) {
                   <Icon name="ri-arrow-right-s-line" size={24} color={colors.gray[400]} />
                 </View>
               </TouchableOpacity>
-              <TouchableOpacity style={[styles.row, styles.rowBordered]} onPress={() => {}}>
+              <TouchableOpacity
+                style={[styles.row, styles.rowBordered]}
+                onPress={() => {
+                  navigation.navigate('ChannelPendingJoinRequestsList');
+                }}
+              >
                 <View style={styles.rowLeading}>
                   <Icon name="ri-user-add-line" color={colors.gray[400]} />
                   <Text fontWeight="700">Pending Join Requests</Text>
@@ -248,7 +289,12 @@ function ChannelDetail({ navigation, route }: ChannelDetailProps) {
                   <Icon name="ri-arrow-right-s-line" size={24} color={colors.gray[400]} />
                 </View>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.row} onPress={() => {}}>
+              <TouchableOpacity
+                style={styles.row}
+                onPress={() => {
+                  navigation.navigate('RemoveMemberFromChannel');
+                }}
+              >
                 <View style={styles.rowLeading}>
                   <Icon name="ri-user-unfollow-line" color={colors.gray[400]} />
                   <Text fontWeight="700">Remove a Member</Text>
@@ -262,7 +308,19 @@ function ChannelDetail({ navigation, route }: ChannelDetailProps) {
         ) : null}
 
         <View style={styles.card}>
-          <TouchableOpacity style={[styles.row, styles.rowBordered]} onPress={() => {}}>
+          <TouchableOpacity
+            style={[styles.row, styles.rowBordered]}
+            onPress={() =>
+              confirm({
+                theme: 'warning',
+                icon: 'logout-box-r-line',
+                title: 'Leave Channel?',
+                description: `Are you sure you want to leave #${channelName}? You will need to send a new join request to rejoin this channel.`,
+                confirmTitle: 'Leave Channel',
+                onConfirm: () => handleRemoveFromChannel(),
+              })
+            }
+          >
             <View style={styles.rowLeading}>
               <Icon name="logout-box-r-line" color={colors.warning} />
               <Text fontWeight="700" color={colors.warning}>
@@ -270,7 +328,19 @@ function ChannelDetail({ navigation, route }: ChannelDetailProps) {
               </Text>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.row} onPress={() => {}}>
+          <TouchableOpacity
+            style={styles.row}
+            onPress={() =>
+              confirm({
+                theme: 'danger',
+                icon: 'ri-delete-bin-line',
+                title: 'Delete Channel?',
+                description: `Are you sure you want to delete #${channelName}? This action is permanent and cannot be undone. All messages and members will be removed.`,
+                confirmTitle: 'Delete Channel',
+                onConfirm: () => handleDeleteChannel(),
+              })
+            }
+          >
             <View style={styles.rowLeading}>
               <Icon name="ri-delete-bin-line" color={colors.danger} />
               <Text fontWeight="700" color={colors.danger}>

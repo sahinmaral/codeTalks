@@ -14,7 +14,8 @@ import styles from './ContinueSignUp.styles';
 import validationSchema from '../../schemas/ContinueSignUpSchema';
 import { fetchSignUp } from '../../services/auths';
 import colors from '../../styles/colors';
-import { ApiError, RootStackParamList } from '../../types';
+import { RootStackParamList } from '../../types';
+import { getApiErrorMessage } from '@/utils/getApiErrorMessage';
 import { AxiosError } from 'axios';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import useKeyboardVisible from '@/hooks/useKeyboardVisible';
@@ -49,8 +50,7 @@ function ContinueSignUp({ navigation, route }: ContinueSignUpProps) {
       if (error instanceof Yup.ValidationError) {
         showMessage({ message: 'Please enter remaining inputs', type: 'warning' });
       } else if (error instanceof AxiosError) {
-        const apiError = error.response?.data as ApiError;
-        showMessage({ message: apiError.detail, type: 'danger' });
+        showMessage({ message: getApiErrorMessage(error), type: 'danger' });
       } else {
         showMessage({ message: 'Bir hata oluştu', type: 'danger' });
       }

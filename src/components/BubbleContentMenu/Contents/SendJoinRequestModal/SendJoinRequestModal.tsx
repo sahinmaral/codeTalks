@@ -8,7 +8,7 @@ import colors from '@/styles/colors';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { Formik } from 'formik';
 import React, { useRef, useState } from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import { View } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import styles from './SendJoinRequestModal.styles';
 
@@ -31,7 +31,7 @@ function SendJoinRequestModal() {
       setLoading(true);
       await fetchSendInviteToChannel(channelId);
       hide();
-      showMessage({ message: 'İsteğiniz başarıyla gönderildi', type: 'info' });
+      showMessage({ message: 'İsteğiniz başarıyla gönderildi', type: 'success' });
     } catch (err: any) {
       const errorResult = err?.response?.data;
       showMessage({
