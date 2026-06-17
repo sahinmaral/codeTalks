@@ -1,4 +1,5 @@
 import ChannelUserStatus from '@/enums/ChannelUserStatus';
+import { UserRole } from '@/enums/UserRole';
 import { ChannelDetailDto } from '@/types';
 import { AxiosResponse } from 'axios';
 import axiosInstance from '../axiosConfig';
@@ -16,6 +17,10 @@ interface UpdateChannelInput {
 interface PatchChannelInput {
   name?: string;
   description?: string;
+}
+
+interface ChangeUserRoleInput {
+  role: UserRole;
 }
 
 export const fetchGetChannelById = (id: string): Promise<AxiosResponse<ChannelDetailDto>> => {
@@ -56,6 +61,10 @@ export const fetchPatchUserStatus = (
   status: ChannelUserStatus,
 ) => {
   return axiosInstance.patch(`/channels/${channelId}/users/${userId}/status`, { status });
+};
+
+export const fetchPatchUserRole = (channelId: string, userId: string, role: UserRole) => {
+  return axiosInstance.patch(`/channels/${channelId}/users/${userId}/role`, { role });
 };
 
 export const fetchGetUsersByChannelId = (

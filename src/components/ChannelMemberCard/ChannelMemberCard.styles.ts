@@ -24,9 +24,18 @@ const styles = StyleSheet.create({
   actionsContainer: { marginRight: 10, justifyContent: 'center' },
   rolePill: {
     paddingHorizontal: 10,
+    flexDirection: 'row',
     alignSelf: 'flex-start',
     alignItems: 'center',
     borderRadius: 20,
+    gap: 6,
+  },
+  pillIconBadge: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   avatarProfilePhoto: {
     width: 50,

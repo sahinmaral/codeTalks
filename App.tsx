@@ -1,8 +1,9 @@
 import { BubbleContentMenuProvider } from '@/components/BubbleContentMenu';
 import { ConfirmationDialogProvider } from '@/components/ConfirmationDialog';
 import CustomBottomTab from '@/components/CustomBottomTab';
-import ChannelMembersList from '@/screens/ChannelMembersList';
 import ChangePassword from '@/screens/ChangePassword';
+import ChannelBannedMembersList from '@/screens/ChannelBannedMembersList';
+import ChannelMembersList from '@/screens/ChannelMembersList';
 import ChannelPendingJoinRequestsList from '@/screens/ChannelPendingJoinRequestsList';
 import MyProfile from '@/screens/MyProfile';
 import RemoveMemberFromChannel from '@/screens/RemoveMemberFromChannel';
@@ -59,6 +60,7 @@ const ChannelStack = () => (
       name="ChannelPendingJoinRequestsList"
       component={ChannelPendingJoinRequestsList}
     />
+    <Stack.Screen name="ChannelBannedMembersList" component={ChannelBannedMembersList} />
     <Stack.Screen name="RemoveMemberFromChannel" component={RemoveMemberFromChannel} />
   </Stack.Navigator>
 );
@@ -118,11 +120,11 @@ function App() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <BubbleContentMenuProvider>
-        <ConfirmationDialogProvider>
+      <ConfirmationDialogProvider>
+        <BubbleContentMenuProvider>
           <NavigationContainer>{!user ? <AuthStack /> : <MainStack />}</NavigationContainer>
-        </ConfirmationDialogProvider>
-      </BubbleContentMenuProvider>
+        </BubbleContentMenuProvider>
+      </ConfirmationDialogProvider>
     </GestureHandlerRootView>
   );
 }

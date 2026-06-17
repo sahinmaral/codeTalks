@@ -119,16 +119,6 @@ const Settings = ({ navigation }: SettingsProps) => {
                 </View>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.listBottomItemContainer}>
-              <View style={styles.listItemContentContainer}>
-                <Text fontWeight="700">Block List</Text>
-              </View>
-              <View style={styles.listItemOptionContainer}>
-                <View style={styles.listItemIconContainer}>
-                  <Icon name={'ri-arrow-right-s-line'} color={colors.gray[400]} size={24} />
-                </View>
-              </View>
-            </TouchableOpacity>
           </View>
         </View>
 

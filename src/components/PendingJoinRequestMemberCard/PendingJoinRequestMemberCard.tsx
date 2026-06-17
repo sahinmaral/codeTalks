@@ -1,4 +1,5 @@
 import ChannelUserStatus from '@/enums/ChannelUserStatus';
+import getFullName from '@/helpers/getFullName';
 import colors from '@/styles/colors';
 import { ChannelUser } from '@/types';
 import formatRelativeTime from '@/utils/formatRelativeTime';
@@ -15,7 +16,7 @@ type PendingJoinRequestMemberCardProps = {
 };
 
 const PendingJoinRequestMemberCard = ({ user, onSubmit }: PendingJoinRequestMemberCardProps) => {
-  const fullName = [user.firstName, user.middleName, user.lastName].filter(Boolean).join(' ');
+  const fullName = getFullName(user);
 
   const { show } = useBubbleContentMenu();
 

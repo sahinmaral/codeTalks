@@ -2,6 +2,7 @@ import { useBubbleContentMenu } from '@/components/BubbleContentMenu/BubbleConte
 import Button from '@/components/Button';
 import Text from '@/components/Text';
 import ChannelUserStatus from '@/enums/ChannelUserStatus';
+import getFullName from '@/helpers/getFullName';
 import colors from '@/styles/colors';
 import { ChannelUser } from '@/types';
 import formatRelativeTime from '@/utils/formatRelativeTime';
@@ -17,7 +18,7 @@ type PendingJoinRequestActionListProps = {
 function PendingJoinRequestActionList({ user, onSelect }: PendingJoinRequestActionListProps) {
   const { hide } = useBubbleContentMenu();
 
-  const fullName = [user.firstName, user.middleName, user.lastName].filter(Boolean).join(' ');
+  const fullName = getFullName(user);
 
   const handleSelect = (status: ChannelUserStatus) => {
     hide();
@@ -59,8 +60,8 @@ function PendingJoinRequestActionList({ user, onSelect }: PendingJoinRequestActi
         <Button
           theme="dark"
           icon="ri-forbid-line"
-          title="Block User"
-          onPress={() => handleSelect(ChannelUserStatus.Blocked)}
+          title="Ban User"
+          onPress={() => handleSelect(ChannelUserStatus.Banned)}
         />
         <Text size="small" color={colors.gray[400]} style={styles.blockHelperText}>
           Blocked users cannot send join requests or see your profile.

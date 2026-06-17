@@ -1,3 +1,4 @@
+import { UserRole } from '@/enums/UserRole';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export interface ActiveChannel {
@@ -6,6 +7,7 @@ export interface ActiveChannel {
   description?: string;
   inviteCode: string;
   createdAt: string;
+  role: UserRole;
 }
 
 interface ActiveChannelState {
@@ -33,10 +35,19 @@ export const activeChannelSlice = createSlice({
         state.channel.description = action.payload;
       }
     },
+    setRoleOfCurrentUser: (state, action: PayloadAction<UserRole>) => {
+      if (state.channel) {
+        state.channel.role = action.payload;
+      }
+    },
   },
 });
 
-export const { setActiveChannel, setActiveChannelName, setActiveChannelDescription } =
-  activeChannelSlice.actions;
+export const {
+  setActiveChannel,
+  setActiveChannelName,
+  setActiveChannelDescription,
+  setRoleOfCurrentUser,
+} = activeChannelSlice.actions;
 
 export default activeChannelSlice.reducer;

@@ -1,4 +1,5 @@
 import Text from '@/components/Text';
+import { UserRole } from '@/enums/UserRole';
 import { useAppDispatch } from '@/redux/hooks';
 import { setActiveChannel } from '@/redux/reducers/activeChannelReducer';
 import colors from '@/styles/colors';
@@ -28,6 +29,7 @@ function ActiveChannelCard({ navigation, channel }: ActiveChannelCardProps) {
             description: channel.description,
             createdAt: channel.createdAt,
             inviteCode: channel.inviteCode,
+            role: channel.role.name as UserRole,
           }),
         );
         navigation.navigate('ChannelMessagesList');

@@ -136,6 +136,7 @@ export type RootStackParamList = {
   ChannelDetail: undefined;
   ChannelMembersList: undefined;
   ChannelPendingJoinRequestsList: undefined;
+  ChannelBannedMembersList: undefined;
   RemoveMemberFromChannel: undefined;
 };
 

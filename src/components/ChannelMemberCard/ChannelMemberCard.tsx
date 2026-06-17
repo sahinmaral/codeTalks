@@ -1,3 +1,5 @@
+import { UserRole } from '@/enums/UserRole';
+import getFullName from '@/helpers/getFullName';
 import colors from '@/styles/colors';
 import { ChannelUser } from '@/types';
 import React, { useCallback, useMemo } from 'react';
@@ -10,11 +12,12 @@ export enum ChannelMemberCardType {
   Normal = 'normal',
   Locked = 'locked',
   RemoveUser = 'remove-user',
+  UnbanUser = 'unban-user',
 }
 
 type ChannelMemberCardProps = {
   user: ChannelUser;
-  onPress?: (user: ChannelUser) => void;
+  onPress?: () => void;
   cardType?: ChannelMemberCardType;
 };
 
@@ -23,7 +26,7 @@ const ChannelMemberCard = ({
   onPress,
   cardType = ChannelMemberCardType.Normal,
 }: ChannelMemberCardProps) => {
-  const fullName = [user.firstName, user.middleName, user.lastName].filter(Boolean).join(' ');
+  const fullName = getFullName(user);
 
   const renderIconByCardType = useCallback(() => {
     switch (cardType) {
@@ -31,41 +34,58 @@ const ChannelMemberCard = ({
         return <Icon name="lock-2-line" size={24} color={colors.gray[400]} />;
       case ChannelMemberCardType.RemoveUser:
         return <Icon name="ri-delete-bin-line" size={24} color={colors.danger} />;
+      case ChannelMemberCardType.UnbanUser:
+        return <Icon name="ri-lock-unlock-line" size={24} color={colors.green[500]} />;
       default:
         return <Icon name="arrow-right-s-line" size={24} color={colors.gray[400]} />;
     }
   }, [cardType]);
 
-  const rolePillBackgroundColor = useMemo(() => {
+  const rolePillStyle = useMemo(() => {
     switch (user.role.name) {
-      case 'Moderator':
-        return colors.orange[100];
-      case 'User':
-        return colors.gray[200];
+      case UserRole.Owner:
+        return { backgroundColor: colors.orange[200] };
+      case UserRole.Moderator:
+        return { backgroundColor: colors.gray[300], borderWidth: 1, borderColor: colors.gray[400] };
       default:
-        return colors.gray[200];
+        return { backgroundColor: colors.gray[300] };
     }
   }, [user.role.name]);
 
   const rolePillTextColor = useMemo(() => {
     switch (user.role.name) {
-      case 'Moderator':
-        return colors.orange[400];
-      case 'User':
-        return colors.gray[400];
+      case UserRole.Owner:
+        return colors.orange[500];
+      case UserRole.Moderator:
+        return colors.black;
       default:
-        return colors.gray[400];
+        return colors.gray[500];
     }
   }, [user.role.name]);
 
   const avatarContainerBackgroundColor = useMemo(() => {
     switch (user.role.name) {
-      case 'Moderator':
+      case UserRole.Owner:
         return colors.orange[400];
-      case 'User':
-        return colors.gray[300];
+      case UserRole.Moderator:
+        return colors.black;
       default:
         return colors.gray[300];
+    }
+  }, [user.role.name]);
+
+  const rolePillIconByRoleName = useMemo(() => {
+    switch (user.role.name) {
+      case UserRole.Owner:
+        return (
+          <View style={[styles.pillIconBadge, { backgroundColor: colors.orange[500] }]}>
+            <Icon name="star-fill" size={12} color={colors.white} />
+          </View>
+        );
+      case UserRole.Moderator:
+        return <Icon name="star-fill" size={12} color={colors.white} />;
+      default:
+        return null;
     }
   }, [user.role.name]);
 
@@ -74,7 +94,7 @@ const ChannelMemberCard = ({
       key={user.id}
       style={styles.container}
       disabled={cardType == ChannelMemberCardType.Locked}
-      onPress={() => cardType != ChannelMemberCardType.Locked && onPress && onPress(user)}
+      onPress={() => cardType != ChannelMemberCardType.Locked && onPress && onPress()}
     >
       <View style={{ flex: 1, flexDirection: 'row' }}>
         <View style={[styles.avatarContainer, { backgroundColor: avatarContainerBackgroundColor }]}>
@@ -84,7 +104,8 @@ const ChannelMemberCard = ({
         </View>
         <View style={styles.infoContainer}>
           <Text fontWeight="700">{fullName}</Text>
-          <View style={[styles.rolePill, { backgroundColor: rolePillBackgroundColor }]}>
+          <View style={[styles.rolePill, rolePillStyle]}>
+            {rolePillIconByRoleName}
             <Text fontWeight="700" color={rolePillTextColor}>
               {user.role.name}
             </Text>

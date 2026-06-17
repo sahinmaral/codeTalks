@@ -4,6 +4,8 @@ import { useConfirmationDialog } from '@/components/ConfirmationDialog';
 import Header from '@/components/Header';
 import Input from '@/components/Input';
 import Text from '@/components/Text';
+import { UserRole } from '@/enums/UserRole';
+import getFullName from '@/helpers/getFullName';
 import useDebounce from '@/hooks/useDebounce';
 import { useAppSelector } from '@/redux/hooks';
 import { fetchGetUsersByChannelId, fetchRemoveMemberFromChannel } from '@/services/channels';
@@ -34,16 +36,15 @@ const PAGE_SIZE = 5;
 const matchesSearch = (user: ChannelUser, term: string) => {
   if (!term) return true;
 
-  const fullName = [user.firstName, user.middleName, user.lastName]
-    .filter(Boolean)
-    .join(' ')
-    .toLowerCase();
+  const fullName = getFullName(user).toLowerCase();
 
   return fullName.includes(term) || user.userName.toLowerCase().includes(term);
 };
 
 const RemoveMemberFromChannel = ({ navigation }: RemoveMemberFromChannelProps) => {
+  const currentUserId = useAppSelector(state => state.app.user?.id);
   const channelId = useAppSelector(state => state.activeChannel.channel?.id ?? '');
+  const currentRole = useAppSelector(state => state.activeChannel.channel?.role);
 
   const [admins, setAdmins] = useState<ChannelUser[]>([]);
   const [members, setMembers] = useState<ChannelUser[]>([]);
@@ -180,7 +181,21 @@ const RemoveMemberFromChannel = ({ navigation }: RemoveMemberFromChannelProps) =
                 <ChannelMemberCard
                   key={admin.id}
                   user={admin}
-                  cardType={ChannelMemberCardType.Locked}
+                  cardType={
+                    currentRole === UserRole.Owner && admin.id !== currentUserId
+                      ? ChannelMemberCardType.RemoveUser
+                      : ChannelMemberCardType.Locked
+                  }
+                  onPress={() =>
+                    confirm({
+                      theme: 'danger',
+                      icon: 'ri-user-unfollow-line',
+                      title: 'Remove Member?',
+                      description: `Are you sure you want to remove @${admin.userName} from this channel? They will need to send a new join request to return.`,
+                      confirmTitle: 'Remove Member',
+                      onConfirm: () => handleRemoveMemberFromChannel(admin.id),
+                    })
+                  }
                 />
               ))}
             </View>
@@ -199,7 +214,7 @@ const RemoveMemberFromChannel = ({ navigation }: RemoveMemberFromChannelProps) =
                 <ChannelMemberCard
                   key={member.id}
                   user={member}
-                  onPress={member =>
+                  onPress={() =>
                     confirm({
                       theme: 'danger',
                       icon: 'ri-user-unfollow-line',

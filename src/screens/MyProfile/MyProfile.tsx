@@ -5,6 +5,7 @@ import Header from '@/components/Header';
 import Text from '@/components/Text';
 import userStatusesData from '@/constants/userStatuses.json';
 import { UserStatusType } from '@/enums/UserStatusType';
+import getFullName from '@/helpers/getFullName';
 import Error from '@/screens/Error';
 import Loading from '@/screens/Loading';
 import { fetchMe } from '@/services/auths';
@@ -47,13 +48,7 @@ function MyProfile({ navigation }: MyProfileProps) {
   const formatMonthYear = (date: string | Date) =>
     new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric' }).format(new Date(date));
 
-  const userFullname = useMemo(() => {
-    if (user) {
-      if (user.middleName) return `${user.firstName} ${user.middleName} ${user.lastName}`;
-      else return `${user.firstName} ${user.lastName}`;
-    }
-    return null;
-  }, [user]);
+  const userFullname = useMemo(() => (user ? getFullName(user) : null), [user]);
 
   const fetchUserProfile = async () => {
     setLoading(true);

@@ -6,6 +6,7 @@ import CustomToggleSwitch from '@/components/CustomToggleSwitch';
 import Divider from '@/components/Divider';
 import Header from '@/components/Header';
 import Text from '@/components/Text';
+import { UserRole } from '@/enums/UserRole';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { setActiveChannel } from '@/redux/reducers/activeChannelReducer';
 import {
@@ -72,6 +73,7 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
               description: response.data.description,
               inviteCode: response.data.inviteCode,
               createdAt: response.data.createdAt,
+              role: response.data.role.name as UserRole,
             }),
           );
         } catch (error) {
@@ -111,8 +113,15 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
     }
   };
 
-  const isUserModeratorAtThisChannel = useMemo(() => {
-    return fetchResult.data?.role?.name === 'Moderator';
+  const isUserAllowedToUseAdminPanel = useMemo(() => {
+    return (
+      fetchResult.data?.role?.name === UserRole.Moderator ||
+      fetchResult.data?.role?.name === UserRole.Owner
+    );
+  }, [fetchResult.data]);
+
+  const isUserOwner = useMemo(() => {
+    return fetchResult.data?.role?.name === UserRole.Owner;
   }, [fetchResult.data]);
 
   if (fetchResult.loading && !fetchResult.data) {
@@ -222,59 +231,64 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
           </View>
         </View>
 
-        {isUserModeratorAtThisChannel ? (
+        {isUserAllowedToUseAdminPanel ? (
           <View>
             <Text size="medium" fontWeight="700" color={colors.orange[400]}>
               ADMIN PANEL
             </Text>
             <View style={[styles.card, styles.adminCard]}>
-              <TouchableOpacity
-                style={[styles.row, styles.rowBordered]}
-                onPress={() => {
-                  show(
-                    <UpdateChannelNameModal
-                      selectedChannelId={channel.id}
-                      currentChannelName={channel.name}
-                    />,
-                  );
-                }}
-              >
-                <View style={styles.rowLeading}>
-                  <Icon name="ri-edit-box-line" color={colors.gray[400]} />
-                  <Text fontWeight="700">Edit Channel Name</Text>
-                </View>
-                <View>
-                  <Icon name="ri-arrow-right-s-line" size={24} color={colors.gray[400]} />
-                </View>
-              </TouchableOpacity>
-              <TouchableOpacity style={[styles.row, styles.rowBordered]} onPress={() => {}}>
-                <View style={styles.rowLeading}>
-                  <Icon name="ri-image-edit-line" color={colors.gray[400]} />
-                  <Text fontWeight="700">Set/Change Thumbnail Image</Text>
-                </View>
-                <View>
-                  <Icon name="ri-arrow-right-s-line" size={24} color={colors.gray[400]} />
-                </View>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.row, styles.rowBordered]}
-                onPress={() => {
-                  show(
-                    <UpdateChannelDescriptionModal
-                      selectedChannelId={channel.id}
-                      currentChannelDescription={channel.description ?? ''}
-                    />,
-                  );
-                }}
-              >
-                <View style={styles.rowLeading}>
-                  <Icon name="ri-list-check" color={colors.gray[400]} />
-                  <Text fontWeight="700">Edit Description</Text>
-                </View>
-                <View>
-                  <Icon name="ri-arrow-right-s-line" size={24} color={colors.gray[400]} />
-                </View>
-              </TouchableOpacity>
+              {isUserOwner ? (
+                <>
+                  <TouchableOpacity
+                    style={[styles.row, styles.rowBordered]}
+                    onPress={() => {
+                      show(
+                        <UpdateChannelNameModal
+                          selectedChannelId={channel.id}
+                          currentChannelName={channel.name}
+                        />,
+                      );
+                    }}
+                  >
+                    <View style={styles.rowLeading}>
+                      <Icon name="ri-edit-box-line" color={colors.gray[400]} />
+                      <Text fontWeight="700">Edit Channel Name</Text>
+                    </View>
+                    <View>
+                      <Icon name="ri-arrow-right-s-line" size={24} color={colors.gray[400]} />
+                    </View>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={[styles.row, styles.rowBordered]} onPress={() => {}}>
+                    <View style={styles.rowLeading}>
+                      <Icon name="ri-image-edit-line" color={colors.gray[400]} />
+                      <Text fontWeight="700">Set/Change Thumbnail Image</Text>
+                    </View>
+                    <View>
+                      <Icon name="ri-arrow-right-s-line" size={24} color={colors.gray[400]} />
+                    </View>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.row, styles.rowBordered]}
+                    onPress={() => {
+                      show(
+                        <UpdateChannelDescriptionModal
+                          selectedChannelId={channel.id}
+                          currentChannelDescription={channel.description ?? ''}
+                        />,
+                      );
+                    }}
+                  >
+                    <View style={styles.rowLeading}>
+                      <Icon name="ri-list-check" color={colors.gray[400]} />
+                      <Text fontWeight="700">Edit Description</Text>
+                    </View>
+                    <View>
+                      <Icon name="ri-arrow-right-s-line" size={24} color={colors.gray[400]} />
+                    </View>
+                  </TouchableOpacity>
+                </>
+              ) : null}
+
               <TouchableOpacity
                 style={[styles.row, styles.rowBordered]}
                 onPress={() => {
@@ -290,7 +304,7 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
                 </View>
               </TouchableOpacity>
               <TouchableOpacity
-                style={styles.row}
+                style={[styles.row, styles.rowBordered]}
                 onPress={() => {
                   navigation.navigate('RemoveMemberFromChannel');
                 }}
@@ -298,6 +312,20 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
                 <View style={styles.rowLeading}>
                   <Icon name="ri-user-unfollow-line" color={colors.gray[400]} />
                   <Text fontWeight="700">Remove a Member</Text>
+                </View>
+                <View>
+                  <Icon name="ri-arrow-right-s-line" size={24} color={colors.gray[400]} />
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.row}
+                onPress={() => {
+                  navigation.navigate('ChannelBannedMembersList');
+                }}
+              >
+                <View style={styles.rowLeading}>
+                  <Icon name="ri-forbid-line" color={colors.gray[400]} />
+                  <Text fontWeight="700">Banned Members</Text>
                 </View>
                 <View>
                   <Icon name="ri-arrow-right-s-line" size={24} color={colors.gray[400]} />

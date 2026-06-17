@@ -1,7 +1,10 @@
+import { useBubbleContentMenu } from '@/components/BubbleContentMenu';
+import MembersActionList from '@/components/BubbleContentMenu/Contents/MembersActionList';
 import ChannelMemberCard from '@/components/ChannelMemberCard';
 import Header from '@/components/Header';
 import Input from '@/components/Input';
 import Text from '@/components/Text';
+import getFullName from '@/helpers/getFullName';
 import useDebounce from '@/hooks/useDebounce';
 import { useAppSelector } from '@/redux/hooks';
 import { fetchGetUsersByChannelId } from '@/services/channels';
@@ -29,16 +32,14 @@ const PAGE_SIZE = 5;
 const matchesSearch = (user: ChannelUser, term: string) => {
   if (!term) return true;
 
-  const fullName = [user.firstName, user.middleName, user.lastName]
-    .filter(Boolean)
-    .join(' ')
-    .toLowerCase();
+  const fullName = getFullName(user).toLowerCase();
 
   return fullName.includes(term) || user.userName.toLowerCase().includes(term);
 };
 
 const ChannelMembersList = ({ navigation }: ChannelMembersListProps) => {
   const channelId = useAppSelector(state => state.activeChannel.channel?.id ?? '');
+  const { show, hide } = useBubbleContentMenu();
 
   const [admins, setAdmins] = useState<ChannelUser[]>([]);
   const [members, setMembers] = useState<ChannelUser[]>([]);
@@ -92,6 +93,18 @@ const ChannelMembersList = ({ navigation }: ChannelMembersListProps) => {
       };
     }, [fetchPage]),
   );
+
+  const refresh = useCallback(async () => {
+    try {
+      setPageIndex(0);
+      await fetchPage(0);
+    } catch {}
+  }, [fetchPage]);
+
+  const handleActionComplete = useCallback(() => {
+    hide();
+    refresh();
+  }, [hide, refresh]);
 
   const handleLoadMore = useCallback(async () => {
     if (isFetchingMore || !hasNext) return;
@@ -153,7 +166,18 @@ const ChannelMembersList = ({ navigation }: ChannelMembersListProps) => {
             </View>
             <View style={styles.adminMembersList}>
               {filteredAdmins.map(admin => (
-                <ChannelMemberCard key={admin.id} user={admin} />
+                <ChannelMemberCard
+                  key={admin.id}
+                  user={admin}
+                  onPress={() => {
+                    show(
+                      <MembersActionList
+                        selectedUser={admin}
+                        onActionComplete={handleActionComplete}
+                      />,
+                    );
+                  }}
+                />
               ))}
             </View>
           </View>
@@ -168,7 +192,18 @@ const ChannelMembersList = ({ navigation }: ChannelMembersListProps) => {
             </View>
             <View style={styles.adminMembersList}>
               {members.map(member => (
-                <ChannelMemberCard key={member.id} user={member} />
+                <ChannelMemberCard
+                  key={member.id}
+                  user={member}
+                  onPress={() => {
+                    show(
+                      <MembersActionList
+                        selectedUser={member}
+                        onActionComplete={handleActionComplete}
+                      />,
+                    );
+                  }}
+                />
               ))}
             </View>
           </View>
