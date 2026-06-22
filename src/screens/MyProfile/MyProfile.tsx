@@ -1,20 +1,27 @@
 import { useBubbleContentMenu } from '@/components/BubbleContentMenu';
 import SetUserStatusModal from '@/components/BubbleContentMenu/Contents/SetUserStatusModal';
+import UpdateProfilePhotoModal from '@/components/BubbleContentMenu/Contents/UpdateProfilePhotoModal';
 import Button from '@/components/Button';
 import Header from '@/components/Header';
 import Text from '@/components/Text';
+import UserAvatar from '@/components/UserAvatar';
 import userStatusesData from '@/constants/userStatuses.json';
 import { UserStatusType } from '@/enums/UserStatusType';
 import getFullName from '@/helpers/getFullName';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { setProfile } from '@/redux/reducers/appReducer';
 import Error from '@/screens/Error';
 import Loading from '@/screens/Loading';
 import { fetchMe } from '@/services/auths';
 import colors from '@/styles/colors';
-import { MyProfileDto, ProfileStackParamList, UserStatusOption } from '@/types';
+import { ProfileStackParamList, UserStatusOption } from '@/types';
+import { getApiErrorMessage } from '@/utils/getApiErrorMessage';
 import { useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { AxiosError } from 'axios';
 import { useCallback, useMemo, useState } from 'react';
-import { Image, TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
+import { showMessage } from 'react-native-flash-message';
 import Icon from 'react-native-remix-icon';
 import styles from './MyProfile.styles';
 
@@ -37,13 +44,16 @@ const userPresenceStatuses: UserStatusOption[] = userStatusesData.map(item => ({
 function MyProfile({ navigation }: MyProfileProps) {
   const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [user, setUser] = useState<MyProfileDto | null>(null);
+
+  const dispatch = useAppDispatch();
+  const user = useAppSelector(state => state.app.user);
+  const profile = user?.profile ?? null;
 
   const { show } = useBubbleContentMenu();
 
   const currentStatusOption: UserStatusOption | undefined = useMemo(() => {
-    return userPresenceStatuses.find(status => status.statusType === user?.userStatus.status);
-  }, [user?.userStatus]);
+    return userPresenceStatuses.find(status => status.statusType === profile?.userStatus.status);
+  }, [profile?.userStatus]);
 
   const formatMonthYear = (date: string | Date) =>
     new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric' }).format(new Date(date));
@@ -55,31 +65,36 @@ function MyProfile({ navigation }: MyProfileProps) {
     setError(null);
     try {
       const response = await fetchMe();
-      setUser(response.data);
-    } catch (err) {
-      setError('Failed to load user profile');
+      dispatch(setProfile(response.data));
+    } catch (exception) {
+      if (exception instanceof AxiosError) {
+        showMessage({ message: getApiErrorMessage(exception), type: 'danger' });
+      } else {
+        showMessage({ message: 'An error occurred', type: 'danger' });
+      }
     } finally {
       setLoading(false);
     }
   };
 
   const handleUpdateUserStatusSuccess = (status: UserStatusType) => {
-    setUser(prev =>
-      prev ? { ...prev, userStatus: { status, lastUpdated: new Date().toISOString() } } : prev,
+    if (!profile) return;
+    dispatch(
+      setProfile({ ...profile, userStatus: { status, lastUpdated: new Date().toISOString() } }),
     );
   };
 
   useFocusEffect(
     useCallback(() => {
-      fetchUserProfile();
-    }, []),
+      if (user && !profile) fetchUserProfile();
+    }, [user, profile]),
   );
 
-  if (isLoading) {
+  if (isLoading && !profile) {
     return <Loading text="Kullanıcı bilgileri yüklenirken lütfen bekleyiniz ..." />;
   }
 
-  if (!isLoading && error) {
+  if (error && !profile) {
     return <Error description={error} />;
   }
 
@@ -94,14 +109,11 @@ function MyProfile({ navigation }: MyProfileProps) {
         <View style={styles.cardInformationContainer}>
           <View style={styles.avatarContainer}>
             <View style={styles.avatarWrapper}>
-              <View style={styles.avatarInner}>
-                {user?.profilePhotoURL ? (
-                  <Image
-                    source={{ uri: user.profilePhotoURL }}
-                    style={{ width: 80, height: 80, borderRadius: 40 }}
-                  />
-                ) : null}
-              </View>
+              <UserAvatar
+                uri={user?.profilePhotoURL}
+                size={80}
+                onPress={() => show(<UpdateProfilePhotoModal />)}
+              />
             </View>
           </View>
           <View style={styles.headerContainer}>
@@ -113,7 +125,7 @@ function MyProfile({ navigation }: MyProfileProps) {
                 @{user?.userName}
               </Text>
             </View>
-            <Text style={styles.description}>{user?.bio}</Text>
+            <Text style={styles.description}>{profile?.bio}</Text>
           </View>
           <View style={styles.editProfileContainer}>
             <Button theme="primary-outline" title="Edit Profile" style={styles.editProfileButton} />
@@ -123,7 +135,7 @@ function MyProfile({ navigation }: MyProfileProps) {
         <View style={styles.additionalInformationContainer}>
           <View style={styles.additionalInformationCard}>
             <Text color={colors.orange[500]} fontWeight="700" size="large">
-              {user?.joinedChannelCount}
+              {profile?.joinedChannelCount}
             </Text>
             <Text
               style={styles.additionalInformationCardDescription}
@@ -140,7 +152,7 @@ function MyProfile({ navigation }: MyProfileProps) {
               size="large"
               fontWeight="700"
             >
-              {user?.createdAt ? formatMonthYear(user.createdAt) : '—'}
+              {profile?.createdAt ? formatMonthYear(profile.createdAt) : '—'}
             </Text>
             <Text
               style={styles.additionalInformationCardDescription}
@@ -155,10 +167,10 @@ function MyProfile({ navigation }: MyProfileProps) {
         <TouchableOpacity
           style={styles.userPresenceStatusContainer}
           onPress={() => {
-            if (!user) return;
+            if (!profile) return;
             show(
               <SetUserStatusModal
-                currentUserStatus={user.userStatus}
+                currentUserStatus={profile.userStatus}
                 onSuccess={status => handleUpdateUserStatusSuccess(status)}
               />,
             );

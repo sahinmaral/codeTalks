@@ -5,13 +5,6 @@ const styles = StyleSheet.create({
   container: { flexDirection: 'row' },
   senderContainer: { flexDirection: 'row', justifyContent: 'flex-end' },
   userProfilePhotoContainer: { flex: 0.2 },
-  userProfilePhoto: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   contentContainer: { flex: 0.8 },
   senderContentContainer: { flex: 1, alignItems: 'flex-end' },
   messageContainer: {

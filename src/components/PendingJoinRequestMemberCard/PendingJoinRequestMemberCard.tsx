@@ -4,10 +4,11 @@ import colors from '@/styles/colors';
 import { ChannelUser } from '@/types';
 import formatRelativeTime from '@/utils/formatRelativeTime';
 import React from 'react';
-import { Image, TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import { useBubbleContentMenu } from '../BubbleContentMenu';
 import PendingJoinRequestActionList from '../BubbleContentMenu/Contents/PendingJoinRequestActionList';
 import Text from '../Text';
+import UserAvatar from '../UserAvatar';
 import styles from './PendingJoinRequestMemberCard.styles';
 
 type PendingJoinRequestMemberCardProps = {
@@ -28,11 +29,7 @@ const PendingJoinRequestMemberCard = ({ user, onSubmit }: PendingJoinRequestMemb
       }
     >
       <View style={styles.userInformationsContainer}>
-        <View style={styles.avatarContainer}>
-          {user.profilePhotoURL && (
-            <Image style={styles.avatarProfilePhoto} source={{ uri: user.profilePhotoURL }} />
-          )}
-        </View>
+        <UserAvatar uri={user.profilePhotoURL} size={50} />
         <View style={styles.userInformationContainer}>
           <Text fontWeight="700">{fullName}</Text>
           <Text color={colors.gray[400]}>@{user.userName}</Text>

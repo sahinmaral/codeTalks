@@ -24,6 +24,14 @@
       "package": "com.sahinmaral.codetalks"
     },
     "assetBundlePatterns": ["**/*"],
-    "plugins": ["expo-font"]
+    "plugins": [
+      "expo-font",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "codeTalks profil fotoğrafınızı güncellemek için galerinize erişmek istiyor."
+        }
+      ]
+    ]
   }
 }

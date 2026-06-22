@@ -15,19 +15,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 10,
   },
-  avatarContainer: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: colors.gray[300],
-  },
-  avatarProfilePhoto: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   userInformationContainer: { flex: 7 / 10 },
   actionsContainer: {
     flexDirection: 'row',

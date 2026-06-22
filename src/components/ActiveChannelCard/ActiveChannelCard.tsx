@@ -8,6 +8,7 @@ import React from 'react';
 import { TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-remix-icon';
 import { Channel, RootStackParamList } from '../../types';
+import ChannelThumbnail from '../ChannelThumbnail';
 import styles from './ActiveChannelCard.styles';
 
 interface ActiveChannelCardProps {
@@ -37,11 +38,11 @@ function ActiveChannelCard({ navigation, channel }: ActiveChannelCardProps) {
     >
       <View style={styles.firstSection}>
         <View style={styles.headerContainer}>
-          <View style={styles.thumbnailPhoto}>
-            <Text size="large" fontWeight="800" color={colors.orange[500]}>
-              #
-            </Text>
-          </View>
+          <ChannelThumbnail
+            uri={channel?.thumbnailPhotoURL}
+            size={35}
+            style={styles.thumbnailPhoto}
+          />
           <View style={styles.titleContainer}>
             <Text size="medium" fontWeight="700">
               {channel.name}

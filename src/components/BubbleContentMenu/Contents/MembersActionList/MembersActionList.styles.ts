@@ -6,16 +6,6 @@ const styles = StyleSheet.create({
     gap: 8,
     alignItems: 'center',
   },
-  avatarContainer: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-  },
-  avatarProfilePhoto: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-  },
   rolePillContainer: {
     flexDirection: 'row',
     alignItems: 'center',

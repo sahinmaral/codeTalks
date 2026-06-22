@@ -19,8 +19,8 @@ interface PatchChannelInput {
   description?: string;
 }
 
-interface ChangeUserRoleInput {
-  role: UserRole;
+interface UpdateChannelThumbnailPhotoResponse {
+  newThumbnailPhotoPath: string;
 }
 
 export const fetchGetChannelById = (id: string): Promise<AxiosResponse<ChannelDetailDto>> => {
@@ -84,4 +84,18 @@ export const fetchGetUsersByChannelId = (
       search,
     },
   });
+};
+
+export const fetchUpdateChannelThumbnailPhoto = (channelId: string, formData: FormData) => {
+  return axiosInstance.put<UpdateChannelThumbnailPhotoResponse>(
+    `/channels/${channelId}/thumbnail-photo`,
+    formData,
+    {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    },
+  );
+};
+
+export const fetchDeleteChannelThumbnailPhoto = (channelId: string) => {
+  return axiosInstance.delete(`/channels/${channelId}/thumbnail-photo`);
 };

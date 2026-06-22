@@ -5,6 +5,7 @@ export interface ActiveChannel {
   id: string;
   name: string;
   description?: string;
+  thumbnailPhotoURL?: string | null;
   inviteCode: string;
   createdAt: string;
   role: UserRole;

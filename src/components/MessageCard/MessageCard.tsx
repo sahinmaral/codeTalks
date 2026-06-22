@@ -1,9 +1,10 @@
 import Text from '@/components/Text';
+import UserAvatar from '@/components/UserAvatar';
 import { useAppSelector } from '@/redux/hooks';
 import colors from '@/styles/colors';
 import { Message } from '@/types';
 import React from 'react';
-import { Image, View } from 'react-native';
+import { View } from 'react-native';
 import styles from './MessageCard.styles';
 
 interface MessageCardProps {
@@ -17,10 +18,7 @@ function MessageCard({ messageDetail }: MessageCardProps) {
     return (
       <View style={styles.container}>
         <View style={styles.userProfilePhotoContainer}>
-          <Image
-            style={styles.userProfilePhoto}
-            source={{ uri: messageDetail.sender.profilePhotoURL }}
-          />
+          <UserAvatar uri={messageDetail.sender.profilePhotoURL} size={40} />
         </View>
         <View style={styles.contentContainer}>
           <View>

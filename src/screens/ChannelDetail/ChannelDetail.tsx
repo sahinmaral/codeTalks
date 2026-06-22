@@ -1,6 +1,8 @@
 import { useBubbleContentMenu } from '@/components/BubbleContentMenu';
 import UpdateChannelDescriptionModal from '@/components/BubbleContentMenu/Contents/UpdateChannelDescriptionModal';
 import UpdateChannelNameModal from '@/components/BubbleContentMenu/Contents/UpdateChannelNameModal';
+import UpdateChannelThumbnailPhotoModal from '@/components/BubbleContentMenu/Contents/UpdateChannelThumbnailPhotoModal';
+import ChannelThumbnail from '@/components/ChannelThumbnail';
 import { useConfirmationDialog } from '@/components/ConfirmationDialog';
 import CustomToggleSwitch from '@/components/CustomToggleSwitch';
 import Divider from '@/components/Divider';
@@ -143,17 +145,11 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
           <View style={styles.identitySection}>
             <View style={styles.thumbnailContainer}>
               <View style={styles.thumbnailRing}>
-                <View style={styles.thumbnail}>
-                  <Text size="xxlarge" fontWeight="800" color={colors.white}>
-                    #
-                  </Text>
-                  {/* {user?.profilePhotoURL ? (
-                  <Image
-                    source={{ uri: user.profilePhotoURL }}
-                    style={{ width: 80, height: 80, borderRadius: 40 }}
-                  />
-                ) : null} */}
-                </View>
+                <ChannelThumbnail
+                  uri={activeChannel?.thumbnailPhotoURL}
+                  size={80}
+                  onPress={() => show(<UpdateChannelThumbnailPhotoModal />)}
+                />
               </View>
             </View>
             <View style={styles.nameSection}>

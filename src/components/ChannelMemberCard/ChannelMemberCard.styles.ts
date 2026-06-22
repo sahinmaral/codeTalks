@@ -15,11 +15,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: 'rgba(255, 255, 255, 0.6)',
   },
-  avatarContainer: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-  },
   infoContainer: { flex: 1, marginLeft: 10 },
   actionsContainer: { marginRight: 10, justifyContent: 'center' },
   rolePill: {
@@ -36,13 +31,6 @@ const styles = StyleSheet.create({
     borderRadius: 9,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  avatarProfilePhoto: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
 });
 

@@ -1,6 +1,7 @@
 import Button from '@/components/Button';
 import { useConfirmationDialog } from '@/components/ConfirmationDialog';
 import Text from '@/components/Text';
+import UserAvatar from '@/components/UserAvatar';
 import ChannelUserStatus from '@/enums/ChannelUserStatus';
 import { UserRole } from '@/enums/UserRole';
 import getFullName from '@/helpers/getFullName';
@@ -17,7 +18,7 @@ import formatRelativeTime from '@/utils/formatRelativeTime';
 import { getApiErrorMessage } from '@/utils/getApiErrorMessage';
 import { AxiosError } from 'axios';
 import React, { useCallback, useMemo, useState } from 'react';
-import { Image, View } from 'react-native';
+import { View } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import Icon from 'react-native-remix-icon';
 import styles from './MembersActionList.styles';
@@ -40,17 +41,6 @@ function MembersActionList({ selectedUser, onActionComplete }: MembersActionList
   if (!currentChannel) return null;
 
   const currentUserRoleAtChannel = currentChannel.role;
-
-  const avatarContainerBackgroundColorByRoleName = useMemo(() => {
-    switch (selectedUser.role.name) {
-      case UserRole.Owner:
-        return colors.orange[400];
-      case UserRole.Moderator:
-        return colors.black;
-      default:
-        return colors.gray[300];
-    }
-  }, [selectedUser.role.name]);
 
   const pillStyleByRoleName = useMemo(() => {
     switch (selectedUser.role.name) {
@@ -115,19 +105,7 @@ function MembersActionList({ selectedUser, onActionComplete }: MembersActionList
   return (
     <View>
       <View style={styles.headerContainer}>
-        <View
-          style={[
-            styles.avatarContainer,
-            { backgroundColor: avatarContainerBackgroundColorByRoleName },
-          ]}
-        >
-          {selectedUser.profilePhotoURL && (
-            <Image
-              style={styles.avatarProfilePhoto}
-              source={{ uri: selectedUser.profilePhotoURL }}
-            />
-          )}
-        </View>
+        <UserAvatar uri={selectedUser.profilePhotoURL} size={60} />
         <Text fontWeight="700" size="large">
           {fullName}
         </Text>

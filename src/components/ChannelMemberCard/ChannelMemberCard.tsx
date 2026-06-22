@@ -3,9 +3,10 @@ import getFullName from '@/helpers/getFullName';
 import colors from '@/styles/colors';
 import { ChannelUser } from '@/types';
 import React, { useCallback, useMemo } from 'react';
-import { Image, TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-remix-icon';
 import Text from '../Text';
+import UserAvatar from '../UserAvatar';
 import styles from './ChannelMemberCard.styles';
 
 export enum ChannelMemberCardType {
@@ -63,17 +64,6 @@ const ChannelMemberCard = ({
     }
   }, [user.role.name]);
 
-  const avatarContainerBackgroundColor = useMemo(() => {
-    switch (user.role.name) {
-      case UserRole.Owner:
-        return colors.orange[400];
-      case UserRole.Moderator:
-        return colors.black;
-      default:
-        return colors.gray[300];
-    }
-  }, [user.role.name]);
-
   const rolePillIconByRoleName = useMemo(() => {
     switch (user.role.name) {
       case UserRole.Owner:
@@ -97,11 +87,7 @@ const ChannelMemberCard = ({
       onPress={() => cardType != ChannelMemberCardType.Locked && onPress && onPress()}
     >
       <View style={{ flex: 1, flexDirection: 'row' }}>
-        <View style={[styles.avatarContainer, { backgroundColor: avatarContainerBackgroundColor }]}>
-          {user.profilePhotoURL && (
-            <Image style={styles.avatarProfilePhoto} source={{ uri: user.profilePhotoURL }} />
-          )}
-        </View>
+        <UserAvatar uri={user.profilePhotoURL} size={50} />
         <View style={styles.infoContainer}>
           <Text fontWeight="700">{fullName}</Text>
           <View style={[styles.rolePill, rolePillStyle]}>

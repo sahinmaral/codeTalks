@@ -105,7 +105,7 @@ const Settings = ({ navigation }: SettingsProps) => {
           </Text>
           <View style={styles.listContainer}>
             <TouchableOpacity
-              style={styles.listTopItemContainer}
+              style={styles.listBottomItemContainer}
               onPress={() => {
                 navigation.navigate('ChangePassword');
               }}

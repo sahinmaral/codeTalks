@@ -34,15 +34,10 @@ export interface User extends TokenResponse {
   middleName?: string | null;
   lastName: string;
   profilePhotoURL?: string | null;
+  profile?: MyProfileDto | null;
 }
 
 export interface MyProfileDto {
-  id: string;
-  userName: string;
-  firstName: string;
-  middleName?: string | null;
-  lastName: string;
-  profilePhotoURL?: string | null;
   bio?: string | null;
   email: string;
   joinedChannelCount: number;
@@ -67,6 +62,7 @@ export interface Channel {
   id: string;
   name: string;
   description?: string;
+  thumbnailPhotoURL?: string | null;
   inviteCode: string;
   memberCount: number;
   createdAt: string;
