@@ -1,6 +1,6 @@
 import Button from '@/components/Button';
 import Text from '@/components/Text';
-import { useAppSelector } from '@/redux/hooks';
+import ChannelJoinPolicy from '@/enums/ChannelJoinPolicy';
 import validationSchema from '@/schemas/CreateChannelSchema';
 import { fetchCreateChannel } from '@/services/channels';
 import colors from '@/styles/colors';
@@ -9,17 +9,22 @@ import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { AxiosError } from 'axios';
 import { Formik } from 'formik';
 import React, { useRef, useState } from 'react';
-import { View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
+import Icon from 'react-native-remix-icon';
 import * as Yup from 'yup';
 import { useBubbleContentMenuScroll } from '../../BubbleContentMenu.context';
 import { useBubbleContentMenu } from '../../BubbleContentMenu.provider';
 import styles from './ChannelCreateModal.styles';
 
+const JOIN_POLICIES = [
+  { label: 'Request', value: ChannelJoinPolicy.Request, icon: 'mail-send-line' },
+  { label: 'Open', value: ChannelJoinPolicy.Open, icon: 'global-line' },
+];
+
 function CreateChannelModal() {
-  const initialValues = { name: '', description: '' };
+  const initialValues = { name: '', description: '', joinPolicy: ChannelJoinPolicy.Request };
   const [loading, setLoading] = useState(false);
-  const user = useAppSelector(state => state.app.user);
   const { scrollTo } = useBubbleContentMenuScroll();
   const { hide } = useBubbleContentMenu();
   const formContainerScrollY = useRef(0);
@@ -62,7 +67,7 @@ function CreateChannelModal() {
       </View>
 
       <Formik initialValues={initialValues} onSubmit={handleSubmit}>
-        {({ handleChange, handleBlur, handleSubmit: formikSubmit, values, errors }) => (
+        {({ handleChange, handleBlur, handleSubmit: formikSubmit, setFieldValue, values }) => (
           <View
             style={styles.formContainer}
             onLayout={e => {
@@ -106,6 +111,29 @@ function CreateChannelModal() {
                 value={values.description}
                 style={styles.textArea}
               />
+            </View>
+
+            <View style={styles.formGroup}>
+              <Text fontWeight="600">Join Policy</Text>
+              <View style={styles.segmentContainer}>
+                {JOIN_POLICIES.map(policy => {
+                  const isActive = values.joinPolicy === policy.value;
+                  const activeColor = isActive ? colors.orange[500] : colors.gray[500];
+                  return (
+                    <TouchableOpacity
+                      key={policy.value}
+                      activeOpacity={0.8}
+                      style={[styles.segment, isActive && styles.segmentActive]}
+                      onPress={() => setFieldValue('joinPolicy', policy.value)}
+                    >
+                      <Icon name={policy.icon} size={16} color={activeColor} />
+                      <Text fontWeight={isActive ? '600' : '400'} color={activeColor}>
+                        {policy.label}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
             </View>
 
             <Button

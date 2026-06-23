@@ -1,4 +1,8 @@
 import { UserStatusType } from '@/enums/UserStatusType';
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import { CompositeNavigationProp } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import ChannelJoinPolicy from './enums/ChannelJoinPolicy';
 
 export interface ApiValidationError {
   propertyName: string;
@@ -64,10 +68,11 @@ export interface Channel {
   description?: string;
   thumbnailPhotoURL?: string | null;
   inviteCode: string;
+  joinPolicy: ChannelJoinPolicy;
   memberCount: number;
   createdAt: string;
-  status: number;
-  role: Role;
+  status?: number;
+  role?: Role;
 }
 
 export interface ChannelDetailDto {
@@ -75,6 +80,7 @@ export interface ChannelDetailDto {
   name: string;
   description?: string;
   inviteCode: string;
+  joinPolicy: ChannelJoinPolicy;
   memberCount: number;
   createdAt: string;
   role: Role;
@@ -141,3 +147,8 @@ export type ProfileStackParamList = {
   Settings: undefined;
   ChangePassword: undefined;
 };
+
+export type AppNavigationProp = CompositeNavigationProp<
+  NativeStackNavigationProp<RootStackParamList>,
+  BottomTabNavigationProp<MainStackParamList>
+>;

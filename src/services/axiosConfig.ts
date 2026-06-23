@@ -1,4 +1,4 @@
-import { setUser } from '@/redux/reducers/appReducer';
+import { clearUser, setUser } from '@/redux/reducers/appReducer';
 import { store } from '@/redux/store';
 import axios, { AxiosRequestConfig } from 'axios';
 import { fetchRefreshToken } from './auths';
@@ -8,7 +8,7 @@ const axiosInstance = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
-axiosInstance.interceptors.request.use((config) => {
+axiosInstance.interceptors.request.use(config => {
   const accessToken = store.getState().app.user?.accessToken;
   if (accessToken) {
     config.headers.Authorization = `Bearer ${accessToken}`;
@@ -20,13 +20,13 @@ let isRefreshing = false;
 let pendingQueue: Array<{ resolve: (token: string) => void; reject: (err: unknown) => void }> = [];
 
 function processQueue(error: unknown, token: string | null) {
-  pendingQueue.forEach((p) => (error ? p.reject(error) : p.resolve(token!)));
+  pendingQueue.forEach(p => (error ? p.reject(error) : p.resolve(token!)));
   pendingQueue = [];
 }
 
 axiosInstance.interceptors.response.use(
-  (response) => response,
-  async (error) => {
+  response => response,
+  async error => {
     const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
 
     if (error.response?.status !== 401 || originalRequest._retry) {
@@ -35,14 +35,14 @@ axiosInstance.interceptors.response.use(
 
     const refreshToken = store.getState().app.user?.refreshToken;
     if (!refreshToken) {
-      store.dispatch(setUser(null));
+      store.dispatch(clearUser());
       return Promise.reject(error);
     }
 
     if (isRefreshing) {
       return new Promise<string>((resolve, reject) => {
         pendingQueue.push({ resolve, reject });
-      }).then((token) => {
+      }).then(token => {
         originalRequest.headers = { ...originalRequest.headers, Authorization: `Bearer ${token}` };
         return axiosInstance(originalRequest);
       });
@@ -63,7 +63,7 @@ axiosInstance.interceptors.response.use(
       return axiosInstance(originalRequest);
     } catch (refreshError) {
       processQueue(refreshError, null);
-      store.dispatch(setUser(null));
+      store.dispatch(clearUser());
       return Promise.reject(refreshError);
     } finally {
       isRefreshing = false;

@@ -30,7 +30,8 @@ function ActiveChannelCard({ navigation, channel }: ActiveChannelCardProps) {
             description: channel.description,
             createdAt: channel.createdAt,
             inviteCode: channel.inviteCode,
-            role: channel.role.name as UserRole,
+            joinPolicy: channel.joinPolicy,
+            role: channel.role?.name as UserRole,
           }),
         );
         navigation.navigate('ChannelMessagesList');

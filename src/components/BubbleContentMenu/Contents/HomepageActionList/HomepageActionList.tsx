@@ -1,13 +1,15 @@
-import { TouchableOpacity, View } from 'react-native';
-import React, { useState } from 'react';
+import { useBubbleContentMenu } from '@/components/BubbleContentMenu/BubbleContentMenu.provider';
 import Text from '@/components/Text';
-import styles from './HomepageActionList.styles';
-import colors from '@/styles/colors';
-import Icon from 'react-native-remix-icon';
 import ModalType from '@/enums/ModalType';
+import colors from '@/styles/colors';
+import { AppNavigationProp } from '@/types';
+import { useNavigation } from '@react-navigation/native';
+import React, { useState } from 'react';
+import { TouchableOpacity, View } from 'react-native';
+import Icon from 'react-native-remix-icon';
 import CreateChannelModal from '../CreateChannelModal';
 import SendJoinRequestModal from '../SendJoinRequestModal';
-import { useBubbleContentMenu } from '@/components/BubbleContentMenu/BubbleContentMenu.provider';
+import styles from './HomepageActionList.styles';
 
 type HomepageActionListProps = {
   initialModalType?: ModalType;
@@ -16,6 +18,7 @@ type HomepageActionListProps = {
 function HomepageActionList({ initialModalType }: HomepageActionListProps) {
   const { hide } = useBubbleContentMenu();
   const [activeModal, setActiveModal] = useState<ModalType | null>(initialModalType ?? null);
+  const navigation = useNavigation<AppNavigationProp>();
 
   const toggleModal = (modalType: ModalType) => {
     setActiveModal(prev => (prev === modalType ? null : modalType));
@@ -95,7 +98,10 @@ function HomepageActionList({ initialModalType }: HomepageActionListProps) {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.optionItemContainer}
-          onPress={() => console.log('Explore Channels')}
+          onPress={() => {
+            navigation.navigate('Explore');
+            closeModal();
+          }}
         >
           <View style={styles.optionIconContainer}>
             <View style={styles.optionIconBackground}>

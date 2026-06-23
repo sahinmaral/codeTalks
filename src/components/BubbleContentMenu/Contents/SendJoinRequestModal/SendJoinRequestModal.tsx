@@ -2,7 +2,8 @@ import { useBubbleContentMenuScroll } from '@/components/BubbleContentMenu/Bubbl
 import { useBubbleContentMenu } from '@/components/BubbleContentMenu/BubbleContentMenu.provider';
 import Button from '@/components/Button';
 import Text from '@/components/Text';
-import { fetchSendInviteToChannel } from '@/services/channels';
+import ChannelUserStatus from '@/enums/ChannelUserStatus';
+import { fetchJoinChannel } from '@/services/channels';
 import colors from '@/styles/colors';
 import { getApiErrorMessage } from '@/utils/getApiErrorMessage';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
@@ -15,25 +16,34 @@ import * as Yup from 'yup';
 import styles from './SendJoinRequestModal.styles';
 
 function SendJoinRequestModal() {
-  const initialValues = { channelId: '' };
-  const [error, setError] = useState('');
+  const initialValues = { inviteCode: '' };
   const [loading, setLoading] = useState(false);
   const { hide } = useBubbleContentMenu();
 
   const { scrollTo } = useBubbleContentMenuScroll();
   const groupYPositions = useRef<Record<number, number>>({});
 
-  const handleSendInvite = async ({ channelId }: typeof initialValues) => {
-    if (channelId.length === 0) {
-      setError('Lütfen istek göndermek istediğiniz kanalın ID sini giriniz');
+  const handleJoinChannel = async ({ inviteCode }: typeof initialValues) => {
+    if (inviteCode.length === 0) {
+      showMessage({
+        message: 'Lütfen katılmak istediğiniz kanalın istek kodunu giriniz',
+        type: 'danger',
+      });
       return;
     }
 
     try {
       setLoading(true);
-      await fetchSendInviteToChannel(channelId);
+      const { data } = await fetchJoinChannel({ inviteCode });
+
       hide();
-      showMessage({ message: 'İsteğiniz başarıyla gönderildi', type: 'success' });
+      showMessage({
+        message:
+          data.status === ChannelUserStatus.Accepted
+            ? 'Kanala başarıyla katıldınız'
+            : 'İsteğiniz başarıyla gönderildi',
+        type: 'success',
+      });
     } catch (exception) {
       if (exception instanceof Yup.ValidationError) {
         showMessage({ message: exception.errors[0], type: 'warning' });
@@ -51,17 +61,18 @@ function SendJoinRequestModal() {
     <View>
       <View style={styles.header}>
         <Text fontWeight="800" size="xlarge">
-          Send Join Request
+          Join a Channel
         </Text>
       </View>
 
       <View style={styles.description}>
         <Text size="medium" color={colors.gray[400]}>
-          Enter the Channel ID below to request access. The channel admins will review your request.
+          Enter the invite code of the channel you want to join. You'll join open channels right
+          away, or send a request that admins review for channels that require approval.
         </Text>
       </View>
 
-      <Formik initialValues={initialValues} onSubmit={handleSendInvite}>
+      <Formik initialValues={initialValues} onSubmit={handleJoinChannel}>
         {({ handleChange, handleBlur, handleSubmit: formikSubmit, values, errors }) => (
           <View style={styles.formContainer}>
             <View
@@ -70,17 +81,17 @@ function SendJoinRequestModal() {
                 groupYPositions.current[0] = e.nativeEvent.layout.y;
               }}
             >
-              <Text fontWeight="600">Channel ID</Text>
+              <Text fontWeight="600">Invite Code</Text>
               <BottomSheetTextInput
-                onChangeText={handleChange('channelId')}
-                onBlur={handleBlur('channelId')}
+                onChangeText={handleChange('inviteCode')}
+                onBlur={handleBlur('inviteCode')}
                 onFocus={() => scrollTo(groupYPositions.current[0] ?? 0)}
-                value={values.channelId}
-                placeholder="# Paste ID here"
+                value={values.inviteCode}
+                placeholder="# Paste Invite Code here"
                 placeholderTextColor={colors.gray[400]}
                 style={styles.input}
               />
-              {errors.channelId && <Text style={styles.inputError}>* {errors.channelId}</Text>}
+              {errors.inviteCode && <Text style={styles.inputError}>* {errors.inviteCode}</Text>}
             </View>
 
             <Button

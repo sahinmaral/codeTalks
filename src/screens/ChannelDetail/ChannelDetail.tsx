@@ -1,5 +1,6 @@
 import { useBubbleContentMenu } from '@/components/BubbleContentMenu';
 import UpdateChannelDescriptionModal from '@/components/BubbleContentMenu/Contents/UpdateChannelDescriptionModal';
+import UpdateChannelJoinPolicyModal from '@/components/BubbleContentMenu/Contents/UpdateChannelJoinPolicyModal';
 import UpdateChannelNameModal from '@/components/BubbleContentMenu/Contents/UpdateChannelNameModal';
 import UpdateChannelThumbnailPhotoModal from '@/components/BubbleContentMenu/Contents/UpdateChannelThumbnailPhotoModal';
 import ChannelThumbnail from '@/components/ChannelThumbnail';
@@ -8,6 +9,7 @@ import CustomToggleSwitch from '@/components/CustomToggleSwitch';
 import Divider from '@/components/Divider';
 import Header from '@/components/Header';
 import Text from '@/components/Text';
+import ChannelJoinPolicy from '@/enums/ChannelJoinPolicy';
 import { UserRole } from '@/enums/UserRole';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { setActiveChannel } from '@/redux/reducers/activeChannelReducer';
@@ -74,6 +76,7 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
               name: response.data.name,
               description: response.data.description,
               inviteCode: response.data.inviteCode,
+              joinPolicy: response.data.joinPolicy,
               createdAt: response.data.createdAt,
               role: response.data.role.name as UserRole,
             }),
@@ -238,12 +241,7 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
                   <TouchableOpacity
                     style={[styles.row, styles.rowBordered]}
                     onPress={() => {
-                      show(
-                        <UpdateChannelNameModal
-                          selectedChannelId={channel.id}
-                          currentChannelName={channel.name}
-                        />,
-                      );
+                      show(<UpdateChannelNameModal />);
                     }}
                   >
                     <View style={styles.rowLeading}>
@@ -266,12 +264,7 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
                   <TouchableOpacity
                     style={[styles.row, styles.rowBordered]}
                     onPress={() => {
-                      show(
-                        <UpdateChannelDescriptionModal
-                          selectedChannelId={channel.id}
-                          currentChannelDescription={channel.description ?? ''}
-                        />,
-                      );
+                      show(<UpdateChannelDescriptionModal />);
                     }}
                   >
                     <View style={styles.rowLeading}>
@@ -282,23 +275,39 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
                       <Icon name="ri-arrow-right-s-line" size={24} color={colors.gray[400]} />
                     </View>
                   </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.row, styles.rowBordered]}
+                    onPress={() => {
+                      show(<UpdateChannelJoinPolicyModal />);
+                    }}
+                  >
+                    <View style={styles.rowLeading}>
+                      <Icon name="ri-shield-keyhole-line" color={colors.gray[400]} />
+                      <Text fontWeight="700">Edit Join Policy</Text>
+                    </View>
+                    <View>
+                      <Icon name="ri-arrow-right-s-line" size={24} color={colors.gray[400]} />
+                    </View>
+                  </TouchableOpacity>
                 </>
               ) : null}
 
-              <TouchableOpacity
-                style={[styles.row, styles.rowBordered]}
-                onPress={() => {
-                  navigation.navigate('ChannelPendingJoinRequestsList');
-                }}
-              >
-                <View style={styles.rowLeading}>
-                  <Icon name="ri-user-add-line" color={colors.gray[400]} />
-                  <Text fontWeight="700">Pending Join Requests</Text>
-                </View>
-                <View>
-                  <Icon name="ri-arrow-right-s-line" size={24} color={colors.gray[400]} />
-                </View>
-              </TouchableOpacity>
+              {channel.joinPolicy === ChannelJoinPolicy.Request ? (
+                <TouchableOpacity
+                  style={[styles.row, styles.rowBordered]}
+                  onPress={() => {
+                    navigation.navigate('ChannelPendingJoinRequestsList');
+                  }}
+                >
+                  <View style={styles.rowLeading}>
+                    <Icon name="ri-user-add-line" color={colors.gray[400]} />
+                    <Text fontWeight="700">Pending Join Requests</Text>
+                  </View>
+                  <View>
+                    <Icon name="ri-arrow-right-s-line" size={24} color={colors.gray[400]} />
+                  </View>
+                </TouchableOpacity>
+              ) : null}
               <TouchableOpacity
                 style={[styles.row, styles.rowBordered]}
                 onPress={() => {

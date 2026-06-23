@@ -1,177 +1,188 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { useAppSelector } from '../../../redux/hooks';
-import colors from '../../../styles/colors';
-import Icon from 'react-native-remix-icon';
-import CustomModal from '../../../components/CustomModal';
-import ChannelCreateModalContent from '../../../components/ModalContent/ChannelCreateModalContent';
+import AllChannelCard from '@/components/AllChannelCard';
+import Header from '@/components/Header';
+import Input from '@/components/Input';
+import Text from '@/components/Text';
+import useDebounce from '@/hooks/useDebounce';
+import ErrorScreen from '@/screens/Error';
+import Loading from '@/screens/Loading';
+import { fetchGetChannels } from '@/services/channels';
+import colors from '@/styles/colors';
+import { Channel, PaginatedResult } from '@/types';
+import React, { useCallback, useEffect, useState } from 'react';
+import {
+  ActivityIndicator,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  RefreshControl,
+  ScrollView,
+  View,
+} from 'react-native';
 import styles from '../ChannelList.styles';
-import ChannelCard from '../../../components/ActiveChannelCard';
-import * as SignalR from '@microsoft/signalr';
-import Loading from '../../Loading';
-import ModalType from '../../../enums/ModalType';
-import ShowChannelOptionsModalContent from '../../../components/ModalContent/ShowChannelOptionsModalContent';
-import NoChannelRegisteredCard from '../../../components/NoChannelRegisteredCard';
-import BubbleContentMenu from '../../../components/BubbleContentMenu';
-import bubbleContentMenuStyles from '../../../components/BubbleContentMenu/BubbleContentMenu.styles';
-import SendInviteToChannelModalContent from '../../../components/ModalContent/SendInviteToChannelModalContent/SendInviteToChannelModalContent';
-import { Channel, PaginatedResult, RootStackParamList } from '../../../types';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-type ModalsVisible = {
-  [ModalType.ChannelCreate]: boolean;
-  [ModalType.ShowChannelOptions]: boolean;
-  [ModalType.SendInviteToChannel]: boolean;
-};
+const PAGE_SIZE = 10;
 
-interface AllChannelListProps {
-  navigation: NativeStackNavigationProp<RootStackParamList, 'AllChannelList'>;
-}
+function AllChannelList() {
+  const [channels, setChannels] = useState<Channel[]>([]);
+  const [pageIndex, setPageIndex] = useState(0);
+  const [hasNext, setHasNext] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [hasLoaded, setHasLoaded] = useState(false);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
 
-function AllChannelList({ navigation }: AllChannelListProps) {
-  const user = useAppSelector(state => state.app.user);
+  const [search, setSearch] = useState('');
+  const debouncedSearch = useDebounce(search.trim(), 400);
 
-  const [connection, setConnection] = useState<SignalR.HubConnection | null>(null);
-  const [channels, setChannels] = useState<PaginatedResult<Channel> | null>(null);
-  const [bubbleContentMenuVisible, setBubbleContentMenuVisible] = useState(false);
-  const [modalsVisible, setModalsVisible] = useState<ModalsVisible>({
-    [ModalType.ChannelCreate]: false,
-    [ModalType.ShowChannelOptions]: false,
-    [ModalType.SendInviteToChannel]: false,
-  });
-  const [selectedChannel, setSelectedChannel] = useState<Channel | null>(null);
+  const fetchPage = useCallback(
+    async (index: number) => {
+      const { data } = await fetchGetChannels({
+        title: debouncedSearch || undefined,
+        index,
+        size: PAGE_SIZE,
+      });
 
-  const toggleModal = (modalType: ModalType) => {
-    const updated = { ...modalsVisible };
-    (Object.keys(updated) as (keyof ModalsVisible)[]).forEach(key => {
-      updated[key] = key === modalType ? !updated[key] : false;
-    });
-    setModalsVisible(updated);
-    setBubbleContentMenuVisible(false);
-  };
-
-  const closeAllModals = () => {
-    const updated = { ...modalsVisible };
-    (Object.keys(updated) as (keyof ModalsVisible)[]).forEach(key => {
-      updated[key] = false;
-    });
-    setModalsVisible(updated);
-  };
-
-  const handleSelectChannel = (channel: Channel) => setSelectedChannel(channel);
-
-  const containerModalVisible = useMemo(() => {
-    return Object.values(modalsVisible).some(v => v);
-  }, [modalsVisible]);
+      const result = data as PaginatedResult<Channel>;
+      setChannels(prev => {
+        if (index === 0) return result.items;
+        const existingIds = new Set(prev.map(channel => channel.id));
+        return [...prev, ...result.items.filter(channel => !existingIds.has(channel.id))];
+      });
+      setHasNext(result.hasNext);
+    },
+    [debouncedSearch],
+  );
 
   useEffect(() => {
-    const newConnection = new SignalR.HubConnectionBuilder()
-      .withUrl(`${process.env.EXPO_PUBLIC_API_BASE_URL}/chatHub`)
-      .build();
+    let active = true;
 
-    setConnection(newConnection);
-
-    return () => {
-      newConnection.stop().catch(console.error);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!connection) return;
-
-    let intervalId: ReturnType<typeof setInterval>;
-
-    const handler = (data: PaginatedResult<Channel>) => setChannels(data);
-    connection.on('ReceiveAllChannelsByUserId', handler);
-
-    const startAndPoll = async () => {
-      if (connection.state === SignalR.HubConnectionState.Disconnected) {
-        await connection.start();
-      }
-      intervalId = setInterval(() => {
-        if (connection.state === SignalR.HubConnectionState.Connected) {
-          connection.invoke('SendAllChannelsByUserId', user?.id, null, null).catch(console.error);
+    (async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        setPageIndex(0);
+        await fetchPage(0);
+      } catch (exception) {
+        if (active) {
+          setError(exception instanceof Error ? exception : new Error(String(exception)));
         }
-      }, 1000);
-    };
-
-    startAndPoll().catch(console.error);
+      } finally {
+        if (active) {
+          setLoading(false);
+          setHasLoaded(true);
+        }
+      }
+    })();
 
     return () => {
-      clearInterval(intervalId);
-      connection.off('ReceiveAllChannelsByUserId', handler);
+      active = false;
     };
-  }, [connection, user?.id]);
+  }, [fetchPage]);
 
-  if (!connection || connection.state !== 'Connected') {
+  const handleRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      setError(null);
+      setPageIndex(0);
+      await fetchPage(0);
+    } catch (exception) {
+      setError(exception instanceof Error ? exception : new Error(String(exception)));
+    } finally {
+      setRefreshing(false);
+    }
+  }, [fetchPage]);
+
+  const handleLoadMore = useCallback(async () => {
+    if (isFetchingMore || !hasNext) return;
+
+    setIsFetchingMore(true);
+    const nextIndex = pageIndex + 1;
+    try {
+      await fetchPage(nextIndex);
+      setPageIndex(nextIndex);
+    } catch {
+    } finally {
+      setIsFetchingMore(false);
+    }
+  }, [isFetchingMore, hasNext, pageIndex, fetchPage]);
+
+  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
+    const isNearBottom = layoutMeasurement.height + contentOffset.y >= contentSize.height - 80;
+    if (isNearBottom) handleLoadMore();
+  };
+
+  if (loading && !hasLoaded) {
     return <Loading text="Kanallar yüklenirken lütfen bekleyiniz ..." />;
+  }
+
+  if (error && channels.length === 0) {
+    return (
+      <ErrorScreen
+        description="Kanallar yüklenemedi. Lütfen tekrar deneyiniz ..."
+        onRetry={() => {
+          setLoading(true);
+          setHasLoaded(false);
+          fetchPage(0)
+            .catch(exception =>
+              setError(exception instanceof Error ? exception : new Error(String(exception))),
+            )
+            .finally(() => {
+              setLoading(false);
+              setHasLoaded(true);
+            });
+        }}
+      />
+    );
   }
 
   return (
     <View style={styles.container}>
-      {channels && channels.items.length === 0 ? (
-        <View style={styles.container}>
-          <NoChannelRegisteredCard />
-        </View>
-      ) : (
-        <ScrollView style={styles.channelListContainer}>
-          {channels?.items.map(channel => (
-            <ChannelCard key={channel.id} navigation={navigation} channel={channel} />
-          ))}
-        </ScrollView>
-      )}
+      <Header title="Explore" description="Discover and join new channels" />
 
-      <TouchableOpacity
-        onPress={() => setBubbleContentMenuVisible(!bubbleContentMenuVisible)}
-        style={styles.showBubbleContentMenuButton}
-      >
-        <Icon
-          name={bubbleContentMenuVisible ? 'information-line' : 'information-fill'}
-          size={24}
-          color={colors.white}
+      <View style={styles.searchContainer}>
+        <Input
+          icon="ri-search-line"
+          placeholder="Search channels..."
+          value={search}
+          onChangeText={setSearch}
         />
-      </TouchableOpacity>
+      </View>
 
-      {bubbleContentMenuVisible ? (
-        <BubbleContentMenu onClose={() => setBubbleContentMenuVisible(false)}>
-          <View>
-            <TouchableOpacity
-              style={bubbleContentMenuStyles.menuItemContainer}
-              onPress={() => toggleModal(ModalType.ChannelCreate)}
-            >
-              <Text style={bubbleContentMenuStyles.menuItemText}>Kanal oluştur</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={bubbleContentMenuStyles.menuItemContainer}
-              onPress={() => toggleModal(ModalType.SendInviteToChannel)}
-            >
-              <Text style={bubbleContentMenuStyles.menuItemText}>Kanala istek at</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={bubbleContentMenuStyles.menuItemContainer}
-              onPress={() => navigation.navigate('AllChannelList')}
-            >
-              <Text style={bubbleContentMenuStyles.menuItemText}>Bütün kanalları görüntüle</Text>
-            </TouchableOpacity>
-          </View>
-        </BubbleContentMenu>
-      ) : null}
-
-      <CustomModal closeAllModals={closeAllModals} containerModalVisible={containerModalVisible}>
-        {modalsVisible[ModalType.ChannelCreate] ? (
-          <ChannelCreateModalContent closeAllModals={closeAllModals} />
-        ) : null}
-        {modalsVisible[ModalType.ShowChannelOptions] && selectedChannel && user ? (
-          <ShowChannelOptionsModalContent
-            user={user}
-            closeAllModals={closeAllModals}
-            selectedChannel={selectedChannel}
+      <ScrollView
+        style={styles.channelListContainer}
+        contentContainerStyle={styles.channelListContainerContent}
+        keyboardShouldPersistTaps="handled"
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            tintColor={colors.orange[500]}
+            colors={[colors.orange[500]]}
           />
-        ) : null}
-        {modalsVisible[ModalType.SendInviteToChannel] && user ? (
-          <SendInviteToChannelModalContent user={user} closeAllModals={closeAllModals} />
-        ) : null}
-      </CustomModal>
+        }
+      >
+        {channels.map(channel => (
+          <AllChannelCard key={channel.id} channel={channel} />
+        ))}
+
+        {isFetchingMore && <ActivityIndicator color={colors.orange[500]} />}
+
+        {channels.length === 0 && (
+          <View style={styles.emptyContainer}>
+            <Text size="large" fontWeight="700" style={{ textAlign: 'center' }}>
+              No Channels Found
+            </Text>
+            <Text color={colors.gray[500]} size="medium" style={{ textAlign: 'center' }}>
+              {debouncedSearch
+                ? `"${debouncedSearch}" ile eşleşen kanal bulunamadı.`
+                : 'Try searching with a different keyword.'}
+            </Text>
+          </View>
+        )}
+      </ScrollView>
     </View>
   );
 }

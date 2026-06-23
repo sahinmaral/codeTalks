@@ -1,3 +1,4 @@
+import ChannelJoinPolicy from '@/enums/ChannelJoinPolicy';
 import { UserRole } from '@/enums/UserRole';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
@@ -6,9 +7,10 @@ export interface ActiveChannel {
   name: string;
   description?: string;
   thumbnailPhotoURL?: string | null;
+  joinPolicy: ChannelJoinPolicy;
   inviteCode: string;
   createdAt: string;
-  role: UserRole;
+  role?: UserRole;
 }
 
 interface ActiveChannelState {
@@ -36,6 +38,11 @@ export const activeChannelSlice = createSlice({
         state.channel.description = action.payload;
       }
     },
+    setActiveChannelJoinPolicy: (state, action: PayloadAction<ChannelJoinPolicy>) => {
+      if (state.channel) {
+        state.channel.joinPolicy = action.payload;
+      }
+    },
     setRoleOfCurrentUser: (state, action: PayloadAction<UserRole>) => {
       if (state.channel) {
         state.channel.role = action.payload;
@@ -48,6 +55,7 @@ export const {
   setActiveChannel,
   setActiveChannelName,
   setActiveChannelDescription,
+  setActiveChannelJoinPolicy,
   setRoleOfCurrentUser,
 } = activeChannelSlice.actions;
 

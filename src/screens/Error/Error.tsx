@@ -1,21 +1,22 @@
-import React from 'react';
-import Text from '@/components/Text';
-import { View, Image } from 'react-native';
-import styles from './Error.styles';
 import Button from '@/components/Button';
+import Text from '@/components/Text';
 import { useAppDispatch } from '@/redux/hooks';
-import { setUser } from '@/redux/reducers/appReducer';
+import { clearUser } from '@/redux/reducers/appReducer';
+import React from 'react';
+import { Image, View } from 'react-native';
+import styles from './Error.styles';
 
 interface ErrorProps {
   title?: string;
   description: string;
+  onRetry?: () => void;
 }
 
-function Error({ description, title = 'Something went wrong' }: ErrorProps) {
+function Error({ description, title = 'Something went wrong', onRetry }: ErrorProps) {
   const dispatch = useAppDispatch();
 
   const handleGoToLogin = () => {
-    dispatch(setUser(null));
+    dispatch(clearUser());
   };
 
   return (
@@ -34,7 +35,14 @@ function Error({ description, title = 'Something went wrong' }: ErrorProps) {
         </Text>
         <Text style={styles.errorTextDescription}>{description}</Text>
         <View style={styles.buttonGroup}>
-          <Button title={'Try Again'} icon="ri-restart-line" style={styles.button} />
+          {onRetry && (
+            <Button
+              title={'Try Again'}
+              icon="ri-restart-line"
+              style={styles.button}
+              onPress={onRetry}
+            />
+          )}
           <Button
             title={'Go To Login'}
             theme="primary-outline"

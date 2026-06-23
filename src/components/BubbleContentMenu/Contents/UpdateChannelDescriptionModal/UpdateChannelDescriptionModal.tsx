@@ -8,22 +8,18 @@ import styles from './UpdateChannelDescriptionModal.styles';
 import { showMessage } from 'react-native-flash-message';
 import { Formik } from 'formik';
 import validationSchema from '@/schemas/CreateChannelSchema';
-import { useAppDispatch } from '@/redux/hooks';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { setActiveChannelDescription } from '@/redux/reducers/activeChannelReducer';
 import { fetchPatchChannel } from '@/services/channels';
 import colors from '@/styles/colors';
 import { useBubbleContentMenu } from '@/components/BubbleContentMenu/BubbleContentMenu.provider';
 import translateErrorMessage from '@/helpers/apiErrorTranslation';
 
-type UpdateChannelDescriptionModalProps = {
-  selectedChannelId: string;
-  currentChannelDescription: string;
-};
+function UpdateChannelDescriptionModal() {
+  const currentChannel = useAppSelector(state => state.activeChannel.channel);
+  const selectedChannelId = currentChannel?.id ?? '';
+  const currentChannelDescription = currentChannel?.description ?? '';
 
-function UpdateChannelDescriptionModal({
-  selectedChannelId,
-  currentChannelDescription,
-}: UpdateChannelDescriptionModalProps) {
   const initialValues = { channelDescription: currentChannelDescription };
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);

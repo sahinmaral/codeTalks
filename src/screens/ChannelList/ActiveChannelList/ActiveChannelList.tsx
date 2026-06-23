@@ -5,7 +5,8 @@ import Header from '@/components/Header';
 import NoChannelRegisteredCard from '@/components/NoChannelRegisteredCard';
 import useSignalRConnection from '@/hooks/useSignalRConnection';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { setUser } from '@/redux/reducers/appReducer';
+import { clearUser } from '@/redux/reducers/appReducer';
+import ErrorScreen from '@/screens/Error';
 import Loading from '@/screens/Loading';
 import colors from '@/styles/colors';
 import { Channel, PaginatedResult, RootStackParamList } from '@/types';
@@ -26,14 +27,28 @@ function ActiveChannelList({ navigation }: ActiveChannelListProps) {
   const dispatch = useAppDispatch();
 
   const handleLogout = () => {
-    dispatch(setUser(null));
+    dispatch(clearUser());
   };
 
-  const { data: channels, isLoading } = useSignalRConnection<PaginatedResult<Channel>>({
+  const {
+    data: channels,
+    isLoading,
+    error,
+    retry,
+  } = useSignalRConnection<PaginatedResult<Channel>>({
     receiveEvent: 'ReceiveActiveChannelsByUserId',
     sendMethod: 'SendActiveChannelsByUserId',
     invokeArgs: [{ page: 1, pageSize: 10 }],
   });
+
+  if (error && !channels) {
+    return (
+      <ErrorScreen
+        description="Kanallar yüklenemedi. Sunucuya bağlanmaya çalışılıyor ..."
+        onRetry={retry}
+      />
+    );
+  }
 
   if (isLoading) {
     return <Loading text="Kanallar yüklenirken lütfen bekleyiniz ..." />;

@@ -30,6 +30,7 @@ import useCheckInternet from './src/hooks/useCheckInternet';
 import { useAppSelector } from './src/redux/hooks';
 import ChannelDetail from './src/screens/ChannelDetail';
 import ActiveChannelList from './src/screens/ChannelList/ActiveChannelList';
+import AllChannelList from './src/screens/ChannelList/AllChannelList';
 import ChannelMessagesList from './src/screens/ChannelMessagesList';
 import CheckInternet from './src/screens/CheckInternet';
 import ContinueSignUp from './src/screens/ContinueSignUp';
@@ -65,6 +66,12 @@ const ChannelStack = () => (
   </Stack.Navigator>
 );
 
+const ExploreStack = () => (
+  <Stack.Navigator initialRouteName="AllChannelList" screenOptions={{ headerShown: false }}>
+    <Stack.Screen name="AllChannelList" component={AllChannelList} />
+  </Stack.Navigator>
+);
+
 const ProfileStack = () => (
   <ProfileStackNav.Navigator initialRouteName="MyProfile" screenOptions={{ headerShown: false }}>
     <ProfileStackNav.Screen name="MyProfile" component={MyProfile} />
@@ -79,7 +86,7 @@ const MainStack = () => (
     tabBar={props => <CustomBottomTab {...props} />}
   >
     <Tab.Screen name="Channels" component={ChannelStack} />
-    <Tab.Screen name="Explore" component={ChannelStack} />
+    <Tab.Screen name="Explore" component={ExploreStack} />
     <Tab.Screen name="Profile" component={ProfileStack} />
   </Tab.Navigator>
 );
@@ -121,9 +128,11 @@ function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ConfirmationDialogProvider>
-        <BubbleContentMenuProvider>
-          <NavigationContainer>{!user ? <AuthStack /> : <MainStack />}</NavigationContainer>
-        </BubbleContentMenuProvider>
+        <NavigationContainer>
+          <BubbleContentMenuProvider>
+            {!user ? <AuthStack /> : <MainStack />}
+          </BubbleContentMenuProvider>
+        </NavigationContainer>
       </ConfirmationDialogProvider>
     </GestureHandlerRootView>
   );

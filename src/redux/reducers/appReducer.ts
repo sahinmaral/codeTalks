@@ -13,8 +13,11 @@ export const appSlice = createSlice({
   name: 'app',
   initialState,
   reducers: {
-    setUser: (state, action: PayloadAction<User | null>) => {
+    setUser: (state, action: PayloadAction<User>) => {
       state.user = action.payload;
+    },
+    clearUser: state => {
+      state.user = null;
     },
     setProfile: (state, action: PayloadAction<MyProfileDto | null>) => {
       if (state.user) {
@@ -24,6 +27,6 @@ export const appSlice = createSlice({
   },
 });
 
-export const { setUser, setProfile } = appSlice.actions;
+export const { setUser, clearUser, setProfile } = appSlice.actions;
 
 export default appSlice.reducer;

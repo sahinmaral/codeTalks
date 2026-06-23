@@ -16,6 +16,7 @@ import useSignalRConnection from '../../hooks/useSignalRConnection';
 import { useAppSelector } from '../../redux/hooks';
 import colors from '../../styles/colors';
 import { Message, PaginatedResult, RootStackParamList } from '../../types';
+import ErrorScreen from '../Error';
 import Loading from '../Loading';
 import styles from './ChannelMessagesList.styles';
 import SendMessageInput from './SendMessageInput';
@@ -63,7 +64,7 @@ function ChannelMessagesList({ navigation }: ChannelMessagesListProps) {
 
   const pageSize = 30;
 
-  const { data: messages, isLoading } = useSignalRConnection<PaginatedResult<Message>>({
+  const { data: messages, error, retry } = useSignalRConnection<PaginatedResult<Message>>({
     receiveEvent: 'ReceiveMessagesOfChannel',
     sendMethod: 'SendMessagesOfChannel',
     invokeArgs: [channelId, pageSize, pageIndex],
@@ -144,7 +145,12 @@ function ChannelMessagesList({ navigation }: ChannelMessagesListProps) {
       />
 
       <View style={{ flex: 1, padding: 20 }}>
-        {!hasLoaded ? (
+        {error && !hasLoaded ? (
+          <ErrorScreen
+            description="Mesajlar yüklenemedi. Sunucuya bağlanmaya çalışılıyor ..."
+            onRetry={retry}
+          />
+        ) : !hasLoaded ? (
           <Loading text="Mesajlar yüklenirken lütfen bekleyiniz ..." />
         ) : allMessages.length === 0 ? (
           <ChannelCreatedMessageCard

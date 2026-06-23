@@ -12,6 +12,19 @@ const styles = StyleSheet.create({
     rowGap: 15,
     paddingBottom: 40,
   },
+  searchContainer: {
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    backgroundColor: colors.light,
+  },
+  emptyContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 40,
+    backgroundColor: colors.light,
+    gap: 8,
+  },
   showBubbleContentMenuButton: {
     position: 'absolute',
     bottom: 10,

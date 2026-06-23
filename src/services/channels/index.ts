@@ -1,3 +1,4 @@
+import ChannelJoinPolicy from '@/enums/ChannelJoinPolicy';
 import ChannelUserStatus from '@/enums/ChannelUserStatus';
 import { UserRole } from '@/enums/UserRole';
 import { ChannelDetailDto } from '@/types';
@@ -17,11 +18,34 @@ interface UpdateChannelInput {
 interface PatchChannelInput {
   name?: string;
   description?: string;
+  joinPolicy?: ChannelJoinPolicy;
+}
+
+interface JoinChannelInput {
+  inviteCode: string;
+}
+
+interface JoinChannelInputResponse {
+  status: ChannelUserStatus;
 }
 
 interface UpdateChannelThumbnailPhotoResponse {
   newThumbnailPhotoPath: string;
 }
+
+export const fetchGetChannels = ({
+  title,
+  size = 10,
+  index = 0,
+}: { title?: string; size?: number; index?: number } = {}) => {
+  return axiosInstance.get(`/channels`, {
+    params: {
+      page: index + 1,
+      pageSize: size,
+      title: title,
+    },
+  });
+};
 
 export const fetchGetChannelById = (id: string): Promise<AxiosResponse<ChannelDetailDto>> => {
   return axiosInstance.get(`/channels/${id}`);
@@ -47,8 +71,10 @@ export const fetchLeaveChannel = (id: string) => {
   return axiosInstance.post(`/channels/leave/${id}`, null);
 };
 
-export const fetchSendInviteToChannel = (id: string) => {
-  return axiosInstance.post(`/channels/send-invite/${id}`, null);
+export const fetchJoinChannel = (
+  input: JoinChannelInput,
+): Promise<AxiosResponse<JoinChannelInputResponse>> => {
+  return axiosInstance.post(`/channels/join`, input);
 };
 
 export const fetchRemoveMemberFromChannel = (id: string, userId: string) => {

@@ -13,8 +13,14 @@ const styles = StyleSheet.create({
   formContainer: {
     gap: 20,
   },
-  formGroup: {},
+  header: { paddingVertical: 10 },
+  description: {
+    paddingBottom: 15,
+  },
   input: inputBase,
+  inputFocused: {
+    borderColor: colors.orange[400],
+  },
   textArea: {
     ...inputBase,
     backgroundColor: colors.stone[100],
@@ -23,6 +29,7 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
   },
   inputError: { color: colors.red[500], fontWeight: '600' },
+  formGroup: { gap: 10 },
   segmentContainer: {
     flexDirection: 'row',
     backgroundColor: colors.stone[100],
