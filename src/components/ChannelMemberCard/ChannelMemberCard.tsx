@@ -1,4 +1,6 @@
 import { UserRole } from '@/enums/UserRole';
+import useTheme from '@/hooks/useTheme';
+import useThemedStyles from '@/hooks/useThemedStyles';
 import getFullName from '@/helpers/getFullName';
 import colors from '@/styles/colors';
 import { ChannelUser } from '@/types';
@@ -7,7 +9,7 @@ import { TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-remix-icon';
 import Text from '../Text';
 import UserAvatar from '../UserAvatar';
-import styles from './ChannelMemberCard.styles';
+import makeStyles from './ChannelMemberCard.styles';
 
 export enum ChannelMemberCardType {
   Normal = 'normal',
@@ -27,20 +29,22 @@ const ChannelMemberCard = ({
   onPress,
   cardType = ChannelMemberCardType.Normal,
 }: ChannelMemberCardProps) => {
+  const styles = useThemedStyles(makeStyles);
+  const theme = useTheme();
   const fullName = getFullName(user);
 
   const renderIconByCardType = useCallback(() => {
     switch (cardType) {
       case ChannelMemberCardType.Locked:
-        return <Icon name="lock-2-line" size={24} color={colors.gray[400]} />;
+        return <Icon name="lock-2-line" size={24} color={theme.text.tertiary} />;
       case ChannelMemberCardType.RemoveUser:
         return <Icon name="ri-delete-bin-line" size={24} color={colors.danger} />;
       case ChannelMemberCardType.UnbanUser:
         return <Icon name="ri-lock-unlock-line" size={24} color={colors.green[500]} />;
       default:
-        return <Icon name="arrow-right-s-line" size={24} color={colors.gray[400]} />;
+        return <Icon name="arrow-right-s-line" size={24} color={theme.text.tertiary} />;
     }
-  }, [cardType]);
+  }, [cardType, theme]);
 
   const rolePillStyle = useMemo(() => {
     switch (user.role.name) {

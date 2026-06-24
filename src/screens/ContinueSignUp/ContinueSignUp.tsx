@@ -10,10 +10,10 @@ import Input from '../../components/Input/Input';
 import Button from '../../components/Button';
 import Text from '@/components/Text';
 import Footer from '@/components/Footer';
-import styles from './ContinueSignUp.styles';
+import useThemedStyles from '@/hooks/useThemedStyles';
+import makeStyles from './ContinueSignUp.styles';
 import validationSchema from '../../schemas/ContinueSignUpSchema';
 import { fetchSignUp } from '../../services/auths';
-import colors from '../../styles/colors';
 import { RootStackParamList } from '../../types';
 import { getApiErrorMessage } from '@/utils/getApiErrorMessage';
 import { AxiosError } from 'axios';
@@ -26,6 +26,7 @@ interface ContinueSignUpProps {
 }
 
 function ContinueSignUp({ navigation, route }: ContinueSignUpProps) {
+  const styles = useThemedStyles(makeStyles);
   const [loading, setLoading] = useState(false);
   const phoneInputRef = useRef<PhoneInput>(null);
   const { isKeyboardVisible } = useKeyboardVisible();

@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { Image, Text, View } from 'react-native';
-import styles from './ChannelDetailUserCard.styles';
+import useThemedStyles from '@/hooks/useThemedStyles';
+import makeStyles from './ChannelDetailUserCard.styles';
 import getFullName from '@/helpers/getFullName';
 import { useAppSelector } from '../../redux/hooks';
 import { ChannelUser } from '../../types';
@@ -10,6 +11,7 @@ interface ChannelDetailUserCardProps {
 }
 
 function ChannelDetailUserCard({ user }: ChannelDetailUserCardProps) {
+  const styles = useThemedStyles(makeStyles);
   const currentUser = useAppSelector(state => state.app.user);
 
   const fullName = useMemo(() => getFullName(user), [user]);

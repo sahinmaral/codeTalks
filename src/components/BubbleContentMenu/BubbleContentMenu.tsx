@@ -6,9 +6,10 @@ import BottomSheet, {
 import React, { useCallback, useRef } from 'react';
 import { Dimensions, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import useThemedStyles from '@/hooks/useThemedStyles';
 import Button from '../Button';
 import { BubbleContentMenuContext } from './BubbleContentMenu.context';
-import styles from './BubbleContentMenu.styles';
+import makeStyles from './BubbleContentMenu.styles';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -18,6 +19,7 @@ interface BubbleContentMenuProps {
 }
 
 function BubbleContentMenu({ children, onClose }: BubbleContentMenuProps) {
+  const styles = useThemedStyles(makeStyles);
   const bottomSheetRef = useRef<BottomSheet>(null);
   const scrollViewRef = useRef<ScrollView>(null);
   const { bottom } = useSafeAreaInsets();
@@ -43,6 +45,8 @@ function BubbleContentMenu({ children, onClose }: BubbleContentMenuProps) {
         maxDynamicContentSize={SCREEN_HEIGHT * 0.85}
         ref={bottomSheetRef}
         style={styles.container}
+        backgroundStyle={styles.sheetBackground}
+        handleIndicatorStyle={styles.handleIndicator}
         bottomInset={bottom}
         backdropComponent={renderBackdrop}
         onClose={onClose}

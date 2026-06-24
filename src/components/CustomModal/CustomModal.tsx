@@ -1,6 +1,7 @@
+import useThemedStyles from '@/hooks/useThemedStyles';
 import React from 'react';
 import { Modal, TouchableOpacity } from 'react-native';
-import styles from './CustomModal.styles';
+import makeStyles from './CustomModal.styles';
 
 interface CustomModalProps {
   children: React.ReactNode;
@@ -9,6 +10,7 @@ interface CustomModalProps {
 }
 
 function CustomModal({ children, closeAllModals, containerModalVisible }: CustomModalProps) {
+  const styles = useThemedStyles(makeStyles);
   return (
     <Modal
       animationType="fade"

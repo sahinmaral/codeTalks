@@ -4,7 +4,8 @@ import Input from '@/components/Input';
 import Text from '@/components/Text';
 import validationSchema from '@/schemas/ChangePasswordSchema';
 import { fetchChangeUserPassword } from '@/services/users';
-import colors from '@/styles/colors';
+import useTheme from '@/hooks/useTheme';
+import useThemedStyles from '@/hooks/useThemedStyles';
 import { ProfileStackParamList } from '@/types';
 import { getApiErrorMessage } from '@/utils/getApiErrorMessage';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -14,7 +15,7 @@ import React, { useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import * as Yup from 'yup';
-import styles from './ChangePassword.styles';
+import makeStyles from './ChangePassword.styles';
 import PasswordRequirementsList from './PasswordRequirementsList';
 
 export type PasswordRequirementsType = {
@@ -38,6 +39,8 @@ type ChangePasswordProps = {
 };
 
 function ChangePassword({ navigation }: ChangePasswordProps) {
+  const styles = useThemedStyles(makeStyles);
+  const theme = useTheme();
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (values: typeof initialFormValues) => {
@@ -80,7 +83,7 @@ function ChangePassword({ navigation }: ChangePasswordProps) {
               showsVerticalScrollIndicator={false}
             >
               <View style={styles.description}>
-                <Text size="medium" color={colors.gray[400]}>
+                <Text size="medium" color={theme.text.secondary}>
                   Keep your account secure with a strong password.
                 </Text>
               </View>

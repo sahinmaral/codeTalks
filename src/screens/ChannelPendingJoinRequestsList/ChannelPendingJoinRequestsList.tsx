@@ -6,6 +6,8 @@ import ChannelUserStatus from '@/enums/ChannelUserStatus';
 import useDebounce from '@/hooks/useDebounce';
 import { useAppSelector } from '@/redux/hooks';
 import { fetchGetUsersByChannelId, fetchPatchUserStatus } from '@/services/channels';
+import useTheme from '@/hooks/useTheme';
+import useThemedStyles from '@/hooks/useThemedStyles';
 import colors from '@/styles/colors';
 import { ChannelUser, RootStackParamList, UsersAtChannelListModel } from '@/types';
 import { getApiErrorMessage } from '@/utils/getApiErrorMessage';
@@ -23,7 +25,7 @@ import {
 import { showMessage } from 'react-native-flash-message';
 import Icon from 'react-native-remix-icon';
 import Loading from '../Loading';
-import styles from './ChannelPendingJoinRequestsList.styles';
+import makeStyles from './ChannelPendingJoinRequestsList.styles';
 
 type ChannelPendingJoinRequestsListProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'ChannelPendingJoinRequestsList'>;
@@ -32,6 +34,8 @@ type ChannelPendingJoinRequestsListProps = {
 const PAGE_SIZE = 5;
 
 const ChannelPendingJoinRequestsList = ({ navigation }: ChannelPendingJoinRequestsListProps) => {
+  const styles = useThemedStyles(makeStyles);
+  const theme = useTheme();
   const channelId = useAppSelector(state => state.activeChannel.channel?.id ?? '');
   const channelName = useAppSelector(state => state.activeChannel.channel?.name ?? '');
 
@@ -133,19 +137,19 @@ const ChannelPendingJoinRequestsList = ({ navigation }: ChannelPendingJoinReques
     <View style={styles.container}>
       <Header title={'Pending Join Requests'} onBackPress={() => navigation.goBack()} />
 
-      <View style={{ backgroundColor: colors.white, paddingBottom: 15 }}>
+      <View style={{ backgroundColor: theme.surface, paddingBottom: 15 }}>
         <View style={styles.searchContainer}>
           <Input
             icon="ri-search-line"
             placeholder="Search requests..."
-            containerStyle={{ borderRadius: 20, backgroundColor: colors.light }}
+            containerStyle={{ borderRadius: 20, backgroundColor: theme.input.background }}
             onChangeText={setSearch}
             value={search}
           />
         </View>
       </View>
 
-      <View style={{ backgroundColor: colors.light, flex: 1 }}>
+      <View style={{ backgroundColor: theme.background.secondary, flex: 1 }}>
         <View style={styles.descriptionContainer}>
           <Icon name="ri-information-line" color={colors.orange[500]} size={20} />
           <Text color={colors.orange[500]} size="small" style={styles.descriptionText}>
@@ -180,7 +184,7 @@ const ChannelPendingJoinRequestsList = ({ navigation }: ChannelPendingJoinReques
 
           {!hasResults && (
             <View style={styles.membersHeader}>
-              <Text color={colors.gray[400]} style={{ textAlign: 'center' }}>
+              <Text color={theme.text.secondary} style={{ textAlign: 'center' }}>
                 {debouncedSearch
                   ? `"${debouncedSearch}" ile eşleşen istek gönderen kullanıcı bulunamadı.`
                   : 'Kanala istek gönderen kullanıcı bulunamadı.'}

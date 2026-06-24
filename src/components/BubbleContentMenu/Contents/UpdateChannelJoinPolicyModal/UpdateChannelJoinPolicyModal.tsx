@@ -5,6 +5,8 @@ import ChannelJoinPolicy from '@/enums/ChannelJoinPolicy';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { setActiveChannelJoinPolicy } from '@/redux/reducers/activeChannelReducer';
 import { fetchPatchChannel } from '@/services/channels';
+import useTheme from '@/hooks/useTheme';
+import useThemedStyles from '@/hooks/useThemedStyles';
 import colors from '@/styles/colors';
 import { getApiErrorMessage } from '@/utils/getApiErrorMessage';
 import { AxiosError } from 'axios';
@@ -14,7 +16,7 @@ import { TouchableOpacity, View } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import Icon from 'react-native-remix-icon';
 import * as Yup from 'yup';
-import styles from './UpdateChannelJoinPolicyModal.styles';
+import makeStyles from './UpdateChannelJoinPolicyModal.styles';
 
 const JOIN_POLICIES = [
   { label: 'Request', value: ChannelJoinPolicy.Request, icon: 'mail-send-line' },
@@ -22,6 +24,8 @@ const JOIN_POLICIES = [
 ];
 
 function UpdateChannelJoinPolicyModal() {
+  const styles = useThemedStyles(makeStyles);
+  const theme = useTheme();
   const currentChannel = useAppSelector(state => state.activeChannel.channel);
   const selectedChannelId = currentChannel?.id ?? '';
   const currentChannelJoinPolicy = currentChannel?.joinPolicy ?? ChannelJoinPolicy.Request;
@@ -68,7 +72,7 @@ function UpdateChannelJoinPolicyModal() {
               <View style={styles.segmentContainer}>
                 {JOIN_POLICIES.map(policy => {
                   const isActive = values.channelJoinPolicy === policy.value;
-                  const activeColor = isActive ? colors.orange[500] : colors.gray[500];
+                  const activeColor = isActive ? colors.orange[500] : theme.text.secondary;
                   return (
                     <TouchableOpacity
                       key={policy.value}

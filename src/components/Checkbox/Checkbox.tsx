@@ -1,8 +1,9 @@
 import React from 'react';
 import { TouchableOpacity, View, ViewStyle } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import styles from './Checkbox.styles';
+import makeStyles from './Checkbox.styles';
 import Text from '@/components/Text';
+import useThemedStyles from '@/hooks/useThemedStyles';
 import colors from '@/styles/colors';
 
 interface CheckboxProps {
@@ -14,6 +15,7 @@ interface CheckboxProps {
 }
 
 function Checkbox({ label, checked, disabled = false, style, onChange }: CheckboxProps) {
+  const styles = useThemedStyles(makeStyles);
   return (
     <TouchableOpacity
       style={[styles.row, style]}

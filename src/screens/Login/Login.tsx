@@ -9,6 +9,7 @@ import { useAppDispatch } from '@/redux/hooks';
 import { setUser } from '@/redux/reducers/appReducer';
 import validationSchema from '@/schemas/LoginSchema';
 import { fetchLogin } from '@/services/auths';
+import useThemedStyles from '@/hooks/useThemedStyles';
 import colors from '@/styles/colors';
 import { RootStackParamList } from '@/types';
 import { getApiErrorMessage } from '@/utils/getApiErrorMessage';
@@ -20,7 +21,7 @@ import { Image, SafeAreaView, TouchableOpacity, View } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import * as Yup from 'yup';
-import styles from './Login.styles';
+import makeStyles from './Login.styles';
 
 interface LoginProps {
   navigation: NativeStackNavigationProp<RootStackParamList, 'Login'>;
@@ -33,6 +34,7 @@ const initialValues = {
 };
 
 function Login({ navigation }: LoginProps) {
+  const styles = useThemedStyles(makeStyles);
   const [loading, setLoading] = useState(false);
   const dispatch = useAppDispatch();
   const { isKeyboardVisible } = useKeyboardVisible();

@@ -18,6 +18,8 @@ import {
   fetchGetChannelById,
   fetchRemoveMemberFromChannel,
 } from '@/services/channels';
+import useTheme from '@/hooks/useTheme';
+import useThemedStyles from '@/hooks/useThemedStyles';
 import colors from '@/styles/colors';
 import { ChannelDetailDto, RootStackParamList } from '@/types';
 import { getApiErrorMessage } from '@/utils/getApiErrorMessage';
@@ -30,7 +32,7 @@ import { ScrollView, TouchableOpacity, View } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import Icon from 'react-native-remix-icon';
 import Loading from '../Loading';
-import styles from './ChannelDetail.styles';
+import makeStyles from './ChannelDetail.styles';
 
 interface FetchState {
   loading: boolean;
@@ -43,6 +45,8 @@ interface ChannelDetailProps {
 }
 
 function ChannelDetail({ navigation }: ChannelDetailProps) {
+  const styles = useThemedStyles(makeStyles);
+  const theme = useTheme();
   const { show } = useBubbleContentMenu();
 
   const [fetchResult, setFetchResult] = useState<FetchState>({
@@ -160,7 +164,7 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
                 {channelName}
               </Text>
 
-              <Text size="medium" color={colors.gray[400]} style={styles.centerText}>
+              <Text size="medium" color={theme.text.tertiary} style={styles.centerText}>
                 {channelDescription}
               </Text>
             </View>
@@ -168,22 +172,22 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
           <Divider />
           <View style={styles.metaSection}>
             <View style={styles.metaRow}>
-              <Text color={colors.gray[400]}>Channel ID</Text>
+              <Text color={theme.text.tertiary}>Channel ID</Text>
               <Text>#{channelInviteCode}</Text>
             </View>
             <View style={styles.metaRow}>
-              <Text color={colors.gray[400]}>Created</Text>
+              <Text color={theme.text.tertiary}>Created</Text>
               <Text>{format(new Date(channelCreatedAt), 'MMM yyyy')}</Text>
             </View>
             <View style={styles.metaRow}>
-              <Text color={colors.gray[400]}>Members</Text>
+              <Text color={theme.text.tertiary}>Members</Text>
               <Text>{channel.memberCount}</Text>
             </View>
           </View>
         </View>
 
         <View>
-          <Text size="medium" fontWeight="700" color={colors.gray[400]}>
+          <Text size="medium" fontWeight="700" color={theme.text.tertiary}>
             MEMBERS
           </Text>
           <View style={styles.card}>
@@ -194,24 +198,24 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
               }}
             >
               <View style={styles.rowLeading}>
-                <Icon name="ri-group-line" color={colors.gray[400]} />
+                <Icon name="ri-group-line" color={theme.text.tertiary} />
                 <Text fontWeight="700">View All Members</Text>
               </View>
               <View>
-                <Icon name="ri-arrow-right-s-line" size={24} color={colors.gray[400]} />
+                <Icon name="ri-arrow-right-s-line" size={24} color={theme.text.tertiary} />
               </View>
             </TouchableOpacity>
           </View>
         </View>
 
         <View>
-          <Text size="medium" fontWeight="700" color={colors.gray[400]}>
+          <Text size="medium" fontWeight="700" color={theme.text.tertiary}>
             NOTIFICATIONS
           </Text>
           <View style={styles.card}>
             <View style={[styles.row, styles.rowBordered]}>
               <View style={styles.rowLeading}>
-                <Icon name="ri-notification-line" color={colors.gray[400]} />
+                <Icon name="ri-notification-line" color={theme.text.tertiary} />
                 <Text fontWeight="700">Mute this Channel</Text>
               </View>
               <View>
@@ -220,7 +224,7 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
             </View>
             <View style={styles.row}>
               <View style={styles.rowLeading}>
-                <Icon name="ri-music-2-line" color={colors.gray[400]} />
+                <Icon name="ri-music-2-line" color={theme.text.tertiary} />
                 <Text fontWeight="700">Notification Sound</Text>
               </View>
               <View>
@@ -245,20 +249,20 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
                     }}
                   >
                     <View style={styles.rowLeading}>
-                      <Icon name="ri-edit-box-line" color={colors.gray[400]} />
+                      <Icon name="ri-edit-box-line" color={theme.text.tertiary} />
                       <Text fontWeight="700">Edit Channel Name</Text>
                     </View>
                     <View>
-                      <Icon name="ri-arrow-right-s-line" size={24} color={colors.gray[400]} />
+                      <Icon name="ri-arrow-right-s-line" size={24} color={theme.text.tertiary} />
                     </View>
                   </TouchableOpacity>
                   <TouchableOpacity style={[styles.row, styles.rowBordered]} onPress={() => {}}>
                     <View style={styles.rowLeading}>
-                      <Icon name="ri-image-edit-line" color={colors.gray[400]} />
+                      <Icon name="ri-image-edit-line" color={theme.text.tertiary} />
                       <Text fontWeight="700">Set/Change Thumbnail Image</Text>
                     </View>
                     <View>
-                      <Icon name="ri-arrow-right-s-line" size={24} color={colors.gray[400]} />
+                      <Icon name="ri-arrow-right-s-line" size={24} color={theme.text.tertiary} />
                     </View>
                   </TouchableOpacity>
                   <TouchableOpacity
@@ -268,11 +272,11 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
                     }}
                   >
                     <View style={styles.rowLeading}>
-                      <Icon name="ri-list-check" color={colors.gray[400]} />
+                      <Icon name="ri-list-check" color={theme.text.tertiary} />
                       <Text fontWeight="700">Edit Description</Text>
                     </View>
                     <View>
-                      <Icon name="ri-arrow-right-s-line" size={24} color={colors.gray[400]} />
+                      <Icon name="ri-arrow-right-s-line" size={24} color={theme.text.tertiary} />
                     </View>
                   </TouchableOpacity>
                   <TouchableOpacity
@@ -282,11 +286,11 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
                     }}
                   >
                     <View style={styles.rowLeading}>
-                      <Icon name="ri-shield-keyhole-line" color={colors.gray[400]} />
+                      <Icon name="ri-shield-keyhole-line" color={theme.text.tertiary} />
                       <Text fontWeight="700">Edit Join Policy</Text>
                     </View>
                     <View>
-                      <Icon name="ri-arrow-right-s-line" size={24} color={colors.gray[400]} />
+                      <Icon name="ri-arrow-right-s-line" size={24} color={theme.text.tertiary} />
                     </View>
                   </TouchableOpacity>
                 </>
@@ -300,11 +304,11 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
                   }}
                 >
                   <View style={styles.rowLeading}>
-                    <Icon name="ri-user-add-line" color={colors.gray[400]} />
+                    <Icon name="ri-user-add-line" color={theme.text.tertiary} />
                     <Text fontWeight="700">Pending Join Requests</Text>
                   </View>
                   <View>
-                    <Icon name="ri-arrow-right-s-line" size={24} color={colors.gray[400]} />
+                    <Icon name="ri-arrow-right-s-line" size={24} color={theme.text.tertiary} />
                   </View>
                 </TouchableOpacity>
               ) : null}
@@ -315,11 +319,11 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
                 }}
               >
                 <View style={styles.rowLeading}>
-                  <Icon name="ri-user-unfollow-line" color={colors.gray[400]} />
+                  <Icon name="ri-user-unfollow-line" color={theme.text.tertiary} />
                   <Text fontWeight="700">Remove a Member</Text>
                 </View>
                 <View>
-                  <Icon name="ri-arrow-right-s-line" size={24} color={colors.gray[400]} />
+                  <Icon name="ri-arrow-right-s-line" size={24} color={theme.text.tertiary} />
                 </View>
               </TouchableOpacity>
               <TouchableOpacity
@@ -329,11 +333,11 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
                 }}
               >
                 <View style={styles.rowLeading}>
-                  <Icon name="ri-forbid-line" color={colors.gray[400]} />
+                  <Icon name="ri-forbid-line" color={theme.text.tertiary} />
                   <Text fontWeight="700">Banned Members</Text>
                 </View>
                 <View>
-                  <Icon name="ri-arrow-right-s-line" size={24} color={colors.gray[400]} />
+                  <Icon name="ri-arrow-right-s-line" size={24} color={theme.text.tertiary} />
                 </View>
               </TouchableOpacity>
             </View>

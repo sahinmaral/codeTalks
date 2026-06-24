@@ -1,10 +1,11 @@
 import Button from '@/components/Button';
 import Text from '@/components/Text';
-import colors from '@/styles/colors';
+import useTheme from '@/hooks/useTheme';
+import useThemedStyles from '@/hooks/useThemedStyles';
 import React from 'react';
 import { Pressable, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-remix-icon';
-import styles, { ConfirmationDialogTheme, dialogThemes } from './ConfirmationDialog.styles';
+import makeStyles, { ConfirmationDialogTheme, dialogThemes } from './ConfirmationDialog.styles';
 
 interface ConfirmationDialogProps {
   visible: boolean;
@@ -31,6 +32,8 @@ function ConfirmationDialog({
   onConfirm,
   onCancel,
 }: ConfirmationDialogProps) {
+  const styles = useThemedStyles(makeStyles);
+  const appTheme = useTheme();
   if (!visible) return null;
 
   const themeStyle = dialogThemes[theme];
@@ -46,7 +49,7 @@ function ConfirmationDialog({
           {title}
         </Text>
 
-        <Text size="small" color={colors.gray[400]} style={styles.description}>
+        <Text size="small" color={appTheme.text.tertiary} style={styles.description}>
           {description}
         </Text>
 
@@ -66,7 +69,7 @@ function ConfirmationDialog({
             disabled={loading}
             activeOpacity={0.7}
           >
-            <Text size="medium" fontWeight="600" color={colors.gray[600]}>
+            <Text size="medium" fontWeight="600" color={appTheme.text.secondary}>
               {cancelTitle}
             </Text>
           </TouchableOpacity>

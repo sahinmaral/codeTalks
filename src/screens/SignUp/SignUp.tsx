@@ -8,7 +8,8 @@ import Input from '../../components/Input/Input';
 import Button from '../../components/Button/';
 import Text from '@/components/Text';
 import Footer from '@/components/Footer';
-import styles from './SignUp.styles';
+import useThemedStyles from '@/hooks/useThemedStyles';
+import makeStyles from './SignUp.styles';
 import validationSchema from '../../schemas/SignUpSchema';
 import colors from '../../styles/colors';
 import { RootStackParamList } from '../../types';
@@ -27,6 +28,7 @@ const initialValues = {
 };
 
 function SignUp({ navigation }: SignUpProps) {
+  const styles = useThemedStyles(makeStyles);
   const { isKeyboardVisible } = useKeyboardVisible();
 
   const handleSubmit = async (values: typeof initialValues) => {

@@ -1,10 +1,11 @@
 import Text from '@/components/Text';
+import useThemedStyles from '@/hooks/useThemedStyles';
 import colors from '@/styles/colors';
 import React from 'react';
 import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-remix-icon';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import styles from './Header.styles';
+import makeStyles from './Header.styles';
 
 interface HeaderProps {
   title: string;
@@ -23,6 +24,7 @@ const Header: React.FC<HeaderProps> = ({
   onRightIconPress,
   theme = 'primary',
 }) => {
+  const styles = useThemedStyles(makeStyles);
   const backgroundColorStyles = StyleSheet.create({
     primary: { backgroundColor: colors.orange[500] },
     danger: { backgroundColor: colors.red[600] },

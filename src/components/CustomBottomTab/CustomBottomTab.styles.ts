@@ -1,24 +1,25 @@
 import { StyleSheet } from 'react-native';
-import colors from '@/styles/colors';
+import { Theme } from '@/styles/themes';
 
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    backgroundColor: colors.white,
-    borderTopWidth: 1,
-    borderColor: colors.gray[100],
-  },
-  tab: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 10,
-    gap: 4,
-  },
-  label: {
-    fontSize: 11,
-    fontFamily: 'Montserrat_600',
-  },
-});
+const makeStyles = (theme: Theme) =>
+  StyleSheet.create({
+    container: {
+      flexDirection: 'row',
+      backgroundColor: theme.surface,
+      borderTopWidth: 1,
+      borderColor: theme.border,
+    },
+    tab: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingVertical: 10,
+      gap: 4,
+    },
+    label: {
+      fontSize: 11,
+      fontFamily: 'Montserrat_600',
+    },
+  });
 
-export default styles;
+export default makeStyles;

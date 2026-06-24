@@ -9,6 +9,8 @@ import getFullName from '@/helpers/getFullName';
 import useDebounce from '@/hooks/useDebounce';
 import { useAppSelector } from '@/redux/hooks';
 import { fetchGetUsersByChannelId, fetchRemoveMemberFromChannel } from '@/services/channels';
+import useTheme from '@/hooks/useTheme';
+import useThemedStyles from '@/hooks/useThemedStyles';
 import colors from '@/styles/colors';
 import { ChannelUser, RootStackParamList, UsersAtChannelListModel } from '@/types';
 import { getApiErrorMessage } from '@/utils/getApiErrorMessage';
@@ -25,7 +27,7 @@ import {
 } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import Loading from '../Loading';
-import styles from './RemoveMemberFromChannel.styles';
+import makeStyles from './RemoveMemberFromChannel.styles';
 
 type RemoveMemberFromChannelProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'RemoveMemberFromChannel'>;
@@ -42,6 +44,8 @@ const matchesSearch = (user: ChannelUser, term: string) => {
 };
 
 const RemoveMemberFromChannel = ({ navigation }: RemoveMemberFromChannelProps) => {
+  const styles = useThemedStyles(makeStyles);
+  const theme = useTheme();
   const currentUserId = useAppSelector(state => state.app.user?.id);
   const channelId = useAppSelector(state => state.activeChannel.channel?.id ?? '');
   const currentRole = useAppSelector(state => state.activeChannel.channel?.role);
@@ -157,7 +161,7 @@ const RemoveMemberFromChannel = ({ navigation }: RemoveMemberFromChannelProps) =
         <Input
           icon="ri-search-line"
           placeholder="Search members..."
-          containerStyle={{ borderRadius: 20, backgroundColor: colors.light }}
+          containerStyle={{ borderRadius: 20, backgroundColor: theme.input.background }}
           onChangeText={setSearch}
           value={search}
         />
@@ -172,7 +176,7 @@ const RemoveMemberFromChannel = ({ navigation }: RemoveMemberFromChannelProps) =
         {filteredAdmins.length > 0 && (
           <View>
             <View style={styles.adminMembersHeader}>
-              <Text fontWeight="700" color={colors.gray[400]}>
+              <Text fontWeight="700" color={theme.text.secondary}>
                 ADMINS
               </Text>
             </View>
@@ -205,7 +209,7 @@ const RemoveMemberFromChannel = ({ navigation }: RemoveMemberFromChannelProps) =
         {members.length > 0 && (
           <View>
             <View style={styles.adminMembersHeader}>
-              <Text fontWeight="700" color={colors.gray[400]}>
+              <Text fontWeight="700" color={theme.text.secondary}>
                 MEMBERS
               </Text>
             </View>
@@ -235,7 +239,7 @@ const RemoveMemberFromChannel = ({ navigation }: RemoveMemberFromChannelProps) =
 
         {!hasResults && (
           <View style={styles.adminMembersHeader}>
-            <Text color={colors.gray[400]} style={{ textAlign: 'center' }}>
+            <Text color={theme.text.secondary} style={{ textAlign: 'center' }}>
               {debouncedSearch
                 ? `"${debouncedSearch}" ile eşleşen kullanıcı bulunamadı.`
                 : 'Kanalda kullanıcı bulunamadı.'}

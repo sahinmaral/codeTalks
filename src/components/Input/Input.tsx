@@ -1,9 +1,10 @@
 import Text from '@/components/Text';
+import useTheme from '@/hooks/useTheme';
+import useThemedStyles from '@/hooks/useThemedStyles';
 import React, { useState } from 'react';
 import { TextInput, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-remix-icon';
-import colors from '../../styles/colors';
-import styles from './Input.styles';
+import makeStyles from './Input.styles';
 
 interface InputProps {
   placeholder?: string;
@@ -29,6 +30,8 @@ function Input({
   label,
   containerStyle,
 }: InputProps) {
+  const styles = useThemedStyles(makeStyles);
+  const theme = useTheme();
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [focused, setFocused] = useState(false);
 
@@ -42,7 +45,7 @@ function Input({
       <View
         style={[styles.inputContainer, focused && styles.inputContainerFocused, containerStyle]}
       >
-        {icon ? <Icon name={icon} color={colors.gray[500]} size={20} /> : null}
+        {icon ? <Icon name={icon} color={theme.text.secondary} size={20} /> : null}
         <TextInput
           placeholder={placeholder}
           onChangeText={onChangeText}
@@ -56,14 +59,14 @@ function Input({
           }}
           value={value ?? ''}
           secureTextEntry={isSecure && !passwordVisible}
-          placeholderTextColor={colors.gray[500]}
+          placeholderTextColor={theme.text.secondary}
           style={styles.input}
         />
         {isSecure ? (
           <TouchableOpacity onPress={() => setPasswordVisible(prev => !prev)}>
             <Icon
               name={passwordVisible ? 'eye-line' : 'eye-off-line'}
-              color={colors.gray[500]}
+              color={theme.text.secondary}
               size={20}
             />
           </TouchableOpacity>

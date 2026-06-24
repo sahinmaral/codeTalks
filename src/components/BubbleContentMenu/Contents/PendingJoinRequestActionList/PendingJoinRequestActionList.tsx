@@ -3,12 +3,13 @@ import Button from '@/components/Button';
 import Text from '@/components/Text';
 import ChannelUserStatus from '@/enums/ChannelUserStatus';
 import getFullName from '@/helpers/getFullName';
-import colors from '@/styles/colors';
+import useTheme from '@/hooks/useTheme';
+import useThemedStyles from '@/hooks/useThemedStyles';
 import { ChannelUser } from '@/types';
 import formatRelativeTime from '@/utils/formatRelativeTime';
 import React from 'react';
 import { Image, View } from 'react-native';
-import styles from './PendingJoinRequestActionList.styles';
+import makeStyles from './PendingJoinRequestActionList.styles';
 
 type PendingJoinRequestActionListProps = {
   user: ChannelUser;
@@ -16,6 +17,8 @@ type PendingJoinRequestActionListProps = {
 };
 
 function PendingJoinRequestActionList({ user, onSelect }: PendingJoinRequestActionListProps) {
+  const styles = useThemedStyles(makeStyles);
+  const theme = useTheme();
   const { hide } = useBubbleContentMenu();
 
   const fullName = getFullName(user);
@@ -36,9 +39,9 @@ function PendingJoinRequestActionList({ user, onSelect }: PendingJoinRequestActi
         <Text fontWeight="700" size="large">
           {fullName}
         </Text>
-        <Text color={colors.gray[400]}>@{user.userName}</Text>
+        <Text color={theme.text.tertiary}>@{user.userName}</Text>
         <View style={styles.requestedAtPill}>
-          <Text size="small" color={colors.gray[400]}>
+          <Text size="small" color={theme.text.tertiary}>
             Requested {formatRelativeTime(user.statusCreatedAt)}
           </Text>
         </View>
@@ -63,7 +66,7 @@ function PendingJoinRequestActionList({ user, onSelect }: PendingJoinRequestActi
           title="Ban User"
           onPress={() => handleSelect(ChannelUserStatus.Banned)}
         />
-        <Text size="small" color={colors.gray[400]} style={styles.blockHelperText}>
+        <Text size="small" color={theme.text.tertiary} style={styles.blockHelperText}>
           Blocked users cannot send join requests or see your profile.
         </Text>
       </View>

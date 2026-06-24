@@ -3,6 +3,8 @@ import Text from '@/components/Text';
 import ChannelJoinPolicy from '@/enums/ChannelJoinPolicy';
 import validationSchema from '@/schemas/CreateChannelSchema';
 import { fetchCreateChannel } from '@/services/channels';
+import useTheme from '@/hooks/useTheme';
+import useThemedStyles from '@/hooks/useThemedStyles';
 import colors from '@/styles/colors';
 import { getApiErrorMessage } from '@/utils/getApiErrorMessage';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
@@ -15,7 +17,7 @@ import Icon from 'react-native-remix-icon';
 import * as Yup from 'yup';
 import { useBubbleContentMenuScroll } from '../../BubbleContentMenu.context';
 import { useBubbleContentMenu } from '../../BubbleContentMenu.provider';
-import styles from './ChannelCreateModal.styles';
+import makeStyles from './ChannelCreateModal.styles';
 
 const JOIN_POLICIES = [
   { label: 'Request', value: ChannelJoinPolicy.Request, icon: 'mail-send-line' },
@@ -23,6 +25,8 @@ const JOIN_POLICIES = [
 ];
 
 function CreateChannelModal() {
+  const styles = useThemedStyles(makeStyles);
+  const theme = useTheme();
   const initialValues = { name: '', description: '', joinPolicy: ChannelJoinPolicy.Request };
   const [loading, setLoading] = useState(false);
   const { scrollTo } = useBubbleContentMenuScroll();
@@ -87,7 +91,7 @@ function CreateChannelModal() {
                 onFocus={() => scrollTo(groupYPositions.current[0] ?? 0)}
                 value={values.name}
                 placeholder="e.g. ui-ux-design"
-                placeholderTextColor={colors.gray[400]}
+                placeholderTextColor={theme.text.tertiary}
                 style={styles.input}
               />
             </View>
@@ -104,7 +108,7 @@ function CreateChannelModal() {
                 multiline={true}
                 numberOfLines={4}
                 placeholder="e.g. ui-ux-design"
-                placeholderTextColor={colors.gray[400]}
+                placeholderTextColor={theme.text.tertiary}
                 onChangeText={handleChange('description')}
                 onBlur={handleBlur('description')}
                 onFocus={() => scrollTo(groupYPositions.current[1] ?? 0)}
@@ -118,7 +122,7 @@ function CreateChannelModal() {
               <View style={styles.segmentContainer}>
                 {JOIN_POLICIES.map(policy => {
                   const isActive = values.joinPolicy === policy.value;
-                  const activeColor = isActive ? colors.orange[500] : colors.gray[500];
+                  const activeColor = isActive ? colors.orange[500] : theme.text.secondary;
                   return (
                     <TouchableOpacity
                       key={policy.value}

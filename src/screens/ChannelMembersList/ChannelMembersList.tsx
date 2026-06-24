@@ -8,6 +8,8 @@ import getFullName from '@/helpers/getFullName';
 import useDebounce from '@/hooks/useDebounce';
 import { useAppSelector } from '@/redux/hooks';
 import { fetchGetUsersByChannelId } from '@/services/channels';
+import useTheme from '@/hooks/useTheme';
+import useThemedStyles from '@/hooks/useThemedStyles';
 import colors from '@/styles/colors';
 import { ChannelUser, RootStackParamList, UsersAtChannelListModel } from '@/types';
 import { useFocusEffect } from '@react-navigation/native';
@@ -21,7 +23,7 @@ import {
   View,
 } from 'react-native';
 import Loading from '../Loading';
-import styles from './ChannelMembersList.styles';
+import makeStyles from './ChannelMembersList.styles';
 
 type ChannelMembersListProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'ChannelMembersList'>;
@@ -38,6 +40,8 @@ const matchesSearch = (user: ChannelUser, term: string) => {
 };
 
 const ChannelMembersList = ({ navigation }: ChannelMembersListProps) => {
+  const styles = useThemedStyles(makeStyles);
+  const theme = useTheme();
   const channelId = useAppSelector(state => state.activeChannel.channel?.id ?? '');
   const { show, hide } = useBubbleContentMenu();
 
@@ -145,7 +149,7 @@ const ChannelMembersList = ({ navigation }: ChannelMembersListProps) => {
         <Input
           icon="ri-search-line"
           placeholder="Search members..."
-          containerStyle={{ borderRadius: 20, backgroundColor: colors.light }}
+          containerStyle={{ borderRadius: 20, backgroundColor: theme.input.background }}
           onChangeText={setSearch}
           value={search}
         />
@@ -160,7 +164,7 @@ const ChannelMembersList = ({ navigation }: ChannelMembersListProps) => {
         {filteredAdmins.length > 0 && (
           <View>
             <View style={styles.adminMembersHeader}>
-              <Text fontWeight="700" color={colors.gray[400]}>
+              <Text fontWeight="700" color={theme.text.secondary}>
                 ADMINS
               </Text>
             </View>
@@ -186,7 +190,7 @@ const ChannelMembersList = ({ navigation }: ChannelMembersListProps) => {
         {members.length > 0 && (
           <View>
             <View style={styles.adminMembersHeader}>
-              <Text fontWeight="700" color={colors.gray[400]}>
+              <Text fontWeight="700" color={theme.text.secondary}>
                 MEMBERS
               </Text>
             </View>
@@ -213,7 +217,7 @@ const ChannelMembersList = ({ navigation }: ChannelMembersListProps) => {
 
         {!hasResults && (
           <View style={styles.adminMembersHeader}>
-            <Text color={colors.gray[400]} style={{ textAlign: 'center' }}>
+            <Text color={theme.text.secondary} style={{ textAlign: 'center' }}>
               {debouncedSearch
                 ? `"${debouncedSearch}" ile eşleşen kullanıcı bulunamadı.`
                 : 'Kanalda kullanıcı bulunamadı.'}

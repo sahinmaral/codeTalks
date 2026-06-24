@@ -1,17 +1,19 @@
 import Text from '@/components/Text';
 import UserAvatar from '@/components/UserAvatar';
 import { useAppSelector } from '@/redux/hooks';
+import useThemedStyles from '@/hooks/useThemedStyles';
 import colors from '@/styles/colors';
 import { Message } from '@/types';
 import React from 'react';
 import { View } from 'react-native';
-import styles from './MessageCard.styles';
+import makeStyles from './MessageCard.styles';
 
 interface MessageCardProps {
   messageDetail: Message;
 }
 
 function MessageCard({ messageDetail }: MessageCardProps) {
+  const styles = useThemedStyles(makeStyles);
   const user = useAppSelector(state => state.app.user);
 
   if (messageDetail.sender.id !== user!.id) {

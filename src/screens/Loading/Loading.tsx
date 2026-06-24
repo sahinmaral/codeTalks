@@ -1,14 +1,15 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Image, Animated, StyleSheet } from 'react-native';
+import { View, Image, Animated } from 'react-native';
 import Text from '@/components/Text';
-import colors from '../../styles/colors';
-import styles from './Loading.styles';
+import useThemedStyles from '@/hooks/useThemedStyles';
+import makeStyles from './Loading.styles';
 
 interface LoadingProps {
   text: string;
 }
 
 function Loading({ text }: LoadingProps) {
+  const styles = useThemedStyles(makeStyles);
   const dot1 = useRef(new Animated.Value(0.4)).current;
   const dot2 = useRef(new Animated.Value(0.4)).current;
   const dot3 = useRef(new Animated.Value(0.4)).current;

@@ -1,7 +1,9 @@
 import { ActivityIndicator, TextInput, TouchableOpacity, View } from 'react-native';
 import React, { useState } from 'react';
 import Icon from 'react-native-remix-icon';
-import styles from './ChannelMessagesList.styles';
+import makeStyles from './ChannelMessagesList.styles';
+import useTheme from '@/hooks/useTheme';
+import useThemedStyles from '@/hooks/useThemedStyles';
 import colors from '@/styles/colors';
 import { showMessage } from 'react-native-flash-message';
 import { fetchCreateMessage } from '@/services/messages';
@@ -21,6 +23,8 @@ const SendMessageInput = ({
   message,
   onMessageChange,
 }: SendMessageInputProps) => {
+  const styles = useThemedStyles(makeStyles);
+  const theme = useTheme();
   const [isLoading, setLoading] = useState(false);
 
   const handleSendMessage = async () => {
@@ -55,7 +59,7 @@ const SendMessageInput = ({
           value={message}
           onChangeText={onMessageChange}
           placeholder={`Message ${channelName}`}
-          placeholderTextColor={colors.gray[400]}
+          placeholderTextColor={theme.text.tertiary}
           multiline
         />
       </View>

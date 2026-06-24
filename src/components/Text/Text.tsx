@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text, TextProps, StyleSheet } from 'react-native';
+import useTheme from '@/hooks/useTheme';
 import styles from './Text.styles';
-import colors from '@/styles/colors';
 
 type AppTextProps = TextProps & {
   size?: 'small' | 'medium' | 'large' | 'xlarge' | 'xxlarge';
@@ -46,19 +46,21 @@ const weightMap: Record<string, string> = {
 function AppText({
   size = 'medium',
   fontWeight = '400',
-  color = 'black',
+  color,
   uppercase,
   style,
   ...props
 }: AppTextProps) {
+  const theme = useTheme();
   const flat = StyleSheet.flatten(style) ?? {};
   const fontFamily = weightMap[String(flat.fontWeight ?? fontWeight)] ?? 'Montserrat_400';
+  const resolvedColor = color ?? theme.text.primary;
 
   return (
     <Text
       style={[
         sizeStyles[size],
-        { color },
+        { color: resolvedColor },
         style,
         { fontFamily, fontWeight: undefined },
         uppercase && styles.uppercase,

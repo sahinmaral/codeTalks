@@ -1,32 +1,34 @@
 import { StyleSheet } from 'react-native';
-import colors from '../../styles/colors';
+import { Theme } from '../../styles/themes';
 
-const styles = StyleSheet.create({
-  container: {
-    gap: 10,
-  },
-  label: {
-    fontSize: 16,
-    color: colors.black,
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderRadius: 10,
-    paddingHorizontal: 10,
-    borderColor: colors.stone[300],
-    borderWidth: 1,
-    gap: 8,
-  },
-  inputContainerFocused: {
-    borderColor: colors.gray[500],
-  },
-  input: {
-    flex: 1,
-    paddingVertical: 10,
-    fontFamily: 'Montserrat_400',
-    color: colors.gray[500],
-  },
-});
+const makeStyles = (theme: Theme) =>
+  StyleSheet.create({
+    container: {
+      gap: 10,
+    },
+    label: {
+      fontSize: 16,
+      color: theme.text.primary,
+    },
+    inputContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      borderRadius: 10,
+      paddingHorizontal: 10,
+      borderColor: theme.input.border,
+      backgroundColor: theme.input.background,
+      borderWidth: 1,
+      gap: 8,
+    },
+    inputContainerFocused: {
+      borderColor: theme.input.focusedBorder,
+    },
+    input: {
+      flex: 1,
+      paddingVertical: 10,
+      fontFamily: 'Montserrat_400',
+      color: theme.text.primary,
+    },
+  });
 
-export default styles;
+export default makeStyles;

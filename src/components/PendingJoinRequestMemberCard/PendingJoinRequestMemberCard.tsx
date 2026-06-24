@@ -1,6 +1,7 @@
 import ChannelUserStatus from '@/enums/ChannelUserStatus';
+import useTheme from '@/hooks/useTheme';
+import useThemedStyles from '@/hooks/useThemedStyles';
 import getFullName from '@/helpers/getFullName';
-import colors from '@/styles/colors';
 import { ChannelUser } from '@/types';
 import formatRelativeTime from '@/utils/formatRelativeTime';
 import React from 'react';
@@ -9,7 +10,7 @@ import { useBubbleContentMenu } from '../BubbleContentMenu';
 import PendingJoinRequestActionList from '../BubbleContentMenu/Contents/PendingJoinRequestActionList';
 import Text from '../Text';
 import UserAvatar from '../UserAvatar';
-import styles from './PendingJoinRequestMemberCard.styles';
+import makeStyles from './PendingJoinRequestMemberCard.styles';
 
 type PendingJoinRequestMemberCardProps = {
   user: ChannelUser;
@@ -17,6 +18,8 @@ type PendingJoinRequestMemberCardProps = {
 };
 
 const PendingJoinRequestMemberCard = ({ user, onSubmit }: PendingJoinRequestMemberCardProps) => {
+  const styles = useThemedStyles(makeStyles);
+  const theme = useTheme();
   const fullName = getFullName(user);
 
   const { show } = useBubbleContentMenu();
@@ -32,10 +35,10 @@ const PendingJoinRequestMemberCard = ({ user, onSubmit }: PendingJoinRequestMemb
         <UserAvatar uri={user.profilePhotoURL} size={50} />
         <View style={styles.userInformationContainer}>
           <Text fontWeight="700">{fullName}</Text>
-          <Text color={colors.gray[400]}>@{user.userName}</Text>
+          <Text color={theme.text.tertiary}>@{user.userName}</Text>
         </View>
         <View style={styles.statusCreateAtContainer}>
-          <Text size="small" color={colors.gray[400]} style={{ textAlign: 'right' }}>
+          <Text size="small" color={theme.text.tertiary} style={{ textAlign: 'right' }}>
             {formatRelativeTime(user.statusCreatedAt)}
           </Text>
         </View>

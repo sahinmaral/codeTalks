@@ -5,6 +5,7 @@ import UserAvatar from '@/components/UserAvatar';
 import ChannelUserStatus from '@/enums/ChannelUserStatus';
 import { UserRole } from '@/enums/UserRole';
 import getFullName from '@/helpers/getFullName';
+import useTheme from '@/hooks/useTheme';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { setRoleOfCurrentUser } from '@/redux/reducers/activeChannelReducer';
 import {
@@ -38,6 +39,7 @@ function MembersActionList({ selectedUser, onActionComplete }: MembersActionList
   const fullName = getFullName(selectedUser);
 
   const currentChannel = useAppSelector(state => state.activeChannel.channel);
+  const theme = useTheme();
   if (!currentChannel) return null;
 
   const currentUserRoleAtChannel = currentChannel.role;
@@ -109,9 +111,9 @@ function MembersActionList({ selectedUser, onActionComplete }: MembersActionList
         <Text fontWeight="700" size="large">
           {fullName}
         </Text>
-        <Text color={colors.gray[400]}>@{selectedUser.userName}</Text>
+        <Text color={theme.text.tertiary}>@{selectedUser.userName}</Text>
         <View>
-          <Text size="small" color={colors.gray[400]}>
+          <Text size="small" color={theme.text.tertiary}>
             Joined {formatRelativeTime(selectedUser.statusCreatedAt)}
           </Text>
         </View>

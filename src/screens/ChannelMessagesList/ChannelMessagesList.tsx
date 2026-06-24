@@ -14,11 +14,12 @@ import ChannelCreatedMessageCard from '../../components/ChannelCreatedMessageCar
 import MessageCard from '../../components/MessageCard';
 import useSignalRConnection from '../../hooks/useSignalRConnection';
 import { useAppSelector } from '../../redux/hooks';
-import colors from '../../styles/colors';
+import useTheme from '@/hooks/useTheme';
+import useThemedStyles from '@/hooks/useThemedStyles';
 import { Message, PaginatedResult, RootStackParamList } from '../../types';
 import ErrorScreen from '../Error';
 import Loading from '../Loading';
-import styles from './ChannelMessagesList.styles';
+import makeStyles from './ChannelMessagesList.styles';
 import SendMessageInput from './SendMessageInput';
 
 interface ChannelMessagesListProps {
@@ -35,15 +36,20 @@ const formatDateLabel = (date: Date) => {
   return format(date, 'd MMMM yyyy');
 };
 
-const DateSeparator = ({ label }: { label: string }) => (
-  <View style={styles.dateSeparatorContainer}>
-    <View style={styles.dateSeparatorPill}>
-      <Text style={styles.dateSeparatorText}>{label}</Text>
+const DateSeparator = ({ label }: { label: string }) => {
+  const styles = useThemedStyles(makeStyles);
+  return (
+    <View style={styles.dateSeparatorContainer}>
+      <View style={styles.dateSeparatorPill}>
+        <Text style={styles.dateSeparatorText}>{label}</Text>
+      </View>
     </View>
-  </View>
-);
+  );
+};
 
 function ChannelMessagesList({ navigation }: ChannelMessagesListProps) {
+  const styles = useThemedStyles(makeStyles);
+  const theme = useTheme();
   const scrollViewRef = useRef<ScrollView>(null);
   const user = useAppSelector(state => state.app.user);
 
@@ -64,7 +70,11 @@ function ChannelMessagesList({ navigation }: ChannelMessagesListProps) {
 
   const pageSize = 30;
 
-  const { data: messages, error, retry } = useSignalRConnection<PaginatedResult<Message>>({
+  const {
+    data: messages,
+    error,
+    retry,
+  } = useSignalRConnection<PaginatedResult<Message>>({
     receiveEvent: 'ReceiveMessagesOfChannel',
     sendMethod: 'SendMessagesOfChannel',
     invokeArgs: [channelId, pageSize, pageIndex],
@@ -184,9 +194,9 @@ function ChannelMessagesList({ navigation }: ChannelMessagesListProps) {
         style={[
           { minHeight: 70 },
           hasLoaded && {
-            backgroundColor: colors.white,
+            backgroundColor: theme.surface,
             borderTopWidth: 1,
-            borderTopColor: colors.gray[300],
+            borderTopColor: theme.border,
           },
         ]}
       >

@@ -1,6 +1,8 @@
 import { useBubbleContentMenu } from '@/components/BubbleContentMenu/BubbleContentMenu.provider';
 import Text from '@/components/Text';
 import ModalType from '@/enums/ModalType';
+import useTheme from '@/hooks/useTheme';
+import useThemedStyles from '@/hooks/useThemedStyles';
 import colors from '@/styles/colors';
 import { AppNavigationProp } from '@/types';
 import { useNavigation } from '@react-navigation/native';
@@ -9,13 +11,15 @@ import { TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-remix-icon';
 import CreateChannelModal from '../CreateChannelModal';
 import SendJoinRequestModal from '../SendJoinRequestModal';
-import styles from './HomepageActionList.styles';
+import makeStyles from './HomepageActionList.styles';
 
 type HomepageActionListProps = {
   initialModalType?: ModalType;
 };
 
 function HomepageActionList({ initialModalType }: HomepageActionListProps) {
+  const styles = useThemedStyles(makeStyles);
+  const theme = useTheme();
   const { hide } = useBubbleContentMenu();
   const [activeModal, setActiveModal] = useState<ModalType | null>(initialModalType ?? null);
   const navigation = useNavigation<AppNavigationProp>();
@@ -51,7 +55,7 @@ function HomepageActionList({ initialModalType }: HomepageActionListProps) {
         <Text fontWeight="700" size="large">
           What would you like to do?
         </Text>
-        <Text color={colors.gray[400]}>Choose an action to get started</Text>
+        <Text color={theme.text.tertiary}>Choose an action to get started</Text>
       </View>
       <View style={styles.optionListContainer}>
         <TouchableOpacity
@@ -67,12 +71,12 @@ function HomepageActionList({ initialModalType }: HomepageActionListProps) {
             <Text style={styles.optionHeader} fontWeight="700">
               Create a Channel
             </Text>
-            <Text style={styles.optionDescription} color={colors.gray[400]}>
+            <Text style={styles.optionDescription} color={theme.text.tertiary}>
               Start your own community for developers
             </Text>
           </View>
           <View style={styles.optionArrowContainer}>
-            <Icon name="ri-arrow-right-s-line" size={24} color={colors.gray[400]} />
+            <Icon name="ri-arrow-right-s-line" size={24} color={theme.text.tertiary} />
           </View>
         </TouchableOpacity>
         <TouchableOpacity
@@ -88,12 +92,12 @@ function HomepageActionList({ initialModalType }: HomepageActionListProps) {
             <Text style={styles.optionHeader} fontWeight="700">
               Join a Channel
             </Text>
-            <Text style={styles.optionDescription} color={colors.gray[400]}>
+            <Text style={styles.optionDescription} color={theme.text.tertiary}>
               Enter a Channel ID to send a join request
             </Text>
           </View>
           <View style={styles.optionArrowContainer}>
-            <Icon name="ri-arrow-right-s-line" size={24} color={colors.gray[400]} />
+            <Icon name="ri-arrow-right-s-line" size={24} color={theme.text.tertiary} />
           </View>
         </TouchableOpacity>
         <TouchableOpacity
@@ -112,12 +116,12 @@ function HomepageActionList({ initialModalType }: HomepageActionListProps) {
             <Text style={styles.optionHeader} fontWeight="700">
               Explore Channels
             </Text>
-            <Text style={styles.optionDescription} color={colors.gray[400]}>
+            <Text style={styles.optionDescription} color={theme.text.tertiary}>
               Browse and discover public channels
             </Text>
           </View>
           <View style={styles.optionArrowContainer}>
-            <Icon name="ri-arrow-right-s-line" size={24} color={colors.gray[400]} />
+            <Icon name="ri-arrow-right-s-line" size={24} color={theme.text.tertiary} />
           </View>
         </TouchableOpacity>
       </View>

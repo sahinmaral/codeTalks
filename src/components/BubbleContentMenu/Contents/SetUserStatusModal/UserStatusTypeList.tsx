@@ -2,8 +2,10 @@ import { View, TouchableOpacity } from 'react-native';
 import Text from '@/components/Text';
 import React from 'react';
 import userStatusesData from '@/constants/userStatuses.json';
+import useTheme from '@/hooks/useTheme';
+import useThemedStyles from '@/hooks/useThemedStyles';
 import colors from '@/styles/colors';
-import styles from './UserStatusTypeList.styles';
+import makeStyles from './UserStatusTypeList.styles';
 import { UserStatusOption } from '@/types';
 import { UserStatusType } from '@/enums/UserStatusType';
 import Icon from 'react-native-remix-icon';
@@ -29,6 +31,8 @@ function UserStatusTypeList({
   currentUserStatusOption,
   handleUpdateUserStatus,
 }: UserStatusTypeListProps) {
+  const styles = useThemedStyles(makeStyles);
+  const theme = useTheme();
   return (
     <View style={styles.container}>
       {userStatusesData.map((userStatus, index) => {
@@ -47,7 +51,7 @@ function UserStatusTypeList({
                 backgroundColor:
                   currentUserStatusOption?.status === userStatus.status
                     ? colors.orange[100]
-                    : colors.white,
+                    : theme.surface,
               },
             ]}
           >
@@ -63,7 +67,7 @@ function UserStatusTypeList({
             </View>
             <View style={styles.contentContainer}>
               <Text fontWeight="700">{userStatus.label}</Text>
-              <Text color={colors.gray[400]}>{userStatus.description}</Text>
+              <Text color={theme.text.tertiary}>{userStatus.description}</Text>
             </View>
             <View style={styles.checkContainer}>
               {currentUserStatusOption?.status === userStatus.status ? (

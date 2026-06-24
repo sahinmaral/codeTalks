@@ -21,13 +21,22 @@ import {
   useFonts,
 } from '@expo-google-fonts/montserrat';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NavigationContainer } from '@react-navigation/native';
+import {
+  DarkTheme,
+  DefaultTheme,
+  NavigationContainer,
+  Theme as NavigationTheme,
+} from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as SplashScreen from 'expo-splash-screen';
+import { StatusBar } from 'expo-status-bar';
 import React, { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import useCheckInternet from './src/hooks/useCheckInternet';
-import { useAppSelector } from './src/redux/hooks';
+import useTheme from './src/hooks/useTheme';
+import { useAppDispatch, useAppSelector } from './src/redux/hooks';
+import { setThemeMode } from './src/redux/reducers/themeReducer';
+import { loadThemeMode } from './src/utils/themeStorage';
 import ChannelDetail from './src/screens/ChannelDetail';
 import ActiveChannelList from './src/screens/ChannelList/ActiveChannelList';
 import AllChannelList from './src/screens/ChannelList/AllChannelList';
@@ -94,6 +103,8 @@ const MainStack = () => (
 function App() {
   const user = useAppSelector(state => state.app.user);
   const { isConnected } = useCheckInternet();
+  const dispatch = useAppDispatch();
+  const theme = useTheme();
   const [fontsLoaded] = useFonts({
     Montserrat_100: Montserrat_100Thin,
     Montserrat_200: Montserrat_200ExtraLight,
@@ -112,13 +123,31 @@ function App() {
     }
   }, [fontsLoaded]);
 
+  useEffect(() => {
+    loadThemeMode().then(mode => {
+      if (mode) dispatch(setThemeMode(mode));
+    });
+  }, [dispatch]);
+
+  const navigationTheme: NavigationTheme = {
+    ...(theme.mode === 'dark' ? DarkTheme : DefaultTheme),
+    colors: {
+      ...(theme.mode === 'dark' ? DarkTheme : DefaultTheme).colors,
+      primary: theme.primary,
+      background: theme.background.primary,
+      card: theme.surface,
+      text: theme.text.primary,
+      border: theme.border,
+    },
+  };
+
   if (!fontsLoaded) return null;
 
   if (!isConnected) {
     return (
       <CheckInternet
         styles={{
-          container: { backgroundColor: colors.orange[500] },
+          container: { backgroundColor: theme.primary },
           text: { color: colors.white },
         }}
       />
@@ -127,8 +156,9 @@ function App() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
+      <StatusBar style={theme.mode === 'dark' ? 'light' : 'dark'} />
       <ConfirmationDialogProvider>
-        <NavigationContainer>
+        <NavigationContainer theme={navigationTheme}>
           <BubbleContentMenuProvider>
             {!user ? <AuthStack /> : <MainStack />}
           </BubbleContentMenuProvider>

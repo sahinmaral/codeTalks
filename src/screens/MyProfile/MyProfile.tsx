@@ -13,6 +13,8 @@ import { setProfile } from '@/redux/reducers/appReducer';
 import Error from '@/screens/Error';
 import Loading from '@/screens/Loading';
 import { fetchMe } from '@/services/auths';
+import useTheme from '@/hooks/useTheme';
+import useThemedStyles from '@/hooks/useThemedStyles';
 import colors from '@/styles/colors';
 import { ProfileStackParamList, UserStatusOption } from '@/types';
 import { getApiErrorMessage } from '@/utils/getApiErrorMessage';
@@ -23,7 +25,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { TouchableOpacity, View } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import Icon from 'react-native-remix-icon';
-import styles from './MyProfile.styles';
+import makeStyles from './MyProfile.styles';
 
 type MyProfileProps = {
   navigation: NativeStackNavigationProp<ProfileStackParamList, 'MyProfile'>;
@@ -42,6 +44,8 @@ const userPresenceStatuses: UserStatusOption[] = userStatusesData.map(item => ({
 }));
 
 function MyProfile({ navigation }: MyProfileProps) {
+  const styles = useThemedStyles(makeStyles);
+  const theme = useTheme();
   const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -121,7 +125,7 @@ function MyProfile({ navigation }: MyProfileProps) {
               <Text size="large" fontWeight="700" style={{ textAlign: 'center' }}>
                 {userFullname}
               </Text>
-              <Text color={colors.gray[400]} style={{ textAlign: 'center' }}>
+              <Text color={theme.text.tertiary} style={{ textAlign: 'center' }}>
                 @{user?.userName}
               </Text>
             </View>
@@ -139,7 +143,7 @@ function MyProfile({ navigation }: MyProfileProps) {
             </Text>
             <Text
               style={styles.additionalInformationCardDescription}
-              color={colors.gray[500]}
+              color={theme.text.secondary}
               fontWeight="400"
             >
               Channels
@@ -156,7 +160,7 @@ function MyProfile({ navigation }: MyProfileProps) {
             </Text>
             <Text
               style={styles.additionalInformationCardDescription}
-              color={colors.gray[500]}
+              color={theme.text.secondary}
               fontWeight="400"
             >
               Joined
@@ -188,7 +192,7 @@ function MyProfile({ navigation }: MyProfileProps) {
           <Icon
             name="arrow-right-s-line"
             size={20}
-            color={colors.gray[400]}
+            color={theme.text.tertiary}
             style={{ marginLeft: 10 }}
           />
         </TouchableOpacity>

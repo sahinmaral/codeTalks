@@ -4,7 +4,9 @@ import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Icon from 'react-native-remix-icon';
 import colors from '@/styles/colors';
-import styles from './CustomBottomTab.styles';
+import useTheme from '@/hooks/useTheme';
+import useThemedStyles from '@/hooks/useThemedStyles';
+import makeStyles from './CustomBottomTab.styles';
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 
 const TAB_ICONS: Record<string, { active: string; inactive: string }> = {
@@ -16,6 +18,8 @@ const TAB_ICONS: Record<string, { active: string; inactive: string }> = {
 const HIDDEN_ON_ROUTES = ['ChannelMessagesList'];
 
 const CustomBottomTab: React.FC<BottomTabBarProps> = ({ state, descriptors, navigation }) => {
+  const styles = useThemedStyles(makeStyles);
+  const theme = useTheme();
   const focusedRoute = state.routes[state.index];
   const focusedChildName = getFocusedRouteNameFromRoute(focusedRoute);
   if (focusedChildName && HIDDEN_ON_ROUTES.includes(focusedChildName)) {
@@ -65,10 +69,13 @@ const CustomBottomTab: React.FC<BottomTabBarProps> = ({ state, descriptors, navi
             <Icon
               name={isFocused ? icons.active : icons.inactive}
               size={24}
-              color={isFocused ? colors.orange[500] : colors.gray[400]}
+              color={isFocused ? colors.orange[500] : theme.text.tertiary}
             />
             <Text
-              style={[styles.label, { color: isFocused ? colors.orange[500] : colors.gray[400] }]}
+              style={[
+                styles.label,
+                { color: isFocused ? colors.orange[500] : theme.text.tertiary },
+              ]}
             >
               {label}
             </Text>

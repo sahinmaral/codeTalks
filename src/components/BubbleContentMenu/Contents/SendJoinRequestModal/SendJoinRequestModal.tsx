@@ -4,7 +4,8 @@ import Button from '@/components/Button';
 import Text from '@/components/Text';
 import ChannelUserStatus from '@/enums/ChannelUserStatus';
 import { fetchJoinChannel } from '@/services/channels';
-import colors from '@/styles/colors';
+import useTheme from '@/hooks/useTheme';
+import useThemedStyles from '@/hooks/useThemedStyles';
 import { getApiErrorMessage } from '@/utils/getApiErrorMessage';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { AxiosError } from 'axios';
@@ -13,9 +14,11 @@ import React, { useRef, useState } from 'react';
 import { View } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import * as Yup from 'yup';
-import styles from './SendJoinRequestModal.styles';
+import makeStyles from './SendJoinRequestModal.styles';
 
 function SendJoinRequestModal() {
+  const styles = useThemedStyles(makeStyles);
+  const theme = useTheme();
   const initialValues = { inviteCode: '' };
   const [loading, setLoading] = useState(false);
   const { hide } = useBubbleContentMenu();
@@ -66,7 +69,7 @@ function SendJoinRequestModal() {
       </View>
 
       <View style={styles.description}>
-        <Text size="medium" color={colors.gray[400]}>
+        <Text size="medium" color={theme.text.secondary}>
           Enter the invite code of the channel you want to join. You'll join open channels right
           away, or send a request that admins review for channels that require approval.
         </Text>
@@ -88,7 +91,7 @@ function SendJoinRequestModal() {
                 onFocus={() => scrollTo(groupYPositions.current[0] ?? 0)}
                 value={values.inviteCode}
                 placeholder="# Paste Invite Code here"
-                placeholderTextColor={colors.gray[400]}
+                placeholderTextColor={theme.text.tertiary}
                 style={styles.input}
               />
               {errors.inviteCode && <Text style={styles.inputError}>* {errors.inviteCode}</Text>}

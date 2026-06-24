@@ -4,18 +4,21 @@ import Text from '@/components/Text';
 import { ActivityIndicator, View } from 'react-native';
 import { useBubbleContentMenuScroll } from '@/components/BubbleContentMenu/BubbleContentMenu.context';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
-import styles from './UpdateChannelNameModal.styles';
+import makeStyles from './UpdateChannelNameModal.styles';
 import { showMessage } from 'react-native-flash-message';
 import { Formik } from 'formik';
 import validationSchema from '@/schemas/CreateChannelSchema';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { setActiveChannelName } from '@/redux/reducers/activeChannelReducer';
 import { fetchPatchChannel } from '@/services/channels';
-import colors from '@/styles/colors';
+import useTheme from '@/hooks/useTheme';
+import useThemedStyles from '@/hooks/useThemedStyles';
 import { useBubbleContentMenu } from '@/components/BubbleContentMenu/BubbleContentMenu.provider';
 import translateErrorMessage from '@/helpers/apiErrorTranslation';
 
 function UpdateChannelNameModal() {
+  const styles = useThemedStyles(makeStyles);
+  const theme = useTheme();
   const currentChannel = useAppSelector(state => state.activeChannel.channel);
   const selectedChannelId = currentChannel?.id ?? '';
   const currentChannelName = currentChannel?.name ?? '';
@@ -76,7 +79,7 @@ function UpdateChannelNameModal() {
                 onChangeText={handleChange('channelName')}
                 value={values.channelName}
                 placeholder="Enter channel name here"
-                placeholderTextColor={colors.gray[400]}
+                placeholderTextColor={theme.text.tertiary}
                 style={[styles.input, isFocused && styles.inputFocused]}
                 onFocus={() => {
                   scrollTo(groupYPositions.current[0] ?? 0);
@@ -88,7 +91,7 @@ function UpdateChannelNameModal() {
                 }}
               />
               {errors.channelName && <Text style={styles.inputError}>* {errors.channelName}</Text>}
-              <Text size="small" color={colors.gray[400]}>
+              <Text size="small" color={theme.text.secondary}>
                 Use lowercase letters, numbers and hypens only
               </Text>
             </View>

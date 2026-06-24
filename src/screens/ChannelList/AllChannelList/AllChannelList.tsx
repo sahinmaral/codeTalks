@@ -6,6 +6,8 @@ import useDebounce from '@/hooks/useDebounce';
 import ErrorScreen from '@/screens/Error';
 import Loading from '@/screens/Loading';
 import { fetchGetChannels } from '@/services/channels';
+import useTheme from '@/hooks/useTheme';
+import useThemedStyles from '@/hooks/useThemedStyles';
 import colors from '@/styles/colors';
 import { Channel, PaginatedResult } from '@/types';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -17,11 +19,13 @@ import {
   ScrollView,
   View,
 } from 'react-native';
-import styles from '../ChannelList.styles';
+import makeStyles from '../ChannelList.styles';
 
 const PAGE_SIZE = 10;
 
 function AllChannelList() {
+  const styles = useThemedStyles(makeStyles);
+  const theme = useTheme();
   const [channels, setChannels] = useState<Channel[]>([]);
   const [pageIndex, setPageIndex] = useState(0);
   const [hasNext, setHasNext] = useState(false);
@@ -175,7 +179,7 @@ function AllChannelList() {
             <Text size="large" fontWeight="700" style={{ textAlign: 'center' }}>
               No Channels Found
             </Text>
-            <Text color={colors.gray[500]} size="medium" style={{ textAlign: 'center' }}>
+            <Text color={theme.text.secondary} size="medium" style={{ textAlign: 'center' }}>
               {debouncedSearch
                 ? `"${debouncedSearch}" ile eşleşen kanal bulunamadı.`
                 : 'Try searching with a different keyword.'}

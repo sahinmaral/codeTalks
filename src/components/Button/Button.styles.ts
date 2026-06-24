@@ -1,4 +1,5 @@
 import { TextStyle, ViewStyle } from 'react-native';
+import { Theme } from '@/styles/themes';
 import colors from '../../styles/colors';
 
 type ButtonThemeStyle = {
@@ -29,7 +30,7 @@ const baseContainer: ViewStyle = {
   borderRadius: 10,
 };
 
-const styles: ButtonStyles = {
+const makeStyles = (theme: Theme): ButtonStyles => ({
   button: {
     primary: {
       container: { ...baseContainer, backgroundColor: colors.orange[500] },
@@ -38,7 +39,7 @@ const styles: ButtonStyles = {
     'primary-outline': {
       container: {
         ...baseContainer,
-        backgroundColor: colors.white,
+        backgroundColor: theme.surface,
         borderWidth: 1,
         borderColor: colors.orange[500],
       },
@@ -51,7 +52,7 @@ const styles: ButtonStyles = {
     'success-outline': {
       container: {
         ...baseContainer,
-        backgroundColor: colors.white,
+        backgroundColor: theme.surface,
         borderWidth: 1,
         borderColor: colors.green[500],
       },
@@ -64,7 +65,7 @@ const styles: ButtonStyles = {
     'danger-outline': {
       container: {
         ...baseContainer,
-        backgroundColor: colors.white,
+        backgroundColor: theme.surface,
         borderWidth: 1,
         borderColor: colors.red[500],
       },
@@ -77,7 +78,7 @@ const styles: ButtonStyles = {
     'warning-outline': {
       container: {
         ...baseContainer,
-        backgroundColor: colors.white,
+        backgroundColor: theme.surface,
         borderWidth: 1,
         borderColor: colors.yellow[500],
       },
@@ -88,6 +89,6 @@ const styles: ButtonStyles = {
       text: { color: colors.white },
     },
   },
-};
+});
 
-export default styles;
+export default makeStyles;

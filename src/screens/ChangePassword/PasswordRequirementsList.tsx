@@ -1,10 +1,12 @@
 import Text from '@/components/Text';
+import useTheme from '@/hooks/useTheme';
+import useThemedStyles from '@/hooks/useThemedStyles';
 import colors from '@/styles/colors';
 import React from 'react';
 import { View } from 'react-native';
 import Icon from 'react-native-remix-icon';
 import { PasswordRequirementsType } from './ChangePassword';
-import styles from './ChangePassword.styles';
+import makeStyles from './ChangePassword.styles';
 
 type PasswordRequirementsListProps = {
   passwordRequirements: PasswordRequirementsType;
@@ -18,6 +20,8 @@ const REQUIREMENTS: { key: keyof PasswordRequirementsType; label: string }[] = [
 ];
 
 const PasswordRequirementsList = ({ passwordRequirements }: PasswordRequirementsListProps) => {
+  const styles = useThemedStyles(makeStyles);
+  const theme = useTheme();
   return (
     <View style={styles.passwordRequirementsContainer}>
       <Text fontWeight="600">Password Requirements</Text>
@@ -30,16 +34,16 @@ const PasswordRequirementsList = ({ passwordRequirements }: PasswordRequirements
             <View
               style={[
                 styles.requirementCompletionIconContainer,
-                { borderColor: isMet ? colors.green[400] : colors.gray[400] },
+                { borderColor: isMet ? colors.green[400] : theme.text.tertiary },
               ]}
             >
               <Icon
                 size={14}
                 name={isMet ? 'ri-check-line' : 'ri-close-line'}
-                color={isMet ? colors.green[400] : colors.gray[400]}
+                color={isMet ? colors.green[400] : theme.text.tertiary}
               />
             </View>
-            <Text color={isMet ? colors.black : colors.gray[400]}>{label}</Text>
+            <Text color={isMet ? theme.text.primary : theme.text.tertiary}>{label}</Text>
           </View>
         );
       })}

@@ -4,18 +4,21 @@ import Text from '@/components/Text';
 import { ActivityIndicator, View } from 'react-native';
 import { useBubbleContentMenuScroll } from '@/components/BubbleContentMenu/BubbleContentMenu.context';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
-import styles from './UpdateChannelDescriptionModal.styles';
+import useTheme from '@/hooks/useTheme';
+import useThemedStyles from '@/hooks/useThemedStyles';
+import makeStyles from './UpdateChannelDescriptionModal.styles';
 import { showMessage } from 'react-native-flash-message';
 import { Formik } from 'formik';
 import validationSchema from '@/schemas/CreateChannelSchema';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { setActiveChannelDescription } from '@/redux/reducers/activeChannelReducer';
 import { fetchPatchChannel } from '@/services/channels';
-import colors from '@/styles/colors';
 import { useBubbleContentMenu } from '@/components/BubbleContentMenu/BubbleContentMenu.provider';
 import translateErrorMessage from '@/helpers/apiErrorTranslation';
 
 function UpdateChannelDescriptionModal() {
+  const styles = useThemedStyles(makeStyles);
+  const theme = useTheme();
   const currentChannel = useAppSelector(state => state.activeChannel.channel);
   const selectedChannelId = currentChannel?.id ?? '';
   const currentChannelDescription = currentChannel?.description ?? '';
@@ -79,7 +82,7 @@ function UpdateChannelDescriptionModal() {
                 onChangeText={handleChange('channelDescription')}
                 value={values.channelDescription}
                 placeholder="Enter channel description here"
-                placeholderTextColor={colors.gray[400]}
+                placeholderTextColor={theme.text.tertiary}
                 style={[styles.textArea, isFocused && styles.inputFocused]}
                 onFocus={() => {
                   scrollTo(groupYPositions.current[0] ?? 0);
@@ -93,7 +96,7 @@ function UpdateChannelDescriptionModal() {
               {errors.channelDescription && (
                 <Text style={styles.inputError}>* {errors.channelDescription}</Text>
               )}
-              <Text size="small" color={colors.gray[400]}>
+              <Text size="small" color={theme.text.secondary}>
                 Describe what your channel is about
               </Text>
             </View>

@@ -8,19 +8,21 @@ import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { clearUser } from '@/redux/reducers/appReducer';
 import ErrorScreen from '@/screens/Error';
 import Loading from '@/screens/Loading';
+import useThemedStyles from '@/hooks/useThemedStyles';
 import colors from '@/styles/colors';
 import { Channel, PaginatedResult, RootStackParamList } from '@/types';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React from 'react';
 import { ScrollView, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-remix-icon';
-import styles from '../ChannelList.styles';
+import makeStyles from '../ChannelList.styles';
 
 interface ActiveChannelListProps {
   navigation: NativeStackNavigationProp<RootStackParamList, 'ActiveChannelList'>;
 }
 
 function ActiveChannelList({ navigation }: ActiveChannelListProps) {
+  const styles = useThemedStyles(makeStyles);
   const user = useAppSelector(state => state.app.user);
   const { show, visible } = useBubbleContentMenu();
 

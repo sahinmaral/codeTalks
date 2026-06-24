@@ -5,12 +5,14 @@ import userStatusesData from '@/constants/userStatuses.json';
 import { UserStatusType } from '@/enums/UserStatusType';
 import translateErrorMessage from '@/helpers/apiErrorTranslation';
 import { fetchUpdateUserStatus } from '@/services/users';
+import useTheme from '@/hooks/useTheme';
+import useThemedStyles from '@/hooks/useThemedStyles';
 import colors from '@/styles/colors';
 import { UserStatus, UserStatusOption } from '@/types';
 import React, { useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
-import styles from './SetUserStatusModal.styles';
+import makeStyles from './SetUserStatusModal.styles';
 import UserStatusTypeList from './UserStatusTypeList';
 
 type SetUserStatusModalProps = {
@@ -31,6 +33,8 @@ const userPresenceStatuses: UserStatusOption[] = userStatusesData.map(item => ({
 }));
 
 function SetUserStatusModal({ currentUserStatus, onSuccess }: SetUserStatusModalProps) {
+  const styles = useThemedStyles(makeStyles);
+  const theme = useTheme();
   const initialValues = { channelId: '' };
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -69,7 +73,7 @@ function SetUserStatusModal({ currentUserStatus, onSuccess }: SetUserStatusModal
       </View>
 
       <View style={styles.description}>
-        <Text color={colors.gray[400]}>Currently: </Text>
+        <Text color={theme.text.secondary}>Currently: </Text>
         <Text size="medium" fontWeight="700" color={currentUserStatusOption?.color}>
           {currentUserStatusOption?.label}
         </Text>

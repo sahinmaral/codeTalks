@@ -2,9 +2,10 @@ import Button from '@/components/Button';
 import Text from '@/components/Text';
 import { useAppDispatch } from '@/redux/hooks';
 import { clearUser } from '@/redux/reducers/appReducer';
+import useThemedStyles from '@/hooks/useThemedStyles';
 import React from 'react';
 import { Image, View } from 'react-native';
-import styles from './Error.styles';
+import makeStyles from './Error.styles';
 
 interface ErrorProps {
   title?: string;
@@ -13,6 +14,7 @@ interface ErrorProps {
 }
 
 function Error({ description, title = 'Something went wrong', onRetry }: ErrorProps) {
+  const styles = useThemedStyles(makeStyles);
   const dispatch = useAppDispatch();
 
   const handleGoToLogin = () => {

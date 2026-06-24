@@ -1,8 +1,9 @@
 import Text from '@/components/Text';
+import useThemedStyles from '@/hooks/useThemedStyles';
 import React from 'react';
 import { ActivityIndicator, TouchableOpacity, ViewStyle } from 'react-native';
 import Icon from 'react-native-remix-icon';
-import styles from './Button.styles';
+import makeStyles from './Button.styles';
 
 type ButtonTheme =
   | 'primary'
@@ -34,6 +35,7 @@ function Button({
   theme = 'primary',
   loading,
 }: ButtonProps) {
+  const styles = useThemedStyles(makeStyles);
   return (
     <TouchableOpacity
       style={[styles.button[theme].container, style]}
