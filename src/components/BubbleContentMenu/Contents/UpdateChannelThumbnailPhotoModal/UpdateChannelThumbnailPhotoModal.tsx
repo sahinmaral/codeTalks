@@ -7,7 +7,7 @@ import { setActiveChannel } from '@/redux/reducers/activeChannelReducer';
 import {
   fetchDeleteChannelThumbnailPhoto,
   fetchUpdateChannelThumbnailPhoto,
-} from '@/services/channels';
+} from '@/services/apiServices/channels';
 import { buildImageFormData, pickImageFromLibrary } from '@/utils/imagePicker';
 import { notifyApiError } from '@/utils/notifyApiError';
 import * as ImagePicker from 'expo-image-picker';

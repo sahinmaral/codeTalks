@@ -4,7 +4,7 @@ import Text from '@/components/Text';
 import userStatusesData from '@/constants/userStatuses.json';
 import { UserStatusType } from '@/enums/UserStatusType';
 import translateErrorMessage from '@/helpers/apiErrorTranslation';
-import { fetchUpdateUserStatus } from '@/services/users';
+import { fetchUpdateUserStatus } from '@/services/apiServices/users';
 import useTheme from '@/hooks/useTheme';
 import useThemedStyles from '@/hooks/useThemedStyles';
 import colors from '@/styles/colors';

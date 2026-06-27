@@ -2,7 +2,7 @@ import Button from '@/components/Button';
 import Text from '@/components/Text';
 import ChannelJoinPolicy from '@/enums/ChannelJoinPolicy';
 import validationSchema from '@/schemas/CreateChannelSchema';
-import { fetchCreateChannel } from '@/services/channels';
+import { fetchCreateChannel } from '@/services/apiServices/channels';
 import useTheme from '@/hooks/useTheme';
 import useThemedStyles from '@/hooks/useThemedStyles';
 import colors from '@/styles/colors';
@@ -10,7 +10,7 @@ import { getApiErrorMessage } from '@/utils/getApiErrorMessage';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { AxiosError } from 'axios';
 import { Formik } from 'formik';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { TouchableOpacity, View } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import Icon from 'react-native-remix-icon';
@@ -29,10 +29,34 @@ function CreateChannelModal() {
   const theme = useTheme();
   const initialValues = { name: '', description: '', joinPolicy: ChannelJoinPolicy.Request };
   const [loading, setLoading] = useState(false);
-  const { scrollTo } = useBubbleContentMenuScroll();
+  const { scrollTo, setSheetHeight, setFooter } = useBubbleContentMenuScroll();
   const { hide } = useBubbleContentMenu();
   const formContainerScrollY = useRef(0);
   const groupYPositions = useRef<Record<number, number>>({});
+  // Formik's submit handler is only available inside its render-prop; keep the
+  // latest reference so the pinned footer button can trigger it.
+  const submitRef = useRef<() => void>(() => {});
+
+  // Pin the primary action in the sheet's sticky footer so it stays visible
+  // while the Channel Name / Description / Join Policy form scrolls.
+  useEffect(() => {
+    setFooter(
+      <Button
+        title={loading ? 'Creating channel...' : 'Create Channel'}
+        disabled={loading}
+        loading={loading}
+        onPress={() => submitRef.current()}
+      />,
+    );
+  }, [loading, setFooter]);
+
+  // Reset the shared sheet state when leaving this content.
+  useEffect(() => {
+    return () => {
+      setSheetHeight(null);
+      setFooter(null);
+    };
+  }, [setSheetHeight, setFooter]);
 
   const handleCreateChannel = async (values: typeof initialValues) => {
     try {
@@ -71,7 +95,9 @@ function CreateChannelModal() {
       </View>
 
       <Formik initialValues={initialValues} onSubmit={handleSubmit}>
-        {({ handleChange, handleBlur, handleSubmit: formikSubmit, setFieldValue, values }) => (
+        {({ handleChange, handleBlur, handleSubmit: formikSubmit, setFieldValue, values }) => {
+          submitRef.current = formikSubmit;
+          return (
           <View
             style={styles.formContainer}
             onLayout={e => {
@@ -100,7 +126,12 @@ function CreateChannelModal() {
               key={1}
               style={styles.formGroup}
               onLayout={e => {
-                groupYPositions.current[1] = formContainerScrollY.current + e.nativeEvent.layout.y;
+                const { y, height } = e.nativeEvent.layout;
+                groupYPositions.current[1] = formContainerScrollY.current + y;
+                // Size the scroll area to end at the bottom of the Description
+                // input; the sheet adds the pinned footer + handle on top, and
+                // Join Policy becomes reachable by scrolling.
+                setSheetHeight(formContainerScrollY.current + y + height);
               }}
             >
               <Text fontWeight="600">Description</Text>
@@ -139,16 +170,9 @@ function CreateChannelModal() {
                 })}
               </View>
             </View>
-
-            <Button
-              title={loading ? 'Creating channel...' : 'Create Channel'}
-              disabled={loading}
-              loading={loading}
-              style={styles.button}
-              onPress={formikSubmit}
-            />
           </View>
-        )}
+          );
+        }}
       </Formik>
     </View>
   );

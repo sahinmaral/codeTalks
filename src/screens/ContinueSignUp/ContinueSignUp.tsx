@@ -13,7 +13,7 @@ import Footer from '@/components/Footer';
 import useThemedStyles from '@/hooks/useThemedStyles';
 import makeStyles from './ContinueSignUp.styles';
 import validationSchema from '../../schemas/ContinueSignUpSchema';
-import { fetchSignUp } from '../../services/auths';
+import { fetchSignUp } from '@/services/apiServices/auths';
 import { RootStackParamList } from '../../types';
 import { getApiErrorMessage } from '@/utils/getApiErrorMessage';
 import { AxiosError } from 'axios';

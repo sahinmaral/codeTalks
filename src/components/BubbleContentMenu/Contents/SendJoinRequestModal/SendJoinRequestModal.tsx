@@ -3,7 +3,7 @@ import { useBubbleContentMenu } from '@/components/BubbleContentMenu/BubbleConte
 import Button from '@/components/Button';
 import Text from '@/components/Text';
 import ChannelUserStatus from '@/enums/ChannelUserStatus';
-import { fetchJoinChannel } from '@/services/channels';
+import { fetchJoinChannel } from '@/services/apiServices/channels';
 import useTheme from '@/hooks/useTheme';
 import useThemedStyles from '@/hooks/useThemedStyles';
 import { getApiErrorMessage } from '@/utils/getApiErrorMessage';

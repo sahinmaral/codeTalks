@@ -4,7 +4,7 @@ import Text from '@/components/Text';
 import UserAvatar from '@/components/UserAvatar';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { setUser } from '@/redux/reducers/appReducer';
-import { fetchDeleteUserProfilePhoto, fetchUpdateUserProfilePhoto } from '@/services/users';
+import { fetchDeleteUserProfilePhoto, fetchUpdateUserProfilePhoto } from '@/services/apiServices/users';
 import { buildImageFormData, pickImageFromLibrary } from '@/utils/imagePicker';
 import { notifyApiError } from '@/utils/notifyApiError';
 import * as ImagePicker from 'expo-image-picker';

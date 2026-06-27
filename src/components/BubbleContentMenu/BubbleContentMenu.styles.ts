@@ -18,6 +18,17 @@ const makeStyles = (theme: Theme) =>
     contentContainer: {
       backgroundColor: theme.surface,
     },
+    fixedContainer: {
+      flex: 1,
+    },
+    scrollContent: {
+      paddingBottom: 8,
+    },
+    footerContainer: {
+      paddingBottom: 36,
+      paddingTop: 8,
+      gap: 8,
+    },
     buttonsContainer: {
       paddingBottom: 36,
       paddingTop: 8,

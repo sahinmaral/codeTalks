@@ -7,7 +7,7 @@ import Text from '@/components/Text';
 import getFullName from '@/helpers/getFullName';
 import useDebounce from '@/hooks/useDebounce';
 import { useAppSelector } from '@/redux/hooks';
-import { fetchGetUsersByChannelId } from '@/services/channels';
+import { fetchGetUsersByChannelId } from '@/services/apiServices/channels';
 import useTheme from '@/hooks/useTheme';
 import useThemedStyles from '@/hooks/useThemedStyles';
 import colors from '@/styles/colors';

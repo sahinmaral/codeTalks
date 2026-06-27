@@ -12,7 +12,7 @@ import {
   fetchPatchUserRole,
   fetchPatchUserStatus,
   fetchRemoveMemberFromChannel,
-} from '@/services/channels';
+} from '@/services/apiServices/channels';
 import colors from '@/styles/colors';
 import { ChannelUser } from '@/types';
 import formatRelativeTime from '@/utils/formatRelativeTime';

@@ -5,7 +5,7 @@ import Text from '@/components/Text';
 import useDebounce from '@/hooks/useDebounce';
 import ErrorScreen from '@/screens/Error';
 import Loading from '@/screens/Loading';
-import { fetchGetChannels } from '@/services/channels';
+import { fetchGetChannels } from '@/services/apiServices/channels';
 import useTheme from '@/hooks/useTheme';
 import useThemedStyles from '@/hooks/useThemedStyles';
 import colors from '@/styles/colors';

@@ -5,7 +5,7 @@ import Text from '@/components/Text';
 import ChannelUserStatus from '@/enums/ChannelUserStatus';
 import useDebounce from '@/hooks/useDebounce';
 import { useAppSelector } from '@/redux/hooks';
-import { fetchGetUsersByChannelId, fetchPatchUserStatus } from '@/services/channels';
+import { fetchGetUsersByChannelId, fetchPatchUserStatus } from '@/services/apiServices/channels';
 import useTheme from '@/hooks/useTheme';
 import useThemedStyles from '@/hooks/useThemedStyles';
 import colors from '@/styles/colors';

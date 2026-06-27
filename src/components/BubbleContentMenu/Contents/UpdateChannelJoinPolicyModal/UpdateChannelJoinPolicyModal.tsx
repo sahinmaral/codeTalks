@@ -4,7 +4,7 @@ import Text from '@/components/Text';
 import ChannelJoinPolicy from '@/enums/ChannelJoinPolicy';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { setActiveChannelJoinPolicy } from '@/redux/reducers/activeChannelReducer';
-import { fetchPatchChannel } from '@/services/channels';
+import { fetchPatchChannel } from '@/services/apiServices/channels';
 import useTheme from '@/hooks/useTheme';
 import useThemedStyles from '@/hooks/useThemedStyles';
 import colors from '@/styles/colors';

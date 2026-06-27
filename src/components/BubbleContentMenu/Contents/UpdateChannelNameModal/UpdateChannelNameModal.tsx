@@ -10,7 +10,7 @@ import { Formik } from 'formik';
 import validationSchema from '@/schemas/CreateChannelSchema';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { setActiveChannelName } from '@/redux/reducers/activeChannelReducer';
-import { fetchPatchChannel } from '@/services/channels';
+import { fetchPatchChannel } from '@/services/apiServices/channels';
 import useTheme from '@/hooks/useTheme';
 import useThemedStyles from '@/hooks/useThemedStyles';
 import { useBubbleContentMenu } from '@/components/BubbleContentMenu/BubbleContentMenu.provider';

@@ -3,7 +3,7 @@ import Header from '@/components/Header';
 import Input from '@/components/Input';
 import Text from '@/components/Text';
 import validationSchema from '@/schemas/ChangePasswordSchema';
-import { fetchChangeUserPassword } from '@/services/users';
+import { fetchChangeUserPassword } from '@/services/apiServices/users';
 import useTheme from '@/hooks/useTheme';
 import useThemedStyles from '@/hooks/useThemedStyles';
 import { ProfileStackParamList } from '@/types';

@@ -11,15 +11,15 @@ import Header from '@/components/Header';
 import Text from '@/components/Text';
 import ChannelJoinPolicy from '@/enums/ChannelJoinPolicy';
 import { UserRole } from '@/enums/UserRole';
+import useTheme from '@/hooks/useTheme';
+import useThemedStyles from '@/hooks/useThemedStyles';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { setActiveChannel } from '@/redux/reducers/activeChannelReducer';
 import {
   fetchDeleteChannel,
   fetchGetChannelById,
   fetchRemoveMemberFromChannel,
-} from '@/services/channels';
-import useTheme from '@/hooks/useTheme';
-import useThemedStyles from '@/hooks/useThemedStyles';
+} from '@/services/apiServices/channels';
 import colors from '@/styles/colors';
 import { ChannelDetailDto, RootStackParamList } from '@/types';
 import { getApiErrorMessage } from '@/utils/getApiErrorMessage';

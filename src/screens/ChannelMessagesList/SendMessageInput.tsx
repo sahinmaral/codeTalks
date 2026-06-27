@@ -6,7 +6,7 @@ import useTheme from '@/hooks/useTheme';
 import useThemedStyles from '@/hooks/useThemedStyles';
 import colors from '@/styles/colors';
 import { showMessage } from 'react-native-flash-message';
-import { fetchCreateMessage } from '@/services/messages';
+import { fetchCreateMessage } from '@/services/apiServices/messages';
 
 type SendMessageInputProps = {
   channelName: string;
