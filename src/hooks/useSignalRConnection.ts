@@ -33,7 +33,7 @@ function useSignalRConnection<T>({
 
   useEffect(() => {
     const newConnection = new SignalR.HubConnectionBuilder()
-      .withUrl(`${process.env.EXPO_PUBLIC_API_BASE_URL}/chatHub`, {
+      .withUrl(`${process.env.EXPO_PUBLIC_API_BASE_URL}/hubs/chat`, {
         accessTokenFactory: () => getValidAccessToken(),
       })
       .withAutomaticReconnect()

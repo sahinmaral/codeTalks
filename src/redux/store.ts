@@ -1,15 +1,35 @@
-import { configureStore } from '@reduxjs/toolkit';
-import appReducer from './reducers/appReducer';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
+import { persistReducer, persistStore } from 'redux-persist';
 import activeChannelReducer from './reducers/activeChannelReducer';
+import appReducer from './reducers/appReducer';
 import themeReducer from './reducers/themeReducer';
 
-export const store = configureStore({
-  reducer: {
-    app: appReducer,
-    activeChannel: activeChannelReducer,
-    theme: themeReducer,
-  },
+const persistConfig = {
+  key: 'root',
+  storage: AsyncStorage,
+  whitelist: ['app', 'theme'],
+};
+
+const rootReducer = combineReducers({
+  app: appReducer,
+  activeChannel: activeChannelReducer,
+  theme: themeReducer,
 });
 
-export type RootState = ReturnType<typeof store.getState>;
+const persistedReducer = persistReducer(persistConfig, rootReducer);
+
+export const store = configureStore({
+  reducer: persistedReducer,
+  middleware: getDefaultMiddleware =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
+      },
+    }),
+});
+
+export const persistor = persistStore(store);
+
+export type RootState = ReturnType<typeof rootReducer>;
 export type AppDispatch = typeof store.dispatch;

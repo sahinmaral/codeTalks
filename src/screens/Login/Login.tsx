@@ -5,11 +5,19 @@ import Footer from '@/components/Footer';
 import Input from '@/components/Input/Input';
 import Text from '@/components/Text';
 import useKeyboardVisible from '@/hooks/useKeyboardVisible';
-import { useAppDispatch } from '@/redux/hooks';
-import { setUser } from '@/redux/reducers/appReducer';
-import validationSchema from '@/schemas/LoginSchema';
-import { fetchLogin } from '@/services/auths';
 import useThemedStyles from '@/hooks/useThemedStyles';
+import { useAppDispatch } from '@/redux/hooks';
+import {
+  setChannelMuteSettings,
+  setNotificationSettings,
+  setUser,
+} from '@/redux/reducers/appReducer';
+import validationSchema from '@/schemas/LoginSchema';
+import { fetchLogin } from '@/services/apiServices/auths';
+import {
+  fetchUserChannelMuteSettings,
+  fetchUserNotificationSettings,
+} from '@/services/apiServices/users';
 import colors from '@/styles/colors';
 import { RootStackParamList } from '@/types';
 import { getApiErrorMessage } from '@/utils/getApiErrorMessage';
@@ -48,6 +56,14 @@ function Login({ navigation }: LoginProps) {
         rememberMe: values.rememberMe,
       });
       dispatch(setUser(result.data));
+
+      const [notificationSettings, channelMuteSettings] = await Promise.all([
+        fetchUserNotificationSettings(),
+        fetchUserChannelMuteSettings(),
+      ]);
+      dispatch(setNotificationSettings(notificationSettings.data));
+      dispatch(setChannelMuteSettings(channelMuteSettings.data));
+
       showMessage({ message: 'Başarıyla giriş yaptınız', type: 'success' });
     } catch (exception) {
       throw exception;

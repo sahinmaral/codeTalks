@@ -62,6 +62,17 @@ export interface UserStatus {
   lastUpdated: string;
 }
 
+export interface UserNotificationSetting {
+  isEnabled: boolean;
+  isSoundEnabled: boolean;
+}
+
+export interface UserChannelMuteSetting {
+  channelId: string;
+  mutedUntil?: string;
+  isMuted: boolean;
+}
+
 export interface Channel {
   id: string;
   name: string;

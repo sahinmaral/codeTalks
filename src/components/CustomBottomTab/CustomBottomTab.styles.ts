@@ -1,5 +1,6 @@
-import { StyleSheet } from 'react-native';
+import colors from '@/styles/colors';
 import { Theme } from '@/styles/themes';
+import { StyleSheet } from 'react-native';
 
 const makeStyles = (theme: Theme) =>
   StyleSheet.create({
@@ -19,6 +20,23 @@ const makeStyles = (theme: Theme) =>
     label: {
       fontSize: 11,
       fontFamily: 'Montserrat_600',
+    },
+    badge: {
+      position: 'absolute',
+      top: -4,
+      right: -8,
+      backgroundColor: colors.orange[500],
+      borderRadius: 10,
+      minWidth: 18,
+      height: 18,
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingHorizontal: 4,
+    },
+    badgeText: {
+      color: colors.white,
+      fontSize: 10,
+      fontFamily: 'Montserrat_700Bold',
     },
   });
 

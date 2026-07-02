@@ -4,13 +4,17 @@ import Text from '@/components/Text';
 import useTheme from '@/hooks/useTheme';
 import useThemedStyles from '@/hooks/useThemedStyles';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { setNotificationSettings } from '@/redux/reducers/appReducer';
 import { setThemeMode } from '@/redux/reducers/themeReducer';
+import { fetchUpdateUserNotificationSettings } from '@/services/apiServices/users';
 import { ThemeMode } from '@/styles/themes';
 import { ProfileStackParamList } from '@/types';
-import { saveThemeMode } from '@/utils/themeStorage';
+import { getApiErrorMessage } from '@/utils/getApiErrorMessage';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { AxiosError } from 'axios';
 import React, { useState } from 'react';
 import { ScrollView, TouchableOpacity, View } from 'react-native';
+import { showMessage } from 'react-native-flash-message';
 import Icon from 'react-native-remix-icon';
 import makeStyles from './Settings.styles';
 
@@ -29,14 +33,38 @@ const Settings = ({ navigation }: SettingsProps) => {
   const theme = useTheme();
   const dispatch = useAppDispatch();
   const themeMode = useAppSelector(state => state.theme.mode);
+  const notificationSetting = useAppSelector(state => state.app.notificationSettings);
   const [settingValues, setSettingValues] = useState({
-    showMessageNotification: false,
-    alertSound: false,
+    showMessageNotification: notificationSetting ? notificationSetting.isEnabled : true,
+    alertSound: notificationSetting ? notificationSetting.isSoundEnabled : false,
   });
+
+  const [loading, setLoading] = useState(false);
 
   const handleThemeModeChange = (mode: ThemeMode) => {
     dispatch(setThemeMode(mode));
-    saveThemeMode(mode);
+  };
+
+  const handleUpdateNotificationSetting = async () => {
+    try {
+      setLoading(true);
+      await fetchUpdateUserNotificationSettings({ isSoundEnabled: !settingValues.alertSound });
+      dispatch(
+        setNotificationSettings({
+          isEnabled: settingValues.showMessageNotification,
+          isSoundEnabled: settingValues.alertSound,
+        }),
+      );
+      setSettingValues({ ...settingValues, alertSound: !settingValues.alertSound });
+    } catch (exception) {
+      if (exception instanceof AxiosError) {
+        showMessage({ message: getApiErrorMessage(exception), type: 'danger' });
+      } else {
+        showMessage({ message: 'An error occurred', type: 'danger' });
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -59,13 +87,9 @@ const Settings = ({ navigation }: SettingsProps) => {
               </View>
               <View style={styles.listItemOptionContainer}>
                 <CustomToggleSwitch
+                  disabled={true}
                   value={settingValues.showMessageNotification}
-                  onValueChange={() => {
-                    setSettingValues(prev => ({
-                      ...prev,
-                      showMessageNotification: !prev.showMessageNotification,
-                    }));
-                  }}
+                  onValueChange={() => {}}
                 />
               </View>
             </TouchableOpacity>
@@ -75,12 +99,10 @@ const Settings = ({ navigation }: SettingsProps) => {
               </View>
               <View style={styles.listItemOptionContainer}>
                 <CustomToggleSwitch
+                  disabled={loading}
                   value={settingValues.alertSound}
                   onValueChange={() => {
-                    setSettingValues(prev => ({
-                      ...prev,
-                      alertSound: !prev.alertSound,
-                    }));
+                    handleUpdateNotificationSetting();
                   }}
                 />
               </View>

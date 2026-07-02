@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "codeTalks",
-    "slug": "codeTalks",
+    "slug": "codetalks",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/logo.png",
@@ -13,7 +13,12 @@
     },
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.sahinmaral.codetalks"
+      "bundleIdentifier": "com.sahinmaral.codetalks",
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "remote-notification"
+        ]
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -21,9 +26,12 @@
         "backgroundColor": "#ffffff"
       },
       "softwareKeyboardLayoutMode": "resize",
-      "package": "com.sahinmaral.codetalks"
+      "package": "com.sahinmaral.codetalks",
+      "googleServicesFile": "./google-services.json"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "plugins": [
       "expo-font",
       [
@@ -31,7 +39,19 @@
         {
           "photosPermission": "codeTalks profil fotoğrafınızı güncellemek için galerinize erişmek istiyor."
         }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/logo.png",
+          "color": "#ffffff"
+        }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "51bb3a20-2564-4f2c-ab8c-13d851c690b1"
+      }
+    }
   }
 }

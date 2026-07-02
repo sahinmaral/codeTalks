@@ -1,11 +1,11 @@
 import { useBubbleContentMenu } from '@/components/BubbleContentMenu';
 import UpdateChannelDescriptionModal from '@/components/BubbleContentMenu/Contents/UpdateChannelDescriptionModal';
 import UpdateChannelJoinPolicyModal from '@/components/BubbleContentMenu/Contents/UpdateChannelJoinPolicyModal';
+import UpdateChannelMuteSettingModal from '@/components/BubbleContentMenu/Contents/UpdateChannelMuteSettingModal';
 import UpdateChannelNameModal from '@/components/BubbleContentMenu/Contents/UpdateChannelNameModal';
 import UpdateChannelThumbnailPhotoModal from '@/components/BubbleContentMenu/Contents/UpdateChannelThumbnailPhotoModal';
 import ChannelThumbnail from '@/components/ChannelThumbnail';
 import { useConfirmationDialog } from '@/components/ConfirmationDialog';
-import CustomToggleSwitch from '@/components/CustomToggleSwitch';
 import Divider from '@/components/Divider';
 import Header from '@/components/Header';
 import Text from '@/components/Text';
@@ -15,13 +15,16 @@ import useTheme from '@/hooks/useTheme';
 import useThemedStyles from '@/hooks/useThemedStyles';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { setActiveChannel } from '@/redux/reducers/activeChannelReducer';
+import { removeChannelMuteSetting } from '@/redux/reducers/appReducer';
 import {
   fetchDeleteChannel,
   fetchGetChannelById,
   fetchRemoveMemberFromChannel,
 } from '@/services/apiServices/channels';
+import { fetchUnmuteChannel } from '@/services/apiServices/users';
 import colors from '@/styles/colors';
 import { ChannelDetailDto, RootStackParamList } from '@/types';
+import { formatMutedUntil } from '@/utils/channelMuteSetting';
 import { getApiErrorMessage } from '@/utils/getApiErrorMessage';
 import { useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -59,7 +62,16 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
   const { confirm } = useConfirmationDialog();
 
   const user = useAppSelector(state => state.app.user);
+  const channelMuteSettings = useAppSelector(state => state.app.channelMuteSettings);
   const activeChannel = useAppSelector(state => state.activeChannel.channel);
+  const currentChannelMuteSetting = useMemo(() => {
+    return channelMuteSettings.find(setting => setting.channelId === activeChannel?.id);
+  }, [channelMuteSettings, activeChannel]);
+
+  const [isChannelMuted, setChannelMuted] = useState(
+    currentChannelMuteSetting ? currentChannelMuteSetting.isMuted : false,
+  );
+
   const channelId = activeChannel?.id ?? '';
   const channelName = activeChannel?.name ?? '';
   const channelDescription = activeChannel?.description;
@@ -85,6 +97,7 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
               role: response.data.role.name as UserRole,
             }),
           );
+          setChannelMuted(true);
         } catch (error) {
           setFetchResult(prev => ({ ...prev, error: error as Error }));
         } finally {
@@ -113,6 +126,22 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
       await fetchDeleteChannel(channelId);
       navigation.navigate('ActiveChannelList');
       showMessage({ message: 'You successfully deleted this channel', type: 'success' });
+    } catch (exception) {
+      if (exception instanceof AxiosError) {
+        showMessage({ message: getApiErrorMessage(exception), type: 'danger' });
+      } else {
+        showMessage({ message: 'An error occurred', type: 'danger' });
+      }
+    }
+  };
+
+  const handleUnmuteChannel = async () => {
+    try {
+      await fetchUnmuteChannel(channelId);
+      dispatch(removeChannelMuteSetting(channelId));
+      setChannelMuted(false);
+      navigation.navigate('ActiveChannelList');
+      showMessage({ message: 'You successfully unmuted this channel', type: 'success' });
     } catch (exception) {
       if (exception instanceof AxiosError) {
         showMessage({ message: getApiErrorMessage(exception), type: 'danger' });
@@ -213,24 +242,46 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
             NOTIFICATIONS
           </Text>
           <View style={styles.card}>
-            <View style={[styles.row, styles.rowBordered]}>
-              <View style={styles.rowLeading}>
-                <Icon name="ri-notification-line" color={theme.text.tertiary} />
-                <Text fontWeight="700">Mute this Channel</Text>
-              </View>
-              <View>
-                <CustomToggleSwitch value={true} onValueChange={() => {}} />
-              </View>
-            </View>
-            <View style={styles.row}>
-              <View style={styles.rowLeading}>
-                <Icon name="ri-music-2-line" color={theme.text.tertiary} />
-                <Text fontWeight="700">Notification Sound</Text>
-              </View>
-              <View>
-                <CustomToggleSwitch value={false} onValueChange={() => {}} />
-              </View>
-            </View>
+            {!isChannelMuted ? (
+              <TouchableOpacity
+                style={styles.row}
+                onPress={() => {
+                  show(<UpdateChannelMuteSettingModal />);
+                }}
+              >
+                <View style={styles.rowLeading}>
+                  <Icon name="ri-notification-line" color={theme.text.tertiary} />
+                  <Text fontWeight="700">Mute this Channel</Text>
+                </View>
+                <View>
+                  <Icon name="ri-arrow-right-s-line" size={24} color={theme.text.tertiary} />
+                </View>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                style={styles.row}
+                onPress={() => {
+                  confirm({
+                    theme: 'warning',
+                    icon: 'ri-notification-off-line',
+                    title: 'Unmute Channel?',
+                    description: `Are you sure you want to unmute #${channelName}? You will start receiving notifications from this channel again.`,
+                    confirmTitle: 'Unmute Channel',
+                    onConfirm: () => handleUnmuteChannel(),
+                  });
+                }}
+              >
+                <View style={styles.rowLeading}>
+                  <Icon name="ri-notification-off-line" color={theme.text.tertiary} />
+                  <Text fontWeight="700">
+                    Muted until {formatMutedUntil(currentChannelMuteSetting?.mutedUntil)}
+                  </Text>
+                </View>
+                <View>
+                  <Icon name="ri-arrow-right-s-line" size={24} color={theme.text.tertiary} />
+                </View>
+              </TouchableOpacity>
+            )}
           </View>
         </View>
 

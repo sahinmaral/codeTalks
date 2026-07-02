@@ -1,4 +1,11 @@
 import Header from '@/components/Header';
+import useTheme from '@/hooks/useTheme';
+import useThemedStyles from '@/hooks/useThemedStyles';
+import { resetChannelUnreadCount, setTotalUnreadCount } from '@/redux/reducers/appReducer';
+import {
+  fetchGetUnreadCount,
+  fetchResetChannelUnreadCount,
+} from '@/services/apiServices/notifications';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { format, isToday, isYesterday, parseISO } from 'date-fns';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
@@ -13,9 +20,7 @@ import {
 import ChannelCreatedMessageCard from '../../components/ChannelCreatedMessageCard';
 import MessageCard from '../../components/MessageCard';
 import useSignalRConnection from '../../hooks/useSignalRConnection';
-import { useAppSelector } from '../../redux/hooks';
-import useTheme from '@/hooks/useTheme';
-import useThemedStyles from '@/hooks/useThemedStyles';
+import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { Message, PaginatedResult, RootStackParamList } from '../../types';
 import ErrorScreen from '../Error';
 import Loading from '../Loading';
@@ -50,10 +55,11 @@ const DateSeparator = ({ label }: { label: string }) => {
 function ChannelMessagesList({ navigation }: ChannelMessagesListProps) {
   const styles = useThemedStyles(makeStyles);
   const theme = useTheme();
+  const dispatch = useAppDispatch();
   const scrollViewRef = useRef<ScrollView>(null);
   const user = useAppSelector(state => state.app.user);
-
   const activeChannel = useAppSelector(state => state.activeChannel.channel);
+
   const channelId = activeChannel?.id ?? '';
   const channelName = activeChannel?.name ?? '';
   const channelCreatedAt = activeChannel?.createdAt ?? '';
@@ -79,6 +85,21 @@ function ChannelMessagesList({ navigation }: ChannelMessagesListProps) {
     sendMethod: 'SendMessagesOfChannel',
     invokeArgs: [channelId, pageSize, pageIndex],
   });
+
+  useEffect(() => {
+    if (!channelId) return;
+
+    const resetUnread = async () => {
+      try {
+        await fetchResetChannelUnreadCount(channelId);
+        dispatch(resetChannelUnreadCount(channelId));
+        const { data: newTotal } = await fetchGetUnreadCount();
+        dispatch(setTotalUnreadCount(newTotal));
+      } catch {}
+    };
+
+    resetUnread();
+  }, [channelId]);
 
   useEffect(() => {
     if (!messages) return;

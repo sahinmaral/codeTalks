@@ -16,7 +16,7 @@ function MessageCard({ messageDetail }: MessageCardProps) {
   const styles = useThemedStyles(makeStyles);
   const user = useAppSelector(state => state.app.user);
 
-  if (messageDetail.sender.id !== user!.id) {
+  if (!user || messageDetail.sender.id !== user.id) {
     return (
       <View style={styles.container}>
         <View style={styles.userProfilePhotoContainer}>

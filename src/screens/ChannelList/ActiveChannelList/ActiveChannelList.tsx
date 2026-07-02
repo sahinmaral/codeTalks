@@ -4,14 +4,17 @@ import HomepageActionList from '@/components/BubbleContentMenu/Contents/Homepage
 import Header from '@/components/Header';
 import NoChannelRegisteredCard from '@/components/NoChannelRegisteredCard';
 import useSignalRConnection from '@/hooks/useSignalRConnection';
+import useThemedStyles from '@/hooks/useThemedStyles';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { clearUser } from '@/redux/reducers/appReducer';
 import ErrorScreen from '@/screens/Error';
 import Loading from '@/screens/Loading';
-import useThemedStyles from '@/hooks/useThemedStyles';
+import { fetchRemoveDevice } from '@/services/apiServices/devices';
 import colors from '@/styles/colors';
 import { Channel, PaginatedResult, RootStackParamList } from '@/types';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import Constants from 'expo-constants';
+import * as Notifications from 'expo-notifications';
 import React from 'react';
 import { ScrollView, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-remix-icon';
@@ -28,8 +31,17 @@ function ActiveChannelList({ navigation }: ActiveChannelListProps) {
 
   const dispatch = useAppDispatch();
 
-  const handleLogout = () => {
-    dispatch(clearUser());
+  const handleLogout = async () => {
+    try {
+      const token = await Notifications.getExpoPushTokenAsync({
+        projectId: Constants.expoConfig?.extra?.eas?.projectId,
+      });
+      await fetchRemoveDevice(token.data);
+    } catch (e) {
+      // don't block logout if this fails
+    } finally {
+      dispatch(clearUser());
+    }
   };
 
   const {

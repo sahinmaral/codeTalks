@@ -67,6 +67,8 @@ const makeStyles = (theme: Theme) =>
       borderBottomWidth: 1,
     },
     rowLeading: {
+      width: '100%',
+      marginRight: -10,
       flexDirection: 'row',
       gap: 10,
     },

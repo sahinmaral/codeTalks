@@ -1,13 +1,14 @@
-import React from 'react';
-import { View, TouchableOpacity, Text } from 'react-native';
-import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Icon from 'react-native-remix-icon';
-import colors from '@/styles/colors';
 import useTheme from '@/hooks/useTheme';
 import useThemedStyles from '@/hooks/useThemedStyles';
-import makeStyles from './CustomBottomTab.styles';
+import { useAppSelector } from '@/redux/hooks';
+import colors from '@/styles/colors';
+import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
+import React from 'react';
+import { Text, TouchableOpacity, View } from 'react-native';
+import Icon from 'react-native-remix-icon';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import makeStyles from './CustomBottomTab.styles';
 
 const TAB_ICONS: Record<string, { active: string; inactive: string }> = {
   Channels: { active: 'chat-3-fill', inactive: 'chat-3-line' },
@@ -20,6 +21,7 @@ const HIDDEN_ON_ROUTES = ['ChannelMessagesList'];
 const CustomBottomTab: React.FC<BottomTabBarProps> = ({ state, descriptors, navigation }) => {
   const styles = useThemedStyles(makeStyles);
   const theme = useTheme();
+  const totalUnreadCount = useAppSelector(state => state.app.totalUnreadCount);
   const focusedRoute = state.routes[state.index];
   const focusedChildName = getFocusedRouteNameFromRoute(focusedRoute);
   if (focusedChildName && HIDDEN_ON_ROUTES.includes(focusedChildName)) {
@@ -66,11 +68,20 @@ const CustomBottomTab: React.FC<BottomTabBarProps> = ({ state, descriptors, navi
             onLongPress={onLongPress}
             style={styles.tab}
           >
-            <Icon
-              name={isFocused ? icons.active : icons.inactive}
-              size={24}
-              color={isFocused ? colors.orange[500] : theme.text.tertiary}
-            />
+            <View>
+              <Icon
+                name={isFocused ? icons.active : icons.inactive}
+                size={24}
+                color={isFocused ? colors.orange[500] : theme.text.tertiary}
+              />
+              {route.name === 'Channels' && totalUnreadCount > 0 && (
+                <View style={styles.badge}>
+                  <Text style={styles.badgeText}>
+                    {totalUnreadCount > 99 ? '99+' : totalUnreadCount}
+                  </Text>
+                </View>
+              )}
+            </View>
             <Text
               style={[
                 styles.label,

@@ -18,12 +18,19 @@ export async function getValidAccessToken(): Promise<string> {
   }
 
   if (!refreshPromise) {
-    refreshPromise = doRefresh(user.refreshToken).finally(() => {
-      refreshPromise = null;
-    });
+    refreshPromise = doRefresh(user.refreshToken)
+      .catch(error => {
+        // Refresh is the last resort; if it fails the session is dead, so log
+        // the user off rather than leaving them with an unusable token.
+        store.dispatch(clearUser());
+        throw error;
+      })
+      .finally(() => {
+        refreshPromise = null;
+      });
   }
 
-  return refreshPromise;
+  return refreshPromise.catch(() => '');
 }
 
 async function doRefresh(refreshToken: string): Promise<string> {
@@ -51,11 +58,19 @@ async function doRefresh(refreshToken: string): Promise<string> {
 
 function isAccessTokenExpired(token: string): boolean {
   try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
+    const payload = JSON.parse(decodeBase64Url(token.split('.')[1]));
     return payload.exp * 1000 < Date.now() + 30_000; // 30s buffer
   } catch {
     return true;
   }
+}
+
+// JWT segments are base64url (`-`/`_`, no padding); atob expects standard
+// base64, so normalise before decoding or it throws on certain tokens.
+function decodeBase64Url(segment: string): string {
+  const base64 = segment.replace(/-/g, '+').replace(/_/g, '/');
+  const padded = base64.padEnd(base64.length + ((4 - (base64.length % 4)) % 4), '=');
+  return atob(padded);
 }
 
 function isRefreshTokenExpired(refreshTokenExpires: string): boolean {

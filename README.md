@@ -10,7 +10,6 @@ Projeyi çalıştırmadan önce kök dizinde bir `.env` dosyası oluşturup aşa
 
 ```env
 EXPO_PUBLIC_API_URL=        # Back-end REST API'nin temel URL'i (örn. http://localhost:5000/api)
-EXPO_PUBLIC_SIGNALR_API_URL= # SignalR Hub'ının URL'i (örn. http://localhost:5000/chatHub)
 ```
 
 ## Roadmap

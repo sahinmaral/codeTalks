@@ -1,6 +1,10 @@
 import { BubbleContentMenuProvider } from '@/components/BubbleContentMenu';
 import { ConfirmationDialogProvider } from '@/components/ConfirmationDialog';
 import CustomBottomTab from '@/components/CustomBottomTab';
+import { useNotificationHandler } from '@/hooks/useNotificationHandler';
+import { useNotificationHub } from '@/hooks/useNotificationHub';
+import { usePushNotifications } from '@/hooks/usePushNotifications';
+import { setTotalUnreadCount } from '@/redux/reducers/appReducer';
 import ChangePassword from '@/screens/ChangePassword';
 import ChannelBannedMembersList from '@/screens/ChannelBannedMembersList';
 import ChannelMembersList from '@/screens/ChannelMembersList';
@@ -8,6 +12,8 @@ import ChannelPendingJoinRequestsList from '@/screens/ChannelPendingJoinRequests
 import MyProfile from '@/screens/MyProfile';
 import RemoveMemberFromChannel from '@/screens/RemoveMemberFromChannel';
 import Settings from '@/screens/Settings';
+import { fetchGetUnreadCount } from '@/services/apiServices/notifications';
+import { navigationRef } from '@/utils/navigationRef';
 import {
   Montserrat_100Thin,
   Montserrat_200ExtraLight,
@@ -35,8 +41,6 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import useCheckInternet from './src/hooks/useCheckInternet';
 import useTheme from './src/hooks/useTheme';
 import { useAppDispatch, useAppSelector } from './src/redux/hooks';
-import { setThemeMode } from './src/redux/reducers/themeReducer';
-import { loadThemeMode } from './src/utils/themeStorage';
 import ChannelDetail from './src/screens/ChannelDetail';
 import ActiveChannelList from './src/screens/ChannelList/ActiveChannelList';
 import AllChannelList from './src/screens/ChannelList/AllChannelList';
@@ -102,8 +106,13 @@ const MainStack = () => (
 
 function App() {
   const user = useAppSelector(state => state.app.user);
-  const { isConnected } = useCheckInternet();
   const dispatch = useAppDispatch();
+
+  usePushNotifications(user?.id);
+  useNotificationHub(user != null);
+  useNotificationHandler();
+
+  const { isConnected } = useCheckInternet();
   const theme = useTheme();
   const [fontsLoaded] = useFonts({
     Montserrat_100: Montserrat_100Thin,
@@ -124,10 +133,12 @@ function App() {
   }, [fontsLoaded]);
 
   useEffect(() => {
-    loadThemeMode().then(mode => {
-      if (mode) dispatch(setThemeMode(mode));
+    if (!user) return;
+
+    fetchGetUnreadCount().then(({ data }) => {
+      dispatch(setTotalUnreadCount(data));
     });
-  }, [dispatch]);
+  }, [user]);
 
   const navigationTheme: NavigationTheme = {
     ...(theme.mode === 'dark' ? DarkTheme : DefaultTheme),
@@ -158,7 +169,7 @@ function App() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <StatusBar style={theme.mode === 'dark' ? 'light' : 'dark'} />
       <ConfirmationDialogProvider>
-        <NavigationContainer theme={navigationTheme}>
+        <NavigationContainer ref={navigationRef} theme={navigationTheme}>
           <BubbleContentMenuProvider>
             {!user ? <AuthStack /> : <MainStack />}
           </BubbleContentMenuProvider>

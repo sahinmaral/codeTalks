@@ -27,6 +27,7 @@ const makeStyles = (theme: Theme) =>
       gap: 15,
     },
     titleContainer: { flexDirection: 'column' },
+    titleRow: { flexDirection: 'row', alignItems: 'center', gap: 5 },
     memberContainer: { flexDirection: 'row', alignItems: 'center', gap: 5 },
     unreadMessageContainer: { flex: 1 / 10 },
     unreadMessageBadge: {
