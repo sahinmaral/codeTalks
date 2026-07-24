@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 import Icon from 'react-native-remix-icon';
 import colors from '@/styles/colors';
@@ -12,6 +13,7 @@ import { useBubbleContentMenu } from '@/components/BubbleContentMenu/BubbleConte
 import HomepageActionList from '@/components/BubbleContentMenu/Contents/HomepageActionList';
 
 function NoChannelRegisteredCard() {
+  const { t } = useTranslation();
   const styles = useThemedStyles(makeStyles);
   const theme = useTheme();
   const { show } = useBubbleContentMenu();
@@ -27,22 +29,22 @@ function NoChannelRegisteredCard() {
       </View>
       <View style={styles.textContainer}>
         <Text size="large" fontWeight="700" style={{ textAlign: 'center' }}>
-          No Active Channels
+          {t('components.noActiveChannels')}
         </Text>
         <Text color={theme.text.secondary} size="medium" style={{ textAlign: 'center' }}>
-          You haven't joined any channels yet. Explore and find communities that interest you!
+          {t('components.noChannelsDescription')}
         </Text>
       </View>
       <View style={styles.buttonGroupContainer}>
         <Button
-          title="Create Channel"
+          title={t('components.createChannel')}
           icon="ri-add-line"
           style={styles.button}
           onPress={() => handleSubmit(ModalType.ChannelCreate)}
         />
         <Button
           theme="primary-outline"
-          title="Join With Channel ID"
+          title={t('components.joinWithChannelId')}
           icon="ri-send-plane-fill"
           style={styles.button}
           onPress={() => handleSubmit(ModalType.SendInviteToChannel)}

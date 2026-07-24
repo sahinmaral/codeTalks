@@ -29,8 +29,10 @@ import { getApiErrorMessage } from '@/utils/getApiErrorMessage';
 import { useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AxiosError } from 'axios';
+import { getDateFnsLocale } from '@/utils/dateFnsLocale';
 import { format } from 'date-fns';
 import React, { useCallback, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ScrollView, TouchableOpacity, View } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import Icon from 'react-native-remix-icon';
@@ -48,6 +50,7 @@ interface ChannelDetailProps {
 }
 
 function ChannelDetail({ navigation }: ChannelDetailProps) {
+  const { t } = useTranslation();
   const styles = useThemedStyles(makeStyles);
   const theme = useTheme();
   const { show } = useBubbleContentMenu();
@@ -111,12 +114,12 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
     try {
       await fetchRemoveMemberFromChannel(channelId, user!.id);
       navigation.navigate('ActiveChannelList');
-      showMessage({ message: 'You successfully removed from this channel', type: 'success' });
+      showMessage({ message: t('channels.removedFromChannel'), type: 'success' });
     } catch (exception) {
       if (exception instanceof AxiosError) {
         showMessage({ message: getApiErrorMessage(exception), type: 'danger' });
       } else {
-        showMessage({ message: 'An error occurred', type: 'danger' });
+        showMessage({ message: t('common.errorOccurred'), type: 'danger' });
       }
     }
   };
@@ -125,12 +128,12 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
     try {
       await fetchDeleteChannel(channelId);
       navigation.navigate('ActiveChannelList');
-      showMessage({ message: 'You successfully deleted this channel', type: 'success' });
+      showMessage({ message: t('channels.deletedChannel'), type: 'success' });
     } catch (exception) {
       if (exception instanceof AxiosError) {
         showMessage({ message: getApiErrorMessage(exception), type: 'danger' });
       } else {
-        showMessage({ message: 'An error occurred', type: 'danger' });
+        showMessage({ message: t('common.errorOccurred'), type: 'danger' });
       }
     }
   };
@@ -141,12 +144,12 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
       dispatch(removeChannelMuteSetting(channelId));
       setChannelMuted(false);
       navigation.navigate('ActiveChannelList');
-      showMessage({ message: 'You successfully unmuted this channel', type: 'success' });
+      showMessage({ message: t('channels.unmutedChannel'), type: 'success' });
     } catch (exception) {
       if (exception instanceof AxiosError) {
         showMessage({ message: getApiErrorMessage(exception), type: 'danger' });
       } else {
-        showMessage({ message: 'An error occurred', type: 'danger' });
+        showMessage({ message: t('common.errorOccurred'), type: 'danger' });
       }
     }
   };
@@ -163,7 +166,7 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
   }, [fetchResult.data]);
 
   if (fetchResult.loading && !fetchResult.data) {
-    return <Loading text="Kanalın detayı yüklenirken lütfen bekleyiniz ..." />;
+    return <Loading text={t('channels.loadingChannelDetail')} />;
   }
 
   if (!fetchResult.data) {
@@ -201,15 +204,17 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
           <Divider />
           <View style={styles.metaSection}>
             <View style={styles.metaRow}>
-              <Text color={theme.text.tertiary}>Channel ID</Text>
+              <Text color={theme.text.tertiary}>{t('channels.channelId')}</Text>
               <Text>#{channelInviteCode}</Text>
             </View>
             <View style={styles.metaRow}>
-              <Text color={theme.text.tertiary}>Created</Text>
-              <Text>{format(new Date(channelCreatedAt), 'MMM yyyy')}</Text>
+              <Text color={theme.text.tertiary}>{t('channels.created')}</Text>
+              <Text>
+                {format(new Date(channelCreatedAt), 'MMM yyyy', { locale: getDateFnsLocale() })}
+              </Text>
             </View>
             <View style={styles.metaRow}>
-              <Text color={theme.text.tertiary}>Members</Text>
+              <Text color={theme.text.tertiary}>{t('channels.members')}</Text>
               <Text>{channel.memberCount}</Text>
             </View>
           </View>
@@ -217,7 +222,7 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
 
         <View>
           <Text size="medium" fontWeight="700" color={theme.text.tertiary}>
-            MEMBERS
+            {t('channels.membersSection')}
           </Text>
           <View style={styles.card}>
             <TouchableOpacity
@@ -228,7 +233,7 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
             >
               <View style={styles.rowLeading}>
                 <Icon name="ri-group-line" color={theme.text.tertiary} />
-                <Text fontWeight="700">View All Members</Text>
+                <Text fontWeight="700">{t('channels.viewAllMembers')}</Text>
               </View>
               <View>
                 <Icon name="ri-arrow-right-s-line" size={24} color={theme.text.tertiary} />
@@ -239,7 +244,7 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
 
         <View>
           <Text size="medium" fontWeight="700" color={theme.text.tertiary}>
-            NOTIFICATIONS
+            {t('channels.notifications')}
           </Text>
           <View style={styles.card}>
             {!isChannelMuted ? (
@@ -251,7 +256,7 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
               >
                 <View style={styles.rowLeading}>
                   <Icon name="ri-notification-line" color={theme.text.tertiary} />
-                  <Text fontWeight="700">Mute this Channel</Text>
+                  <Text fontWeight="700">{t('channels.muteChannel')}</Text>
                 </View>
                 <View>
                   <Icon name="ri-arrow-right-s-line" size={24} color={theme.text.tertiary} />
@@ -264,9 +269,9 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
                   confirm({
                     theme: 'warning',
                     icon: 'ri-notification-off-line',
-                    title: 'Unmute Channel?',
-                    description: `Are you sure you want to unmute #${channelName}? You will start receiving notifications from this channel again.`,
-                    confirmTitle: 'Unmute Channel',
+                    title: t('channels.unmuteTitle'),
+                    description: t('channels.unmuteDescription', { channel: channelName }),
+                    confirmTitle: t('channels.unmuteConfirm'),
                     onConfirm: () => handleUnmuteChannel(),
                   });
                 }}
@@ -274,7 +279,9 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
                 <View style={styles.rowLeading}>
                   <Icon name="ri-notification-off-line" color={theme.text.tertiary} />
                   <Text fontWeight="700">
-                    Muted until {formatMutedUntil(currentChannelMuteSetting?.mutedUntil)}
+                    {t('channels.mutedUntil', {
+                      time: formatMutedUntil(currentChannelMuteSetting?.mutedUntil),
+                    })}
                   </Text>
                 </View>
                 <View>
@@ -288,7 +295,7 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
         {isUserAllowedToUseAdminPanel ? (
           <View>
             <Text size="medium" fontWeight="700" color={colors.orange[400]}>
-              ADMIN PANEL
+              {t('channels.adminPanel')}
             </Text>
             <View style={[styles.card, styles.adminCard]}>
               {isUserOwner ? (
@@ -301,7 +308,7 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
                   >
                     <View style={styles.rowLeading}>
                       <Icon name="ri-edit-box-line" color={theme.text.tertiary} />
-                      <Text fontWeight="700">Edit Channel Name</Text>
+                      <Text fontWeight="700">{t('channels.editChannelName')}</Text>
                     </View>
                     <View>
                       <Icon name="ri-arrow-right-s-line" size={24} color={theme.text.tertiary} />
@@ -310,7 +317,7 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
                   <TouchableOpacity style={[styles.row, styles.rowBordered]} onPress={() => {}}>
                     <View style={styles.rowLeading}>
                       <Icon name="ri-image-edit-line" color={theme.text.tertiary} />
-                      <Text fontWeight="700">Set/Change Thumbnail Image</Text>
+                      <Text fontWeight="700">{t('channels.setChangeThumbnail')}</Text>
                     </View>
                     <View>
                       <Icon name="ri-arrow-right-s-line" size={24} color={theme.text.tertiary} />
@@ -324,7 +331,7 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
                   >
                     <View style={styles.rowLeading}>
                       <Icon name="ri-list-check" color={theme.text.tertiary} />
-                      <Text fontWeight="700">Edit Description</Text>
+                      <Text fontWeight="700">{t('channels.editDescription')}</Text>
                     </View>
                     <View>
                       <Icon name="ri-arrow-right-s-line" size={24} color={theme.text.tertiary} />
@@ -338,7 +345,7 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
                   >
                     <View style={styles.rowLeading}>
                       <Icon name="ri-shield-keyhole-line" color={theme.text.tertiary} />
-                      <Text fontWeight="700">Edit Join Policy</Text>
+                      <Text fontWeight="700">{t('channels.editJoinPolicy')}</Text>
                     </View>
                     <View>
                       <Icon name="ri-arrow-right-s-line" size={24} color={theme.text.tertiary} />
@@ -356,7 +363,7 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
                 >
                   <View style={styles.rowLeading}>
                     <Icon name="ri-user-add-line" color={theme.text.tertiary} />
-                    <Text fontWeight="700">Pending Join Requests</Text>
+                    <Text fontWeight="700">{t('channels.pendingJoinRequests')}</Text>
                   </View>
                   <View>
                     <Icon name="ri-arrow-right-s-line" size={24} color={theme.text.tertiary} />
@@ -371,7 +378,7 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
               >
                 <View style={styles.rowLeading}>
                   <Icon name="ri-user-unfollow-line" color={theme.text.tertiary} />
-                  <Text fontWeight="700">Remove a Member</Text>
+                  <Text fontWeight="700">{t('channels.removeMemberRow')}</Text>
                 </View>
                 <View>
                   <Icon name="ri-arrow-right-s-line" size={24} color={theme.text.tertiary} />
@@ -385,7 +392,7 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
               >
                 <View style={styles.rowLeading}>
                   <Icon name="ri-forbid-line" color={theme.text.tertiary} />
-                  <Text fontWeight="700">Banned Members</Text>
+                  <Text fontWeight="700">{t('channels.bannedMembersRow')}</Text>
                 </View>
                 <View>
                   <Icon name="ri-arrow-right-s-line" size={24} color={theme.text.tertiary} />
@@ -402,9 +409,9 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
               confirm({
                 theme: 'warning',
                 icon: 'logout-box-r-line',
-                title: 'Leave Channel?',
-                description: `Are you sure you want to leave #${channelName}? You will need to send a new join request to rejoin this channel.`,
-                confirmTitle: 'Leave Channel',
+                title: t('channels.leaveTitle'),
+                description: t('channels.leaveDescription', { channel: channelName }),
+                confirmTitle: t('channels.leaveChannel'),
                 onConfirm: () => handleRemoveFromChannel(),
               })
             }
@@ -412,7 +419,7 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
             <View style={styles.rowLeading}>
               <Icon name="logout-box-r-line" color={colors.warning} />
               <Text fontWeight="700" color={colors.warning}>
-                Leave Channel
+                {t('channels.leaveChannel')}
               </Text>
             </View>
           </TouchableOpacity>
@@ -422,9 +429,9 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
               confirm({
                 theme: 'danger',
                 icon: 'ri-delete-bin-line',
-                title: 'Delete Channel?',
-                description: `Are you sure you want to delete #${channelName}? This action is permanent and cannot be undone. All messages and members will be removed.`,
-                confirmTitle: 'Delete Channel',
+                title: t('channels.deleteTitle'),
+                description: t('channels.deleteDescription', { channel: channelName }),
+                confirmTitle: t('channels.deleteChannel'),
                 onConfirm: () => handleDeleteChannel(),
               })
             }
@@ -432,7 +439,7 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
             <View style={styles.rowLeading}>
               <Icon name="ri-delete-bin-line" color={colors.danger} />
               <Text fontWeight="700" color={colors.danger}>
-                Delete Channel
+                {t('channels.deleteChannel')}
               </Text>
             </View>
           </TouchableOpacity>

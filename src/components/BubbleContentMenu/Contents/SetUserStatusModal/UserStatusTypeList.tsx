@@ -1,6 +1,7 @@
 import { View, TouchableOpacity } from 'react-native';
 import Text from '@/components/Text';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import userStatusesData from '@/constants/userStatuses.json';
 import useTheme from '@/hooks/useTheme';
 import useThemedStyles from '@/hooks/useThemedStyles';
@@ -31,6 +32,7 @@ function UserStatusTypeList({
   currentUserStatusOption,
   handleUpdateUserStatus,
 }: UserStatusTypeListProps) {
+  const { t } = useTranslation();
   const styles = useThemedStyles(makeStyles);
   const theme = useTheme();
   return (
@@ -66,8 +68,10 @@ function UserStatusTypeList({
               ></View>
             </View>
             <View style={styles.contentContainer}>
-              <Text fontWeight="700">{userStatus.label}</Text>
-              <Text color={theme.text.tertiary}>{userStatus.description}</Text>
+              <Text fontWeight="700">{t(`statuses.${userStatus.status.toLowerCase()}.label`)}</Text>
+              <Text color={theme.text.tertiary}>
+                {t(`statuses.${userStatus.status.toLowerCase()}.description`)}
+              </Text>
             </View>
             <View style={styles.checkContainer}>
               {currentUserStatusOption?.status === userStatus.status ? (

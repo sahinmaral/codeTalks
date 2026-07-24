@@ -5,17 +5,13 @@ import Header from '@/components/Header';
 import NoChannelRegisteredCard from '@/components/NoChannelRegisteredCard';
 import useSignalRConnection from '@/hooks/useSignalRConnection';
 import useThemedStyles from '@/hooks/useThemedStyles';
-import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { clearUser } from '@/redux/reducers/appReducer';
 import ErrorScreen from '@/screens/Error';
 import Loading from '@/screens/Loading';
-import { fetchRemoveDevice } from '@/services/apiServices/devices';
 import colors from '@/styles/colors';
 import { Channel, PaginatedResult, RootStackParamList } from '@/types';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import Constants from 'expo-constants';
-import * as Notifications from 'expo-notifications';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { ScrollView, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-remix-icon';
 import makeStyles from '../ChannelList.styles';
@@ -25,24 +21,9 @@ interface ActiveChannelListProps {
 }
 
 function ActiveChannelList({ navigation }: ActiveChannelListProps) {
+  const { t } = useTranslation();
   const styles = useThemedStyles(makeStyles);
-  const user = useAppSelector(state => state.app.user);
   const { show, visible } = useBubbleContentMenu();
-
-  const dispatch = useAppDispatch();
-
-  const handleLogout = async () => {
-    try {
-      const token = await Notifications.getExpoPushTokenAsync({
-        projectId: Constants.expoConfig?.extra?.eas?.projectId,
-      });
-      await fetchRemoveDevice(token.data);
-    } catch (e) {
-      // don't block logout if this fails
-    } finally {
-      dispatch(clearUser());
-    }
-  };
 
   const {
     data: channels,
@@ -56,26 +37,16 @@ function ActiveChannelList({ navigation }: ActiveChannelListProps) {
   });
 
   if (error && !channels) {
-    return (
-      <ErrorScreen
-        description="Kanallar yüklenemedi. Sunucuya bağlanmaya çalışılıyor ..."
-        onRetry={retry}
-      />
-    );
+    return <ErrorScreen description={t('channels.channelsLoadFailedServer')} onRetry={retry} />;
   }
 
   if (isLoading) {
-    return <Loading text="Kanallar yüklenirken lütfen bekleyiniz ..." />;
+    return <Loading text={t('channels.loadingChannels')} />;
   }
 
   return (
     <View style={styles.container}>
-      <Header
-        title="Active Channels"
-        description="Welcome back!"
-        rightIcon="logout-box-r-line"
-        onRightIconPress={handleLogout}
-      />
+      <Header title={t('channels.activeChannelsTitle')} description={t('channels.welcomeBack')} />
 
       {channels?.items.length === 0 ? (
         <NoChannelRegisteredCard />

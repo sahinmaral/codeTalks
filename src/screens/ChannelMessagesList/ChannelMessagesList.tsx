@@ -7,8 +7,11 @@ import {
   fetchResetChannelUnreadCount,
 } from '@/services/apiServices/notifications';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { getDateFnsLocale } from '@/utils/dateFnsLocale';
 import { format, isToday, isYesterday, parseISO } from 'date-fns';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { TFunction } from 'i18next';
+import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -35,10 +38,10 @@ type GroupedItem =
   | { type: 'date'; key: string; label: string }
   | { type: 'message'; key: string; message: Message };
 
-const formatDateLabel = (date: Date) => {
-  if (isToday(date)) return 'Today';
-  if (isYesterday(date)) return 'Yesterday';
-  return format(date, 'd MMMM yyyy');
+const formatDateLabel = (date: Date, t: TFunction) => {
+  if (isToday(date)) return t('channels.today');
+  if (isYesterday(date)) return t('channels.yesterday');
+  return format(date, 'd MMMM yyyy', { locale: getDateFnsLocale() });
 };
 
 const DateSeparator = ({ label }: { label: string }) => {
@@ -53,6 +56,7 @@ const DateSeparator = ({ label }: { label: string }) => {
 };
 
 function ChannelMessagesList({ navigation }: ChannelMessagesListProps) {
+  const { t } = useTranslation();
   const styles = useThemedStyles(makeStyles);
   const theme = useTheme();
   const dispatch = useAppDispatch();
@@ -140,13 +144,13 @@ function ChannelMessagesList({ navigation }: ChannelMessagesListProps) {
       const date = parseISO(message.createdAt);
       const dayKey = format(date, 'yyyy-MM-dd');
       if (dayKey !== lastDayKey) {
-        result.push({ type: 'date', key: `date-${dayKey}`, label: formatDateLabel(date) });
+        result.push({ type: 'date', key: `date-${dayKey}`, label: formatDateLabel(date, t) });
         lastDayKey = dayKey;
       }
       result.push({ type: 'message', key: message.id, message });
     }
     return result;
-  }, [allMessages]);
+  }, [allMessages, t]);
 
   useEffect(() => {
     const newestId = allMessages[allMessages.length - 1]?.id ?? null;
@@ -177,12 +181,9 @@ function ChannelMessagesList({ navigation }: ChannelMessagesListProps) {
 
       <View style={{ flex: 1, padding: 20 }}>
         {error && !hasLoaded ? (
-          <ErrorScreen
-            description="Mesajlar yüklenemedi. Sunucuya bağlanmaya çalışılıyor ..."
-            onRetry={retry}
-          />
+          <ErrorScreen description={t('channels.messagesLoadFailedServer')} onRetry={retry} />
         ) : !hasLoaded ? (
-          <Loading text="Mesajlar yüklenirken lütfen bekleyiniz ..." />
+          <Loading text={t('channels.loadingMessages')} />
         ) : allMessages.length === 0 ? (
           <ChannelCreatedMessageCard
             channelName={channelName}

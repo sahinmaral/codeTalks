@@ -1,7 +1,8 @@
 import React, { useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Button from '@/components/Button';
 import Text from '@/components/Text';
-import { ActivityIndicator, View } from 'react-native';
+import { View } from 'react-native';
 import { useBubbleContentMenuScroll } from '@/components/BubbleContentMenu/BubbleContentMenu.context';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import useTheme from '@/hooks/useTheme';
@@ -17,6 +18,7 @@ import { useBubbleContentMenu } from '@/components/BubbleContentMenu/BubbleConte
 import translateErrorMessage from '@/helpers/apiErrorTranslation';
 
 function UpdateChannelDescriptionModal() {
+  const { t } = useTranslation();
   const styles = useThemedStyles(makeStyles);
   const theme = useTheme();
   const currentChannel = useAppSelector(state => state.activeChannel.channel);
@@ -36,7 +38,7 @@ function UpdateChannelDescriptionModal() {
 
   const handleUpdateChannelDescription = async ({ channelDescription }: typeof initialValues) => {
     if (channelDescription.length === 0) {
-      setError('Lütfen herhangi bir kanal açıklaması giriniz');
+      setError(t('components.enterChannelDesc'));
       return;
     }
 
@@ -45,7 +47,7 @@ function UpdateChannelDescriptionModal() {
       await fetchPatchChannel(selectedChannelId, { description: channelDescription });
       dispatch(setActiveChannelDescription(channelDescription));
       hide();
-      showMessage({ message: 'Kanal açıklaması başarıyla güncellendi', type: 'success' });
+      showMessage({ message: t('components.channelDescUpdated'), type: 'success' });
     } catch (err: any) {
       const errorResult = err?.response?.data;
       showMessage({
@@ -61,7 +63,7 @@ function UpdateChannelDescriptionModal() {
     <View>
       <View style={styles.header}>
         <Text fontWeight="800" size="xlarge">
-          Edit Channel Description
+          {t('components.editChannelDescTitle')}
         </Text>
       </View>
 
@@ -74,14 +76,14 @@ function UpdateChannelDescriptionModal() {
                 groupYPositions.current[0] = e.nativeEvent.layout.y;
               }}
             >
-              <Text fontWeight="600">Channel Description</Text>
+              <Text fontWeight="600">{t('components.channelDescLabel')}</Text>
               <BottomSheetTextInput
                 multiline
                 numberOfLines={4}
                 textAlignVertical="top"
                 onChangeText={handleChange('channelDescription')}
                 value={values.channelDescription}
-                placeholder="Enter channel description here"
+                placeholder={t('components.channelDescPlaceholder')}
                 placeholderTextColor={theme.text.tertiary}
                 style={[styles.textArea, isFocused && styles.inputFocused]}
                 onFocus={() => {
@@ -97,12 +99,12 @@ function UpdateChannelDescriptionModal() {
                 <Text style={styles.inputError}>* {errors.channelDescription}</Text>
               )}
               <Text size="small" color={theme.text.secondary}>
-                Describe what your channel is about
+                {t('components.channelDescHelper')}
               </Text>
             </View>
 
             <Button
-              title={loading ? 'Saving changes...' : 'Save Changes'}
+              title={loading ? t('components.savingChanges') : t('components.saveChanges')}
               loading={loading}
               disabled={loading}
               style={styles.button}

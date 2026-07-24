@@ -12,6 +12,7 @@ import { getApiErrorMessage } from '@/utils/getApiErrorMessage';
 import { AxiosError } from 'axios';
 import { Formik } from 'formik';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { TouchableOpacity, View } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import Icon from 'react-native-remix-icon';
@@ -19,11 +20,12 @@ import * as Yup from 'yup';
 import makeStyles from './UpdateChannelJoinPolicyModal.styles';
 
 const JOIN_POLICIES = [
-  { label: 'Request', value: ChannelJoinPolicy.Request, icon: 'mail-send-line' },
-  { label: 'Open', value: ChannelJoinPolicy.Open, icon: 'global-line' },
+  { labelKey: 'components.policyRequest', value: ChannelJoinPolicy.Request, icon: 'mail-send-line' },
+  { labelKey: 'components.policyOpen', value: ChannelJoinPolicy.Open, icon: 'global-line' },
 ];
 
 function UpdateChannelJoinPolicyModal() {
+  const { t } = useTranslation();
   const styles = useThemedStyles(makeStyles);
   const theme = useTheme();
   const currentChannel = useAppSelector(state => state.activeChannel.channel);
@@ -42,14 +44,14 @@ function UpdateChannelJoinPolicyModal() {
       await fetchPatchChannel(selectedChannelId, { joinPolicy: channelJoinPolicy });
       dispatch(setActiveChannelJoinPolicy(channelJoinPolicy));
       hide();
-      showMessage({ message: 'Kanala giriş politikası başarıyla güncellendi', type: 'success' });
+      showMessage({ message: t('components.joinPolicyUpdated'), type: 'success' });
     } catch (exception) {
       if (exception instanceof Yup.ValidationError) {
-        showMessage({ message: exception.errors[0], type: 'warning' });
+        showMessage({ message: t(exception.errors[0]), type: 'warning' });
       } else if (exception instanceof AxiosError) {
         showMessage({ message: getApiErrorMessage(exception), type: 'danger' });
       } else {
-        showMessage({ message: 'An error occurred', type: 'danger' });
+        showMessage({ message: t('common.errorOccurred'), type: 'danger' });
       }
     } finally {
       setLoading(false);
@@ -60,7 +62,7 @@ function UpdateChannelJoinPolicyModal() {
     <View>
       <View style={styles.header}>
         <Text fontWeight="800" size="xlarge">
-          Edit Channel Join Policy
+          {t('components.editJoinPolicyTitle')}
         </Text>
       </View>
 
@@ -68,7 +70,7 @@ function UpdateChannelJoinPolicyModal() {
         {({ handleSubmit: formikSubmit, values, setFieldValue }) => (
           <View style={styles.formContainer}>
             <View style={styles.formGroup}>
-              <Text fontWeight="600">Channel Join Policy</Text>
+              <Text fontWeight="600">{t('components.channelJoinPolicyLabel')}</Text>
               <View style={styles.segmentContainer}>
                 {JOIN_POLICIES.map(policy => {
                   const isActive = values.channelJoinPolicy === policy.value;
@@ -82,7 +84,7 @@ function UpdateChannelJoinPolicyModal() {
                     >
                       <Icon name={policy.icon} size={16} color={activeColor} />
                       <Text fontWeight={isActive ? '600' : '400'} color={activeColor}>
-                        {policy.label}
+                        {t(policy.labelKey)}
                       </Text>
                     </TouchableOpacity>
                   );
@@ -91,7 +93,7 @@ function UpdateChannelJoinPolicyModal() {
             </View>
 
             <Button
-              title={loading ? 'Saving changes...' : 'Save Changes'}
+              title={loading ? t('components.savingChanges') : t('components.saveChanges')}
               loading={loading}
               disabled={loading}
               style={styles.button}

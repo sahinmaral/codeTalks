@@ -12,6 +12,7 @@ import { buildImageFormData, pickImageFromLibrary } from '@/utils/imagePicker';
 import { notifyApiError } from '@/utils/notifyApiError';
 import * as ImagePicker from 'expo-image-picker';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import styles from './UpdateChannelThumbnailPhotoModal.styles';
@@ -21,6 +22,7 @@ type UpdateChannelThumbnailPhotoModalProps = {
 };
 
 function UpdateChannelThumbnailPhotoModal({ onSuccess }: UpdateChannelThumbnailPhotoModalProps) {
+  const { t } = useTranslation();
   const [selectedImage, setSelectedImage] = useState<ImagePicker.ImagePickerAsset | null>(null);
   const [loading, setLoading] = useState({ submit: false, delete: false });
 
@@ -55,7 +57,7 @@ function UpdateChannelThumbnailPhotoModal({ onSuccess }: UpdateChannelThumbnailP
       onSuccess?.(newPhotoURL);
       hide();
       showMessage({
-        message: `You successfully updated channel's thumbnail photo`,
+        message: t('components.thumbnailUpdated'),
         type: 'success',
       });
     } catch (exception) {
@@ -78,7 +80,7 @@ function UpdateChannelThumbnailPhotoModal({ onSuccess }: UpdateChannelThumbnailP
       onSuccess?.(null);
       hide();
       showMessage({
-        message: `You successfully removed channel's thumbnail photo`,
+        message: t('components.thumbnailRemoved'),
         type: 'success',
       });
     } catch (exception) {
@@ -103,7 +105,7 @@ function UpdateChannelThumbnailPhotoModal({ onSuccess }: UpdateChannelThumbnailP
     }
 
     if (!currentChannel?.thumbnailPhotoURL) {
-      showMessage({ message: `You haven't selected any photo yet.`, type: 'danger' });
+      showMessage({ message: t('components.noPhotoSelected'), type: 'danger' });
       return;
     }
 
@@ -114,7 +116,7 @@ function UpdateChannelThumbnailPhotoModal({ onSuccess }: UpdateChannelThumbnailP
     <View>
       <View style={styles.header}>
         <Text fontWeight="800" size="xlarge">
-          Update Thumbnail Photo
+          {t('components.updateThumbnailTitle')}
         </Text>
       </View>
 
@@ -128,7 +130,7 @@ function UpdateChannelThumbnailPhotoModal({ onSuccess }: UpdateChannelThumbnailP
 
       <View style={styles.actions}>
         <Button
-          title={selectedImage ? 'Save' : 'Select Photo'}
+          title={selectedImage ? t('components.save') : t('components.selectPhoto')}
           theme="primary"
           loading={loading.submit}
           disabled={isBusy}
@@ -137,7 +139,7 @@ function UpdateChannelThumbnailPhotoModal({ onSuccess }: UpdateChannelThumbnailP
         />
         {currentChannel?.thumbnailPhotoURL ? (
           <Button
-            title={selectedImage ? 'Clear' : 'Delete Current'}
+            title={selectedImage ? t('components.clear') : t('components.deleteCurrent')}
             theme="danger-outline"
             loading={loading.delete}
             disabled={isBusy}

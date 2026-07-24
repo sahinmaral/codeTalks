@@ -7,6 +7,7 @@ import colors from '@/styles/colors';
 import { AppNavigationProp } from '@/types';
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-remix-icon';
 import CreateChannelModal from '../CreateChannelModal';
@@ -18,6 +19,7 @@ type HomepageActionListProps = {
 };
 
 function HomepageActionList({ initialModalType }: HomepageActionListProps) {
+  const { t } = useTranslation();
   const styles = useThemedStyles(makeStyles);
   const theme = useTheme();
   const { hide } = useBubbleContentMenu();
@@ -53,9 +55,9 @@ function HomepageActionList({ initialModalType }: HomepageActionListProps) {
     <View>
       <View style={styles.headerContainer}>
         <Text fontWeight="700" size="large">
-          What would you like to do?
+          {t('components.whatWouldYouLikeToDo')}
         </Text>
-        <Text color={theme.text.tertiary}>Choose an action to get started</Text>
+        <Text color={theme.text.tertiary}>{t('components.chooseAction')}</Text>
       </View>
       <View style={styles.optionListContainer}>
         <TouchableOpacity
@@ -69,10 +71,10 @@ function HomepageActionList({ initialModalType }: HomepageActionListProps) {
           </View>
           <View style={styles.optionTextContainer}>
             <Text style={styles.optionHeader} fontWeight="700">
-              Create a Channel
+              {t('components.createAChannel')}
             </Text>
             <Text style={styles.optionDescription} color={theme.text.tertiary}>
-              Start your own community for developers
+              {t('components.createChannelDesc')}
             </Text>
           </View>
           <View style={styles.optionArrowContainer}>
@@ -90,10 +92,10 @@ function HomepageActionList({ initialModalType }: HomepageActionListProps) {
           </View>
           <View style={styles.optionTextContainer}>
             <Text style={styles.optionHeader} fontWeight="700">
-              Join a Channel
+              {t('components.joinAChannel')}
             </Text>
             <Text style={styles.optionDescription} color={theme.text.tertiary}>
-              Enter a Channel ID to send a join request
+              {t('components.joinChannelDesc')}
             </Text>
           </View>
           <View style={styles.optionArrowContainer}>
@@ -114,10 +116,10 @@ function HomepageActionList({ initialModalType }: HomepageActionListProps) {
           </View>
           <View style={styles.optionTextContainer}>
             <Text style={styles.optionHeader} fontWeight="700">
-              Explore Channels
+              {t('components.exploreChannels')}
             </Text>
             <Text style={styles.optionDescription} color={theme.text.tertiary}>
-              Browse and discover public channels
+              {t('components.exploreChannelsDesc')}
             </Text>
           </View>
           <View style={styles.optionArrowContainer}>

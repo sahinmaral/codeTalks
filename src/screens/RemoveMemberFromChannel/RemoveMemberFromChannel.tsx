@@ -18,6 +18,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AxiosError } from 'axios';
 import React, { useCallback, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
   NativeScrollEvent,
@@ -44,6 +45,7 @@ const matchesSearch = (user: ChannelUser, term: string) => {
 };
 
 const RemoveMemberFromChannel = ({ navigation }: RemoveMemberFromChannelProps) => {
+  const { t } = useTranslation();
   const styles = useThemedStyles(makeStyles);
   const theme = useTheme();
   const currentUserId = useAppSelector(state => state.app.user?.id);
@@ -73,7 +75,7 @@ const RemoveMemberFromChannel = ({ navigation }: RemoveMemberFromChannelProps) =
       if (exception instanceof AxiosError) {
         showMessage({ message: getApiErrorMessage(exception), type: 'danger' });
       } else {
-        showMessage({ message: 'An error occurred', type: 'danger' });
+        showMessage({ message: t('common.errorOccurred'), type: 'danger' });
       }
     } finally {
       setLoading(false);
@@ -150,17 +152,21 @@ const RemoveMemberFromChannel = ({ navigation }: RemoveMemberFromChannelProps) =
   const hasResults = filteredAdmins.length > 0 || members.length > 0;
 
   if (loading && !hasLoaded) {
-    return <Loading text="Kanaldaki kullanıcılar yüklenirken lütfen bekleyiniz ..." />;
+    return <Loading text={t('channels.loadingMembers')} />;
   }
 
   return (
     <View style={styles.container}>
-      <Header theme="danger" title={'Remove Member'} onBackPress={() => navigation.goBack()} />
+      <Header
+        theme="danger"
+        title={t('channels.removeMemberTitle')}
+        onBackPress={() => navigation.goBack()}
+      />
 
       <View style={styles.searchContainer}>
         <Input
           icon="ri-search-line"
-          placeholder="Search members..."
+          placeholder={t('channels.searchMembers')}
           containerStyle={{ borderRadius: 20, backgroundColor: theme.input.background }}
           onChangeText={setSearch}
           value={search}
@@ -177,7 +183,7 @@ const RemoveMemberFromChannel = ({ navigation }: RemoveMemberFromChannelProps) =
           <View>
             <View style={styles.adminMembersHeader}>
               <Text fontWeight="700" color={theme.text.secondary}>
-                ADMINS
+                {t('channels.adminsSection')}
               </Text>
             </View>
             <View style={styles.adminMembersList}>
@@ -194,9 +200,11 @@ const RemoveMemberFromChannel = ({ navigation }: RemoveMemberFromChannelProps) =
                     confirm({
                       theme: 'danger',
                       icon: 'ri-user-unfollow-line',
-                      title: 'Remove Member?',
-                      description: `Are you sure you want to remove @${admin.userName} from this channel? They will need to send a new join request to return.`,
-                      confirmTitle: 'Remove Member',
+                      title: t('channels.removeMemberDialogTitle'),
+                      description: t('channels.removeMemberDescription', {
+                        username: admin.userName,
+                      }),
+                      confirmTitle: t('channels.removeMemberConfirm'),
                       onConfirm: () => handleRemoveMemberFromChannel(admin.id),
                     })
                   }
@@ -210,7 +218,7 @@ const RemoveMemberFromChannel = ({ navigation }: RemoveMemberFromChannelProps) =
           <View>
             <View style={styles.adminMembersHeader}>
               <Text fontWeight="700" color={theme.text.secondary}>
-                MEMBERS
+                {t('channels.membersSection')}
               </Text>
             </View>
             <View style={styles.adminMembersList}>
@@ -222,9 +230,11 @@ const RemoveMemberFromChannel = ({ navigation }: RemoveMemberFromChannelProps) =
                     confirm({
                       theme: 'danger',
                       icon: 'ri-user-unfollow-line',
-                      title: 'Remove Member?',
-                      description: `Are you sure you want to remove @${member.userName} from this channel? They will need to send a new join request to return.`,
-                      confirmTitle: 'Remove Member',
+                      title: t('channels.removeMemberDialogTitle'),
+                      description: t('channels.removeMemberDescription', {
+                        username: member.userName,
+                      }),
+                      confirmTitle: t('channels.removeMemberConfirm'),
                       onConfirm: () => handleRemoveMemberFromChannel(member.id),
                     })
                   }
@@ -241,8 +251,8 @@ const RemoveMemberFromChannel = ({ navigation }: RemoveMemberFromChannelProps) =
           <View style={styles.adminMembersHeader}>
             <Text color={theme.text.secondary} style={{ textAlign: 'center' }}>
               {debouncedSearch
-                ? `"${debouncedSearch}" ile eşleşen kullanıcı bulunamadı.`
-                : 'Kanalda kullanıcı bulunamadı.'}
+                ? t('channels.noUsersMatchSearch', { query: debouncedSearch })
+                : t('channels.noUsersInChannel')}
             </Text>
           </View>
         )}

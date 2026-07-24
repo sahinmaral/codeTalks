@@ -1,6 +1,6 @@
 import { clearUser, setUser } from '@/redux/reducers/appReducer';
 import { store } from '@/redux/store';
-import axios from 'axios';
+import { fetchRefreshToken } from '@/services/apiServices/auths';
 
 let refreshPromise: Promise<string> | null = null;
 
@@ -34,9 +34,7 @@ export async function getValidAccessToken(): Promise<string> {
 }
 
 async function doRefresh(refreshToken: string): Promise<string> {
-  const response = await axios.post(`${process.env.EXPO_PUBLIC_API_BASE_URL}/auth/refresh`, {
-    refreshToken,
-  });
+  const response = await fetchRefreshToken(refreshToken);
 
   const updated = response.data as {
     accessToken: string;

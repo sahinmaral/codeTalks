@@ -15,6 +15,7 @@ import { ChannelUser, RootStackParamList, UsersAtChannelListModel } from '@/type
 import { useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useCallback, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
   NativeScrollEvent,
@@ -40,6 +41,7 @@ const matchesSearch = (user: ChannelUser, term: string) => {
 };
 
 const ChannelMembersList = ({ navigation }: ChannelMembersListProps) => {
+  const { t } = useTranslation();
   const styles = useThemedStyles(makeStyles);
   const theme = useTheme();
   const channelId = useAppSelector(state => state.activeChannel.channel?.id ?? '');
@@ -138,17 +140,17 @@ const ChannelMembersList = ({ navigation }: ChannelMembersListProps) => {
   const hasResults = filteredAdmins.length > 0 || members.length > 0;
 
   if (loading && !hasLoaded) {
-    return <Loading text="Kanaldaki kullanıcılar yüklenirken lütfen bekleyiniz ..." />;
+    return <Loading text={t('channels.loadingMembers')} />;
   }
 
   return (
     <View style={styles.container}>
-      <Header title={'Members'} onBackPress={() => navigation.goBack()} />
+      <Header title={t('channels.membersTitle')} onBackPress={() => navigation.goBack()} />
 
       <View style={styles.searchContainer}>
         <Input
           icon="ri-search-line"
-          placeholder="Search members..."
+          placeholder={t('channels.searchMembers')}
           containerStyle={{ borderRadius: 20, backgroundColor: theme.input.background }}
           onChangeText={setSearch}
           value={search}
@@ -165,7 +167,7 @@ const ChannelMembersList = ({ navigation }: ChannelMembersListProps) => {
           <View>
             <View style={styles.adminMembersHeader}>
               <Text fontWeight="700" color={theme.text.secondary}>
-                ADMINS
+                {t('channels.adminsSection')}
               </Text>
             </View>
             <View style={styles.adminMembersList}>
@@ -191,7 +193,7 @@ const ChannelMembersList = ({ navigation }: ChannelMembersListProps) => {
           <View>
             <View style={styles.adminMembersHeader}>
               <Text fontWeight="700" color={theme.text.secondary}>
-                MEMBERS
+                {t('channels.membersSection')}
               </Text>
             </View>
             <View style={styles.adminMembersList}>
@@ -219,8 +221,8 @@ const ChannelMembersList = ({ navigation }: ChannelMembersListProps) => {
           <View style={styles.adminMembersHeader}>
             <Text color={theme.text.secondary} style={{ textAlign: 'center' }}>
               {debouncedSearch
-                ? `"${debouncedSearch}" ile eşleşen kullanıcı bulunamadı.`
-                : 'Kanalda kullanıcı bulunamadı.'}
+                ? t('channels.noUsersMatchSearch', { query: debouncedSearch })
+                : t('channels.noUsersInChannel')}
             </Text>
           </View>
         )}

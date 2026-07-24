@@ -9,6 +9,7 @@ import { Channel } from '@/types';
 import { getApiErrorMessage } from '@/utils/getApiErrorMessage';
 import { AxiosError } from 'axios';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import Icon from 'react-native-remix-icon';
@@ -20,6 +21,7 @@ interface AllChannelCardProps {
 }
 
 function AllChannelCard({ channel }: AllChannelCardProps) {
+  const { t } = useTranslation();
   const styles = useThemedStyles(makeStyles);
   const theme = useTheme();
   const [loading, setLoading] = useState(false);
@@ -38,15 +40,15 @@ function AllChannelCard({ channel }: AllChannelCardProps) {
       showMessage({
         message:
           data.status === ChannelUserStatus.Accepted
-            ? 'Kanala başarıyla katıldınız'
-            : 'İsteğiniz başarıyla gönderildi',
+            ? t('components.joinedSuccess')
+            : t('components.requestSentSuccess'),
         type: 'success',
       });
     } catch (exception) {
       if (exception instanceof AxiosError) {
         showMessage({ message: getApiErrorMessage(exception), type: 'danger' });
       } else {
-        showMessage({ message: 'An error occurred', type: 'danger' });
+        showMessage({ message: t('common.errorOccurred'), type: 'danger' });
       }
     } finally {
       setLoading(false);
@@ -58,15 +60,15 @@ function AllChannelCard({ channel }: AllChannelCardProps) {
 
   const buttonTitle = loading
     ? isOpen
-      ? 'Joining...'
-      : 'Sending...'
+      ? t('components.joining')
+      : t('components.sending')
     : joined
-      ? 'Joined'
+      ? t('components.joined')
       : requested
-        ? 'Requested'
+        ? t('components.requested')
         : isOpen
-          ? 'Join'
-          : 'Request to Join';
+          ? t('components.join')
+          : t('components.requestToJoin');
 
   return (
     <View style={styles.container}>
@@ -83,7 +85,7 @@ function AllChannelCard({ channel }: AllChannelCardProps) {
           <View style={styles.memberContainer}>
             <Icon name="ri-group-line" color={theme.text.tertiary} size={18} />
             <Text size="medium" fontWeight="300" color={theme.text.secondary}>
-              {channel.memberCount} members
+              {t('components.membersCount', { count: channel.memberCount })}
             </Text>
           </View>
         </View>

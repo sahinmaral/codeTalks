@@ -25,6 +25,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AxiosError } from 'axios';
 import { Formik } from 'formik';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Image, SafeAreaView, TouchableOpacity, View } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -42,6 +43,7 @@ const initialValues = {
 };
 
 function Login({ navigation }: LoginProps) {
+  const { t } = useTranslation();
   const styles = useThemedStyles(makeStyles);
   const [loading, setLoading] = useState(false);
   const dispatch = useAppDispatch();
@@ -64,7 +66,7 @@ function Login({ navigation }: LoginProps) {
       dispatch(setNotificationSettings(notificationSettings.data));
       dispatch(setChannelMuteSettings(channelMuteSettings.data));
 
-      showMessage({ message: 'Başarıyla giriş yaptınız', type: 'success' });
+      showMessage({ message: t('auth.loginSuccess'), type: 'success' });
     } catch (exception) {
       throw exception;
     } finally {
@@ -78,11 +80,11 @@ function Login({ navigation }: LoginProps) {
       await handleLogin(values);
     } catch (exception) {
       if (exception instanceof Yup.ValidationError) {
-        showMessage({ message: exception.errors[0], type: 'warning' });
+        showMessage({ message: t(exception.errors[0]), type: 'warning' });
       } else if (exception instanceof AxiosError) {
         showMessage({ message: getApiErrorMessage(exception), type: 'danger' });
       } else {
-        showMessage({ message: 'An error occurred', type: 'danger' });
+        showMessage({ message: t('common.errorOccurred'), type: 'danger' });
       }
     }
   };
@@ -110,9 +112,9 @@ function Login({ navigation }: LoginProps) {
         <View style={styles.formContainer}>
           <View style={styles.description}>
             <Text size="large" fontWeight="800">
-              Sign In
+              {t('auth.signInTitle')}
             </Text>
-            <Text size="medium">Welcome back! Please enter your details.</Text>
+            <Text size="medium">{t('auth.signInSubtitle')}</Text>
           </View>
 
           <Formik initialValues={initialValues} onSubmit={handleSubmit}>
@@ -120,7 +122,7 @@ function Login({ navigation }: LoginProps) {
               <View style={styles.formInputsContainer}>
                 <View style={styles.inputGroup}>
                   <Input
-                    label="Email Address"
+                    label={t('auth.emailLabel')}
                     placeholder="name@example.com"
                     onChangeText={handleChange('email')}
                     onBlur={handleBlur('email')}
@@ -128,7 +130,7 @@ function Login({ navigation }: LoginProps) {
                     icon="mail-line"
                   />
                   <Input
-                    label="Password"
+                    label={t('auth.passwordLabel')}
                     placeholder="********"
                     onChangeText={handleChange('password')}
                     onBlur={handleBlur('password')}
@@ -138,13 +140,13 @@ function Login({ navigation }: LoginProps) {
                   />
                   <View style={styles.additionalOptionsContainer}>
                     <Checkbox
-                      label="Remember me"
+                      label={t('auth.rememberMe')}
                       checked={values.rememberMe}
                       onChange={value => setFieldValue('rememberMe', value)}
                     />
                     <TouchableOpacity>
                       <Text size="medium" fontWeight="400" color={colors.orange[500]}>
-                        Forgot password?
+                        {t('auth.forgotPassword')}
                       </Text>
                     </TouchableOpacity>
                   </View>
@@ -153,16 +155,16 @@ function Login({ navigation }: LoginProps) {
                 <View style={styles.buttonGroup}>
                   <Button
                     loading={loading}
-                    title="Sign In"
+                    title={t('auth.signInButton')}
                     theme="primary"
                     onPress={formikSubmit}
                   />
 
-                  <Divider text="or" />
+                  <Divider text={t('auth.or')} />
 
                   <Button
                     disabled={loading}
-                    title="Create account"
+                    title={t('auth.createAccountButton')}
                     theme="primary-outline"
                     onPress={() => navigation.navigate('SignUp')}
                   />

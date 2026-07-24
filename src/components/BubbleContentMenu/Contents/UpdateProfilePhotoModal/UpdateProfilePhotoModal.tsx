@@ -9,6 +9,7 @@ import { buildImageFormData, pickImageFromLibrary } from '@/utils/imagePicker';
 import { notifyApiError } from '@/utils/notifyApiError';
 import * as ImagePicker from 'expo-image-picker';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import styles from './UpdateProfilePhotoModal.styles';
@@ -18,6 +19,7 @@ type UpdateProfilePhotoModalProps = {
 };
 
 function UpdateProfilePhotoModal({ onSuccess }: UpdateProfilePhotoModalProps) {
+  const { t } = useTranslation();
   const [selectedImage, setSelectedImage] = useState<ImagePicker.ImagePickerAsset | null>(null);
   const [loading, setLoading] = useState({ submit: false, delete: false });
 
@@ -47,7 +49,7 @@ function UpdateProfilePhotoModal({ onSuccess }: UpdateProfilePhotoModalProps) {
       }
       onSuccess?.(newPhotoURL);
       hide();
-      showMessage({ message: 'You successfully updated your profile photo', type: 'success' });
+      showMessage({ message: t('components.profilePhotoUpdated'), type: 'success' });
     } catch (exception) {
       notifyApiError(exception);
     } finally {
@@ -65,7 +67,7 @@ function UpdateProfilePhotoModal({ onSuccess }: UpdateProfilePhotoModalProps) {
       }
       onSuccess?.(null);
       hide();
-      showMessage({ message: 'You successfully removed your profile photo', type: 'success' });
+      showMessage({ message: t('components.profilePhotoRemoved'), type: 'success' });
     } catch (exception) {
       notifyApiError(exception);
     } finally {
@@ -88,7 +90,7 @@ function UpdateProfilePhotoModal({ onSuccess }: UpdateProfilePhotoModalProps) {
     }
 
     if (!user?.profilePhotoURL) {
-      showMessage({ message: `You haven't selected any photo yet.`, type: 'danger' });
+      showMessage({ message: t('components.noPhotoSelected'), type: 'danger' });
       return;
     }
 
@@ -99,7 +101,7 @@ function UpdateProfilePhotoModal({ onSuccess }: UpdateProfilePhotoModalProps) {
     <View>
       <View style={styles.header}>
         <Text fontWeight="800" size="xlarge">
-          Update Profile Photo
+          {t('components.updateProfilePhotoTitle')}
         </Text>
       </View>
 
@@ -113,7 +115,7 @@ function UpdateProfilePhotoModal({ onSuccess }: UpdateProfilePhotoModalProps) {
 
       <View style={styles.actions}>
         <Button
-          title={selectedImage ? 'Save' : 'Select Photo'}
+          title={selectedImage ? t('components.save') : t('components.selectPhoto')}
           theme="primary"
           loading={loading.submit}
           disabled={isBusy}
@@ -122,7 +124,7 @@ function UpdateProfilePhotoModal({ onSuccess }: UpdateProfilePhotoModalProps) {
         />
         {user?.profilePhotoURL ? (
           <Button
-            title={selectedImage ? 'Clear' : 'Delete Current'}
+            title={selectedImage ? t('components.clear') : t('components.deleteCurrent')}
             theme="danger-outline"
             loading={loading.delete}
             disabled={isBusy}

@@ -1,3 +1,4 @@
+import '@/localization/i18n';
 import { persistor, store } from '@/redux/store';
 import React from 'react';
 import FlashMessage from 'react-native-flash-message';

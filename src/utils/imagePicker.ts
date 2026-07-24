@@ -1,5 +1,6 @@
 import * as ImagePicker from 'expo-image-picker';
 import { showMessage } from 'react-native-flash-message';
+import i18n from '@/localization/i18n';
 
 /**
  * Requests gallery permission and opens the image library for a single,
@@ -10,7 +11,7 @@ export async function pickImageFromLibrary(): Promise<ImagePicker.ImagePickerAss
   const { granted } = await ImagePicker.requestMediaLibraryPermissionsAsync();
   if (!granted) {
     showMessage({
-      message: 'Access to the gallery was denied.',
+      message: i18n.t('common.galleryAccessDenied'),
       type: 'danger',
     });
     return null;

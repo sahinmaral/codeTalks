@@ -11,6 +11,7 @@ import { FOREVER_MUTE_DATE } from '@/utils/channelMuteSetting';
 import { getApiErrorMessage } from '@/utils/getApiErrorMessage';
 import { AxiosError } from 'axios';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { TouchableOpacity, View } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import Icon from 'react-native-remix-icon';
@@ -18,11 +19,11 @@ import makeStyles from './UpdateChannelMuteSettingModal.styles';
 
 type MuteDurationValue = '1d' | '1m' | '1y' | 'forever';
 
-const MUTE_DURATIONS: { label: string; value: MuteDurationValue }[] = [
-  { label: '1 Day', value: '1d' },
-  { label: '1 Month', value: '1m' },
-  { label: '1 Year', value: '1y' },
-  { label: 'Forever', value: 'forever' },
+const MUTE_DURATIONS: { labelKey: string; value: MuteDurationValue }[] = [
+  { labelKey: 'components.muteDuration1d', value: '1d' },
+  { labelKey: 'components.muteDuration1m', value: '1m' },
+  { labelKey: 'components.muteDuration1y', value: '1y' },
+  { labelKey: 'components.muteDurationForever', value: 'forever' },
 ];
 
 const getMuteUntil = (duration: MuteDurationValue): string => {
@@ -44,6 +45,7 @@ const getMuteUntil = (duration: MuteDurationValue): string => {
 };
 
 function UpdateChannelMuteSettingModal() {
+  const { t } = useTranslation();
   const styles = useThemedStyles(makeStyles);
   const theme = useTheme();
 
@@ -70,12 +72,12 @@ function UpdateChannelMuteSettingModal() {
         }),
       );
       hide();
-      showMessage({ message: 'You successfully muted channel', type: 'success' });
+      showMessage({ message: t('components.channelMutedSuccess'), type: 'success' });
     } catch (exception) {
       if (exception instanceof AxiosError) {
         showMessage({ message: getApiErrorMessage(exception), type: 'danger' });
       } else {
-        showMessage({ message: 'An error occurred', type: 'danger' });
+        showMessage({ message: t('common.errorOccurred'), type: 'danger' });
       }
     } finally {
       setLoading(false);
@@ -86,14 +88,10 @@ function UpdateChannelMuteSettingModal() {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text fontWeight="800" size="large">
-          Mute Channel
+          {t('components.muteChannelTitle')}
         </Text>
         <Text color={theme.text.secondary} style={styles.description}>
-          You won't receive notifications from{' '}
-          <Text fontWeight="700" color={theme.text.secondary}>
-            #{channelName}
-          </Text>{' '}
-          during this time.
+          {t('components.muteChannelDescription', { channel: channelName })}
         </Text>
       </View>
 
@@ -117,7 +115,7 @@ function UpdateChannelMuteSettingModal() {
                 fontWeight={isActive ? '700' : '500'}
                 color={isActive ? colors.orange[500] : theme.text.primary}
               >
-                {duration.label}
+                {t(duration.labelKey)}
               </Text>
               <Icon
                 name={isActive ? 'ri-radio-button-line' : 'ri-checkbox-blank-circle-line'}
@@ -132,13 +130,13 @@ function UpdateChannelMuteSettingModal() {
       <View style={styles.infoBox}>
         <Icon name="ri-information-line" size={18} color={theme.text.tertiary} />
         <Text size="small" color={theme.text.secondary} style={styles.infoText}>
-          You can unmute this channel anytime from Channel Settings.
+          {t('components.muteInfo')}
         </Text>
       </View>
 
       <View style={styles.actions}>
         <Button
-          title="Mute Channel"
+          title={t('components.muteChannelButton')}
           loading={loading}
           disabled={loading}
           onPress={handleMuteChannel}

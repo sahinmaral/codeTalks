@@ -3,6 +3,7 @@ import useTheme from '@/hooks/useTheme';
 import useThemedStyles from '@/hooks/useThemedStyles';
 import colors from '@/styles/colors';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 import Icon from 'react-native-remix-icon';
 import { PasswordRequirementsType } from './ChangePassword';
@@ -12,21 +13,22 @@ type PasswordRequirementsListProps = {
   passwordRequirements: PasswordRequirementsType;
 };
 
-const REQUIREMENTS: { key: keyof PasswordRequirementsType; label: string }[] = [
-  { key: 'minLength', label: 'Min 6 characters' },
-  { key: 'includeLowercase', label: 'Include a lowercase letter' },
-  { key: 'includeUppercase', label: 'Include an uppercase letter' },
-  { key: 'includeSpecialCharacter', label: 'Include a special character' },
+const REQUIREMENTS: { key: keyof PasswordRequirementsType; labelKey: string }[] = [
+  { key: 'minLength', labelKey: 'profile.reqMinLength' },
+  { key: 'includeLowercase', labelKey: 'profile.reqLowercase' },
+  { key: 'includeUppercase', labelKey: 'profile.reqUppercase' },
+  { key: 'includeSpecialCharacter', labelKey: 'profile.reqSpecialChar' },
 ];
 
 const PasswordRequirementsList = ({ passwordRequirements }: PasswordRequirementsListProps) => {
+  const { t } = useTranslation();
   const styles = useThemedStyles(makeStyles);
   const theme = useTheme();
   return (
     <View style={styles.passwordRequirementsContainer}>
-      <Text fontWeight="600">Password Requirements</Text>
+      <Text fontWeight="600">{t('profile.passwordRequirements')}</Text>
 
-      {REQUIREMENTS.map(({ key, label }) => {
+      {REQUIREMENTS.map(({ key, labelKey }) => {
         const isMet = passwordRequirements[key];
 
         return (
@@ -43,7 +45,7 @@ const PasswordRequirementsList = ({ passwordRequirements }: PasswordRequirements
                 color={isMet ? colors.green[400] : theme.text.tertiary}
               />
             </View>
-            <Text color={isMet ? theme.text.primary : theme.text.tertiary}>{label}</Text>
+            <Text color={isMet ? theme.text.primary : theme.text.tertiary}>{t(labelKey)}</Text>
           </View>
         );
       })}

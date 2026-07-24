@@ -19,6 +19,7 @@ import formatRelativeTime from '@/utils/formatRelativeTime';
 import { getApiErrorMessage } from '@/utils/getApiErrorMessage';
 import { AxiosError } from 'axios';
 import React, { useCallback, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import Icon from 'react-native-remix-icon';
@@ -36,6 +37,7 @@ type ActionButtonsProps = {
 };
 
 function MembersActionList({ selectedUser, onActionComplete }: MembersActionListProps) {
+  const { t } = useTranslation();
   const fullName = getFullName(selectedUser);
 
   const currentChannel = useAppSelector(state => state.activeChannel.channel);
@@ -114,7 +116,7 @@ function MembersActionList({ selectedUser, onActionComplete }: MembersActionList
         <Text color={theme.text.tertiary}>@{selectedUser.userName}</Text>
         <View>
           <Text size="small" color={theme.text.tertiary}>
-            Joined {formatRelativeTime(selectedUser.statusCreatedAt)}
+            {t('components.joinedRelative', { time: formatRelativeTime(selectedUser.statusCreatedAt) })}
           </Text>
         </View>
         <View style={[styles.rolePillContainer, pillStyleByRoleName]}>
@@ -131,6 +133,7 @@ function MembersActionList({ selectedUser, onActionComplete }: MembersActionList
 }
 
 function OwnerActionButtons({ selectedUser, channelId, onActionComplete }: ActionButtonsProps) {
+  const { t } = useTranslation();
   const initialLoadingState = {
     removeModerator: false,
     removeFromChannel: false,
@@ -154,7 +157,7 @@ function OwnerActionButtons({ selectedUser, channelId, onActionComplete }: Actio
       if (exception instanceof AxiosError) {
         showMessage({ message: getApiErrorMessage(exception), type: 'danger' });
       } else {
-        showMessage({ message: 'An error occurred', type: 'danger' });
+        showMessage({ message: t('common.errorOccurred'), type: 'danger' });
       }
     } finally {
       setLoading(initialLoadingState);
@@ -170,7 +173,7 @@ function OwnerActionButtons({ selectedUser, channelId, onActionComplete }: Actio
       if (exception instanceof AxiosError) {
         showMessage({ message: getApiErrorMessage(exception), type: 'danger' });
       } else {
-        showMessage({ message: 'An error occurred', type: 'danger' });
+        showMessage({ message: t('common.errorOccurred'), type: 'danger' });
       }
     } finally {
       setLoading(initialLoadingState);
@@ -200,7 +203,7 @@ function OwnerActionButtons({ selectedUser, channelId, onActionComplete }: Actio
       if (exception instanceof AxiosError) {
         showMessage({ message: getApiErrorMessage(exception), type: 'danger' });
       } else {
-        showMessage({ message: 'An error occurred', type: 'danger' });
+        showMessage({ message: t('common.errorOccurred'), type: 'danger' });
       }
     } finally {
       setLoading(initialLoadingState);
@@ -214,16 +217,16 @@ function OwnerActionButtons({ selectedUser, channelId, onActionComplete }: Actio
           <Button
             theme="primary"
             icon="ri-vip-crown-line"
-            title="Make Owner"
+            title={t('components.makeOwner')}
             disabled={isAnyProcessLoadig}
             loading={loading.toggleOwner}
             onPress={() => {
               confirm({
                 theme: 'primary',
                 icon: 'vip-crown-line',
-                title: 'Transfer Ownership?',
-                description: `Are you sure you want to make ${selectedUser.fullName} the owner? You will lose owner privileges.`,
-                confirmTitle: 'Make Owner',
+                title: t('components.transferOwnershipTitle'),
+                description: t('components.transferOwnershipDesc', { name: selectedUser.fullName }),
+                confirmTitle: t('components.makeOwner'),
                 onConfirm: () => handlePatchUserRole(UserRole.Owner),
               });
             }}
@@ -231,16 +234,16 @@ function OwnerActionButtons({ selectedUser, channelId, onActionComplete }: Actio
           <Button
             theme="primary-outline"
             icon="ri-user-line"
-            title="Remove Moderator"
+            title={t('components.removeModerator')}
             disabled={isAnyProcessLoadig}
             loading={loading.removeModerator}
             onPress={() => {
               confirm({
                 theme: 'warning',
                 icon: 'user-line',
-                title: 'Remove Moderator?',
-                description: `Are you sure you want to remove ${selectedUser.fullName} as a moderator? They will become a regular member.`,
-                confirmTitle: 'Remove Moderator',
+                title: t('components.removeModeratorTitle'),
+                description: t('components.removeModeratorDesc', { name: selectedUser.fullName }),
+                confirmTitle: t('components.removeModerator'),
                 onConfirm: () => handlePatchUserRole(UserRole.User),
               });
             }}
@@ -248,16 +251,16 @@ function OwnerActionButtons({ selectedUser, channelId, onActionComplete }: Actio
           <Button
             theme="danger-outline"
             icon="ri-user-unfollow-line"
-            title="Remove from Channel"
+            title={t('components.removeFromChannel')}
             disabled={isAnyProcessLoadig}
             loading={loading.removeFromChannel}
             onPress={() => {
               confirm({
                 theme: 'danger',
                 icon: 'user-unfollow-line',
-                title: 'Remove from Channel?',
-                description: `Are you sure you want to remove ${selectedUser.fullName} from this channel? They can request to join again later.`,
-                confirmTitle: 'Remove',
+                title: t('components.removeFromChannelTitle'),
+                description: t('components.removeFromChannelDesc', { name: selectedUser.fullName }),
+                confirmTitle: t('components.removeShort'),
                 onConfirm: () => handleRemoveFromChannel(),
               });
             }}
@@ -265,16 +268,16 @@ function OwnerActionButtons({ selectedUser, channelId, onActionComplete }: Actio
           <Button
             theme="dark"
             icon="ri-forbid-line"
-            title="Ban User"
+            title={t('components.banUser')}
             disabled={isAnyProcessLoadig}
             loading={loading.banUser}
             onPress={() => {
               confirm({
                 theme: 'danger',
                 icon: 'forbid-line',
-                title: 'Ban User?',
-                description: `Are you sure you want to ban ${selectedUser.fullName}? They won't be able to rejoin this channel.`,
-                confirmTitle: 'Ban User',
+                title: t('components.banUserTitle'),
+                description: t('components.banUserDesc', { name: selectedUser.fullName }),
+                confirmTitle: t('components.banUser'),
                 onConfirm: () => handlePatchUserStatus(ChannelUserStatus.Banned),
               });
             }}
@@ -286,16 +289,16 @@ function OwnerActionButtons({ selectedUser, channelId, onActionComplete }: Actio
           <Button
             theme="primary"
             icon="ri-vip-crown-line"
-            title="Make Owner"
+            title={t('components.makeOwner')}
             disabled={isAnyProcessLoadig}
             loading={loading.toggleOwner}
             onPress={() => {
               confirm({
                 theme: 'primary',
                 icon: 'vip-crown-line',
-                title: 'Transfer Ownership?',
-                description: `Are you sure you want to make ${selectedUser.fullName} the owner? You will lose owner privileges.`,
-                confirmTitle: 'Make Owner',
+                title: t('components.transferOwnershipTitle'),
+                description: t('components.transferOwnershipDesc', { name: selectedUser.fullName }),
+                confirmTitle: t('components.makeOwner'),
                 onConfirm: () => handlePatchUserRole(UserRole.Owner),
               });
             }}
@@ -303,16 +306,16 @@ function OwnerActionButtons({ selectedUser, channelId, onActionComplete }: Actio
           <Button
             theme="primary-outline"
             icon="ri-star-line"
-            title="Make Moderator"
+            title={t('components.makeModerator')}
             disabled={isAnyProcessLoadig}
             loading={loading.toggleModerator}
             onPress={() => {
               confirm({
                 theme: 'primary',
                 icon: 'star-line',
-                title: 'Make Moderator?',
-                description: `Are you sure you want to make ${selectedUser.fullName} a moderator? They will be able to manage members.`,
-                confirmTitle: 'Make Moderator',
+                title: t('components.makeModeratorTitle'),
+                description: t('components.makeModeratorDesc', { name: selectedUser.fullName }),
+                confirmTitle: t('components.makeModerator'),
                 onConfirm: () => handlePatchUserRole(UserRole.Moderator),
               });
             }}
@@ -320,16 +323,16 @@ function OwnerActionButtons({ selectedUser, channelId, onActionComplete }: Actio
           <Button
             theme="danger-outline"
             icon="ri-user-unfollow-line"
-            title="Remove from Channel"
+            title={t('components.removeFromChannel')}
             disabled={isAnyProcessLoadig}
             loading={loading.removeFromChannel}
             onPress={() => {
               confirm({
                 theme: 'danger',
                 icon: 'user-unfollow-line',
-                title: 'Remove from Channel?',
-                description: `Are you sure you want to remove ${selectedUser.fullName} from this channel? They can request to join again later.`,
-                confirmTitle: 'Remove',
+                title: t('components.removeFromChannelTitle'),
+                description: t('components.removeFromChannelDesc', { name: selectedUser.fullName }),
+                confirmTitle: t('components.removeShort'),
                 onConfirm: () => handleRemoveFromChannel(),
               });
             }}
@@ -337,16 +340,16 @@ function OwnerActionButtons({ selectedUser, channelId, onActionComplete }: Actio
           <Button
             theme="dark"
             icon="ri-forbid-line"
-            title="Ban User"
+            title={t('components.banUser')}
             disabled={isAnyProcessLoadig}
             loading={loading.banUser}
             onPress={() => {
               confirm({
                 theme: 'danger',
                 icon: 'forbid-line',
-                title: 'Ban User?',
-                description: `Are you sure you want to ban ${selectedUser.fullName}? They won't be able to rejoin this channel.`,
-                confirmTitle: 'Ban User',
+                title: t('components.banUserTitle'),
+                description: t('components.banUserDesc', { name: selectedUser.fullName }),
+                confirmTitle: t('components.banUser'),
                 onConfirm: () => handlePatchUserStatus(ChannelUserStatus.Banned),
               });
             }}
@@ -358,6 +361,7 @@ function OwnerActionButtons({ selectedUser, channelId, onActionComplete }: Actio
 }
 
 function ModeratorActionButtons({ selectedUser, channelId, onActionComplete }: ActionButtonsProps) {
+  const { t } = useTranslation();
   const initialLoadingState = {
     removeFromChannel: false,
     banUser: false,
@@ -377,7 +381,7 @@ function ModeratorActionButtons({ selectedUser, channelId, onActionComplete }: A
       if (exception instanceof AxiosError) {
         showMessage({ message: getApiErrorMessage(exception), type: 'danger' });
       } else {
-        showMessage({ message: 'An error occurred', type: 'danger' });
+        showMessage({ message: t('common.errorOccurred'), type: 'danger' });
       }
     } finally {
       setLoading(initialLoadingState);
@@ -393,7 +397,7 @@ function ModeratorActionButtons({ selectedUser, channelId, onActionComplete }: A
       if (exception instanceof AxiosError) {
         showMessage({ message: getApiErrorMessage(exception), type: 'danger' });
       } else {
-        showMessage({ message: 'An error occurred', type: 'danger' });
+        showMessage({ message: t('common.errorOccurred'), type: 'danger' });
       }
     } finally {
       setLoading(initialLoadingState);
@@ -407,16 +411,16 @@ function ModeratorActionButtons({ selectedUser, channelId, onActionComplete }: A
           <Button
             theme="danger-outline"
             icon="ri-user-unfollow-line"
-            title="Remove from Channel"
+            title={t('components.removeFromChannel')}
             disabled={isAnyProcessLoadig}
             loading={loading.removeFromChannel}
             onPress={() => {
               confirm({
                 theme: 'danger',
                 icon: 'user-unfollow-line',
-                title: 'Remove from Channel?',
-                description: `Are you sure you want to remove ${selectedUser.fullName} from this channel? They can request to join again later.`,
-                confirmTitle: 'Remove',
+                title: t('components.removeFromChannelTitle'),
+                description: t('components.removeFromChannelDesc', { name: selectedUser.fullName }),
+                confirmTitle: t('components.removeShort'),
                 onConfirm: () => handleRemoveFromChannel(),
               });
             }}
@@ -424,16 +428,16 @@ function ModeratorActionButtons({ selectedUser, channelId, onActionComplete }: A
           <Button
             theme="dark"
             icon="ri-forbid-line"
-            title="Ban User"
+            title={t('components.banUser')}
             disabled={isAnyProcessLoadig}
             loading={loading.banUser}
             onPress={() => {
               confirm({
                 theme: 'danger',
                 icon: 'forbid-line',
-                title: 'Ban User?',
-                description: `Are you sure you want to ban ${selectedUser.fullName}? They won't be able to rejoin this channel.`,
-                confirmTitle: 'Ban User',
+                title: t('components.banUserTitle'),
+                description: t('components.banUserDesc', { name: selectedUser.fullName }),
+                confirmTitle: t('components.banUser'),
                 onConfirm: () => handlePatchUserStatus(ChannelUserStatus.Banned),
               });
             }}

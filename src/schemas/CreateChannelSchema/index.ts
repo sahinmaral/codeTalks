@@ -1,10 +1,12 @@
 import * as Yup from 'yup';
 
 const validationSchema = Yup.object().shape({
-  name: Yup.string().required('Kanal adı giriniz').min(1, 'Kanal adı minimum 1 karakter olmalıdır'),
+  name: Yup.string()
+    .required('validation.channelNameRequired')
+    .min(1, 'validation.channelNameMin1'),
   description: Yup.string()
-    .required('Açıklama giriniz')
-    .min(1, 'Açıklaam minimum 1 karakter olmalıdır'),
+    .required('validation.channelDescriptionRequired')
+    .min(1, 'validation.channelDescriptionMin1'),
 });
 
 export default validationSchema;

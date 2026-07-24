@@ -11,6 +11,7 @@ import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { AxiosError } from 'axios';
 import { Formik } from 'formik';
 import React, { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { TouchableOpacity, View } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import Icon from 'react-native-remix-icon';
@@ -20,11 +21,12 @@ import { useBubbleContentMenu } from '../../BubbleContentMenu.provider';
 import makeStyles from './ChannelCreateModal.styles';
 
 const JOIN_POLICIES = [
-  { label: 'Request', value: ChannelJoinPolicy.Request, icon: 'mail-send-line' },
-  { label: 'Open', value: ChannelJoinPolicy.Open, icon: 'global-line' },
+  { labelKey: 'components.policyRequest', value: ChannelJoinPolicy.Request, icon: 'mail-send-line' },
+  { labelKey: 'components.policyOpen', value: ChannelJoinPolicy.Open, icon: 'global-line' },
 ];
 
 function CreateChannelModal() {
+  const { t } = useTranslation();
   const styles = useThemedStyles(makeStyles);
   const theme = useTheme();
   const initialValues = { name: '', description: '', joinPolicy: ChannelJoinPolicy.Request };
@@ -42,7 +44,7 @@ function CreateChannelModal() {
   useEffect(() => {
     setFooter(
       <Button
-        title={loading ? 'Creating channel...' : 'Create Channel'}
+        title={loading ? t('components.creatingChannel') : t('components.createChannel')}
         disabled={loading}
         loading={loading}
         onPress={() => submitRef.current()}
@@ -62,7 +64,7 @@ function CreateChannelModal() {
     try {
       await fetchCreateChannel({ ...values });
       hide();
-      showMessage({ message: 'Channel created successfully', type: 'success' });
+      showMessage({ message: t('components.channelCreatedSuccess'), type: 'success' });
     } catch (error) {
       throw error;
     }
@@ -75,11 +77,11 @@ function CreateChannelModal() {
       await handleCreateChannel(values);
     } catch (exception) {
       if (exception instanceof Yup.ValidationError) {
-        showMessage({ message: exception.errors[0], type: 'warning' });
+        showMessage({ message: t(exception.errors[0]), type: 'warning' });
       } else if (exception instanceof AxiosError) {
         showMessage({ message: getApiErrorMessage(exception), type: 'danger' });
       } else {
-        showMessage({ message: 'An error occurred', type: 'danger' });
+        showMessage({ message: t('common.errorOccurred'), type: 'danger' });
       }
     } finally {
       setLoading(false);
@@ -90,7 +92,7 @@ function CreateChannelModal() {
     <View>
       <View style={{ paddingVertical: 10 }}>
         <Text fontWeight="800" size="xlarge">
-          Create Channel
+          {t('components.createChannel')}
         </Text>
       </View>
 
@@ -110,13 +112,13 @@ function CreateChannelModal() {
                 groupYPositions.current[0] = formContainerScrollY.current + e.nativeEvent.layout.y;
               }}
             >
-              <Text fontWeight="600">Channel Name</Text>
+              <Text fontWeight="600">{t('components.channelNameLabel')}</Text>
               <BottomSheetTextInput
                 onChangeText={handleChange('name')}
                 onBlur={handleBlur('name')}
                 onFocus={() => scrollTo(groupYPositions.current[0] ?? 0)}
                 value={values.name}
-                placeholder="e.g. ui-ux-design"
+                placeholder={t('components.channelNamePlaceholderExample')}
                 placeholderTextColor={theme.text.tertiary}
                 style={styles.input}
               />
@@ -134,11 +136,11 @@ function CreateChannelModal() {
                 setSheetHeight(formContainerScrollY.current + y + height);
               }}
             >
-              <Text fontWeight="600">Description</Text>
+              <Text fontWeight="600">{t('components.descriptionLabel')}</Text>
               <BottomSheetTextInput
                 multiline={true}
                 numberOfLines={4}
-                placeholder="e.g. ui-ux-design"
+                placeholder={t('components.channelNamePlaceholderExample')}
                 placeholderTextColor={theme.text.tertiary}
                 onChangeText={handleChange('description')}
                 onBlur={handleBlur('description')}
@@ -149,7 +151,7 @@ function CreateChannelModal() {
             </View>
 
             <View style={styles.formGroup}>
-              <Text fontWeight="600">Join Policy</Text>
+              <Text fontWeight="600">{t('components.joinPolicyLabel')}</Text>
               <View style={styles.segmentContainer}>
                 {JOIN_POLICIES.map(policy => {
                   const isActive = values.joinPolicy === policy.value;
@@ -163,7 +165,7 @@ function CreateChannelModal() {
                     >
                       <Icon name={policy.icon} size={16} color={activeColor} />
                       <Text fontWeight={isActive ? '600' : '400'} color={activeColor}>
-                        {policy.label}
+                        {t(policy.labelKey)}
                       </Text>
                     </TouchableOpacity>
                   );

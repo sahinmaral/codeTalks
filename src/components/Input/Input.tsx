@@ -1,7 +1,7 @@
 import Text from '@/components/Text';
 import useTheme from '@/hooks/useTheme';
 import useThemedStyles from '@/hooks/useThemedStyles';
-import React, { useState } from 'react';
+import React, { ReactNode, useState } from 'react';
 import { TextInput, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-remix-icon';
 import makeStyles from './Input.styles';
@@ -15,6 +15,12 @@ interface InputProps {
   isSecure?: boolean;
   icon?: string;
   label?: string;
+  labelRight?: ReactNode;
+  helperText?: string;
+  multiline?: boolean;
+  numberOfLines?: number;
+  maxLength?: number;
+  showCharacterCount?: boolean;
   style?: any;
   containerStyle?: any;
 }
@@ -28,6 +34,12 @@ function Input({
   isSecure,
   icon,
   label,
+  labelRight,
+  helperText,
+  multiline,
+  numberOfLines,
+  maxLength,
+  showCharacterCount,
   containerStyle,
 }: InputProps) {
   const styles = useThemedStyles(makeStyles);
@@ -37,13 +49,25 @@ function Input({
 
   return (
     <View style={styles.container}>
-      {label ? (
-        <Text style={styles.label} fontWeight="bold">
-          {label}
-        </Text>
+      {label || labelRight ? (
+        <View style={styles.labelRow}>
+          {label ? (
+            <Text style={styles.label} fontWeight="bold">
+              {label}
+            </Text>
+          ) : (
+            <View />
+          )}
+          {labelRight}
+        </View>
       ) : null}
       <View
-        style={[styles.inputContainer, focused && styles.inputContainerFocused, containerStyle]}
+        style={[
+          styles.inputContainer,
+          multiline && styles.inputContainerMultiline,
+          focused && styles.inputContainerFocused,
+          containerStyle,
+        ]}
       >
         {icon ? <Icon name={icon} color={theme.text.secondary} size={20} /> : null}
         <TextInput
@@ -60,7 +84,10 @@ function Input({
           value={value ?? ''}
           secureTextEntry={isSecure && !passwordVisible}
           placeholderTextColor={theme.text.secondary}
-          style={styles.input}
+          multiline={multiline}
+          numberOfLines={multiline ? numberOfLines : undefined}
+          maxLength={maxLength}
+          style={[styles.input, multiline && styles.inputMultiline]}
         />
         {isSecure ? (
           <TouchableOpacity onPress={() => setPasswordVisible(prev => !prev)}>
@@ -72,6 +99,22 @@ function Input({
           </TouchableOpacity>
         ) : null}
       </View>
+      {helperText || (showCharacterCount && maxLength) ? (
+        <View style={styles.footerRow}>
+          {helperText ? (
+            <Text size="small" color={theme.text.tertiary} style={styles.helperText}>
+              {helperText}
+            </Text>
+          ) : (
+            <View />
+          )}
+          {showCharacterCount && maxLength ? (
+            <Text size="small" color={theme.text.tertiary}>
+              {(value ?? '').length}/{maxLength}
+            </Text>
+          ) : null}
+        </View>
+      ) : null}
     </View>
   );
 }

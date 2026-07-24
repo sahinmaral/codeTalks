@@ -17,6 +17,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AxiosError } from 'axios';
 import React, { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
   NativeScrollEvent,
@@ -36,6 +37,7 @@ type ChannelBannedMembersListProps = {
 const PAGE_SIZE = 5;
 
 const ChannelBannedMembersList = ({ navigation }: ChannelBannedMembersListProps) => {
+  const { t } = useTranslation();
   const styles = useThemedStyles(makeStyles);
   const theme = useTheme();
   const channelId = useAppSelector(state => state.activeChannel.channel?.id ?? '');
@@ -64,7 +66,7 @@ const ChannelBannedMembersList = ({ navigation }: ChannelBannedMembersListProps)
       if (exception instanceof AxiosError) {
         showMessage({ message: getApiErrorMessage(exception), type: 'danger' });
       } else {
-        showMessage({ message: 'An error occurred', type: 'danger' });
+        showMessage({ message: t('common.errorOccurred'), type: 'danger' });
       }
     } finally {
       setLoading(false);
@@ -134,18 +136,18 @@ const ChannelBannedMembersList = ({ navigation }: ChannelBannedMembersListProps)
   const hasResults = members.length > 0;
 
   if (loading && !hasLoaded) {
-    return <Loading text="Kanaldan banlanan kullanıcılar yüklenirken lütfen bekleyiniz ..." />;
+    return <Loading text={t('channels.loadingBannedMembers')} />;
   }
 
   return (
     <View style={styles.container}>
-      <Header title={'Banned Members'} onBackPress={() => navigation.goBack()} />
+      <Header title={t('channels.bannedTitle')} onBackPress={() => navigation.goBack()} />
 
       <View style={{ backgroundColor: theme.surface, paddingBottom: 15 }}>
         <View style={styles.searchContainer}>
           <Input
             icon="ri-search-line"
-            placeholder="Search banned members..."
+            placeholder={t('channels.searchBannedMembers')}
             containerStyle={{ borderRadius: 20, backgroundColor: theme.input.background }}
             onChangeText={setSearch}
             value={search}
@@ -157,8 +159,7 @@ const ChannelBannedMembersList = ({ navigation }: ChannelBannedMembersListProps)
         <View style={styles.descriptionContainer}>
           <Icon name="ri-information-line" color={colors.orange[500]} size={20} />
           <Text color={colors.orange[500]} size="small" style={styles.descriptionText}>
-            Review members banned from #{channelName}. Tap a member to unban them and restore their
-            access
+            {t('channels.bannedDescription', { channel: channelName })}
           </Text>
         </View>
 
@@ -179,9 +180,9 @@ const ChannelBannedMembersList = ({ navigation }: ChannelBannedMembersListProps)
                       confirm({
                         theme: 'success',
                         icon: 'ri-lock-unlock-line',
-                        title: 'Unban User?',
-                        description: `Are you sure you want to unban ${getFullName(member)}? They will regain access to this channel.`,
-                        confirmTitle: 'Unban User',
+                        title: t('channels.unbanTitle'),
+                        description: t('channels.unbanDescription', { name: getFullName(member) }),
+                        confirmTitle: t('channels.unbanConfirm'),
                         onConfirm: () => handlePatchUserStatus(member.id),
                       });
                     }}
@@ -197,8 +198,8 @@ const ChannelBannedMembersList = ({ navigation }: ChannelBannedMembersListProps)
             <View style={styles.membersHeader}>
               <Text color={theme.text.secondary} style={{ textAlign: 'center' }}>
                 {debouncedSearch
-                  ? `"${debouncedSearch}" ile eşleşen banlanan kullanıcı bulunamadı.`
-                  : 'Kanaldan banlanan kullanıcı bulunamadı.'}
+                  ? t('channels.noBannedMatchSearch', { query: debouncedSearch })
+                  : t('channels.noBannedUsers')}
               </Text>
             </View>
           )}

@@ -155,8 +155,11 @@ export type RootStackParamList = {
 
 export type ProfileStackParamList = {
   MyProfile: undefined;
+  EditProfile: undefined;
   Settings: undefined;
   ChangePassword: undefined;
+  TermsOfService: undefined;
+  PrivacyPolicy: undefined;
 };
 
 export type AppNavigationProp = CompositeNavigationProp<

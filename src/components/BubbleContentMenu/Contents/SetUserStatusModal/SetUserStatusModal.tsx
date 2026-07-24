@@ -10,6 +10,7 @@ import useThemedStyles from '@/hooks/useThemedStyles';
 import colors from '@/styles/colors';
 import { UserStatus, UserStatusOption } from '@/types';
 import React, { useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import makeStyles from './SetUserStatusModal.styles';
@@ -33,6 +34,7 @@ const userPresenceStatuses: UserStatusOption[] = userStatusesData.map(item => ({
 }));
 
 function SetUserStatusModal({ currentUserStatus, onSuccess }: SetUserStatusModalProps) {
+  const { t } = useTranslation();
   const styles = useThemedStyles(makeStyles);
   const theme = useTheme();
   const initialValues = { channelId: '' };
@@ -68,14 +70,16 @@ function SetUserStatusModal({ currentUserStatus, onSuccess }: SetUserStatusModal
     <View>
       <View style={styles.header}>
         <Text fontWeight="800" size="large">
-          Send Status
+          {t('components.sendStatus')}
         </Text>
       </View>
 
       <View style={styles.description}>
-        <Text color={theme.text.secondary}>Currently: </Text>
+        <Text color={theme.text.secondary}>{t('components.currently')}</Text>
         <Text size="medium" fontWeight="700" color={currentUserStatusOption?.color}>
-          {currentUserStatusOption?.label}
+          {currentUserStatusOption
+            ? t(`statuses.${currentUserStatusOption.status.toLowerCase()}.label`)
+            : ''}
         </Text>
       </View>
 

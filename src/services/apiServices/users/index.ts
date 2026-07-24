@@ -12,6 +12,13 @@ interface ChangeUserPasswordInput {
   newPassword: string;
 }
 
+interface UpdateUserProfileInput {
+  firstName: string;
+  middleName?: string | null;
+  lastName: string;
+  bio?: string | null;
+}
+
 interface UpdateUserProfilePhotoResponse {
   newProfilePhotoPath: string;
 }
@@ -30,6 +37,10 @@ export const fetchUpdateUserStatus = (input: UpdateUserStatusInput) => {
 
 export const fetchChangeUserPassword = (input: ChangeUserPasswordInput) => {
   return axiosInstance.put('/users/password', input);
+};
+
+export const fetchUpdateUserProfile = (input: UpdateUserProfileInput) => {
+  return axiosInstance.put('/users/profile', input);
 };
 
 export const fetchUpdateUserProfilePhoto = (formData: FormData) => {

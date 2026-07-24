@@ -8,6 +8,7 @@ import useThemedStyles from '@/hooks/useThemedStyles';
 import { ChannelUser } from '@/types';
 import formatRelativeTime from '@/utils/formatRelativeTime';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Image, View } from 'react-native';
 import makeStyles from './PendingJoinRequestActionList.styles';
 
@@ -17,6 +18,7 @@ type PendingJoinRequestActionListProps = {
 };
 
 function PendingJoinRequestActionList({ user, onSelect }: PendingJoinRequestActionListProps) {
+  const { t } = useTranslation();
   const styles = useThemedStyles(makeStyles);
   const theme = useTheme();
   const { hide } = useBubbleContentMenu();
@@ -42,7 +44,7 @@ function PendingJoinRequestActionList({ user, onSelect }: PendingJoinRequestActi
         <Text color={theme.text.tertiary}>@{user.userName}</Text>
         <View style={styles.requestedAtPill}>
           <Text size="small" color={theme.text.tertiary}>
-            Requested {formatRelativeTime(user.statusCreatedAt)}
+            {t('components.requestedRelative', { time: formatRelativeTime(user.statusCreatedAt) })}
           </Text>
         </View>
       </View>
@@ -51,23 +53,23 @@ function PendingJoinRequestActionList({ user, onSelect }: PendingJoinRequestActi
         <Button
           theme="success"
           icon="ri-check-line"
-          title="Accept Request"
+          title={t('components.acceptRequest')}
           onPress={() => handleSelect(ChannelUserStatus.Accepted)}
         />
         <Button
           theme="danger-outline"
           icon="ri-close-line"
-          title="Reject Request"
+          title={t('components.rejectRequest')}
           onPress={() => handleSelect(ChannelUserStatus.Denied)}
         />
         <Button
           theme="dark"
           icon="ri-forbid-line"
-          title="Ban User"
+          title={t('components.banUser')}
           onPress={() => handleSelect(ChannelUserStatus.Banned)}
         />
         <Text size="small" color={theme.text.tertiary} style={styles.blockHelperText}>
-          Blocked users cannot send join requests or see your profile.
+          {t('components.blockHelper')}
         </Text>
       </View>
     </View>

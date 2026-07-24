@@ -1,20 +1,18 @@
 import * as Yup from 'yup';
 
 const validationSchema = Yup.object().shape({
-  username: Yup.string()
-    .required('Kullanıcı adı giriniz')
-    .min(3, 'Kullanıcı adı minimum 3 karakter olmalıdır'),
-  email: Yup.string().email('Geçerli bir email giriniz').required('Email giriniz'),
+  username: Yup.string().required('validation.usernameRequired').min(3, 'validation.usernameMin3'),
+  email: Yup.string().email('validation.emailInvalid').required('validation.emailRequired'),
   password: Yup.string()
-    .required('Şifrenizi giriniz')
-    .min(6, 'Şifre minimum 6 karakter olmalıdır')
+    .required('validation.passwordRequired')
+    .min(6, 'validation.passwordMin6')
     .matches(
       /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[.#?!@$%^*-]).{6,}$/,
-      'Şifreniz en az bir büyük harf, küçük harf, rakam ve özel karakter içermelidir',
+      'validation.passwordComplexity',
     ),
   passwordConfirm: Yup.string()
-    .required('Şifrenizi tekrar giriniz')
-    .oneOf([Yup.ref('password')], 'Şifreniz ile aynı olmalıdır'),
+    .required('validation.passwordConfirmRequired')
+    .oneOf([Yup.ref('password')], 'validation.passwordMustMatch'),
 });
 
 export default validationSchema;

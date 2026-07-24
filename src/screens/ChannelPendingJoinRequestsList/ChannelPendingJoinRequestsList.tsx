@@ -15,6 +15,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AxiosError } from 'axios';
 import React, { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
   NativeScrollEvent,
@@ -34,6 +35,7 @@ type ChannelPendingJoinRequestsListProps = {
 const PAGE_SIZE = 5;
 
 const ChannelPendingJoinRequestsList = ({ navigation }: ChannelPendingJoinRequestsListProps) => {
+  const { t } = useTranslation();
   const styles = useThemedStyles(makeStyles);
   const theme = useTheme();
   const channelId = useAppSelector(state => state.activeChannel.channel?.id ?? '');
@@ -60,7 +62,7 @@ const ChannelPendingJoinRequestsList = ({ navigation }: ChannelPendingJoinReques
       if (exception instanceof AxiosError) {
         showMessage({ message: getApiErrorMessage(exception), type: 'danger' });
       } else {
-        showMessage({ message: 'An error occurred', type: 'danger' });
+        showMessage({ message: t('common.errorOccurred'), type: 'danger' });
       }
     } finally {
       setLoading(false);
@@ -130,18 +132,18 @@ const ChannelPendingJoinRequestsList = ({ navigation }: ChannelPendingJoinReques
   const hasResults = members.length > 0;
 
   if (loading && !hasLoaded) {
-    return <Loading text="Kanaldaki kullanıcılar yüklenirken lütfen bekleyiniz ..." />;
+    return <Loading text={t('channels.loadingMembers')} />;
   }
 
   return (
     <View style={styles.container}>
-      <Header title={'Pending Join Requests'} onBackPress={() => navigation.goBack()} />
+      <Header title={t('channels.pendingTitle')} onBackPress={() => navigation.goBack()} />
 
       <View style={{ backgroundColor: theme.surface, paddingBottom: 15 }}>
         <View style={styles.searchContainer}>
           <Input
             icon="ri-search-line"
-            placeholder="Search requests..."
+            placeholder={t('channels.searchRequests')}
             containerStyle={{ borderRadius: 20, backgroundColor: theme.input.background }}
             onChangeText={setSearch}
             value={search}
@@ -153,8 +155,7 @@ const ChannelPendingJoinRequestsList = ({ navigation }: ChannelPendingJoinReques
         <View style={styles.descriptionContainer}>
           <Icon name="ri-information-line" color={colors.orange[500]} size={20} />
           <Text color={colors.orange[500]} size="small" style={styles.descriptionText}>
-            Review and manage join requests for #{channelName}. Tap a request to accept, reject, or
-            block the user
+            {t('channels.pendingDescription', { channel: channelName })}
           </Text>
         </View>
 
@@ -186,8 +187,8 @@ const ChannelPendingJoinRequestsList = ({ navigation }: ChannelPendingJoinReques
             <View style={styles.membersHeader}>
               <Text color={theme.text.secondary} style={{ textAlign: 'center' }}>
                 {debouncedSearch
-                  ? `"${debouncedSearch}" ile eşleşen istek gönderen kullanıcı bulunamadı.`
-                  : 'Kanala istek gönderen kullanıcı bulunamadı.'}
+                  ? t('channels.noRequestsMatchSearch', { query: debouncedSearch })
+                  : t('channels.noRequests')}
               </Text>
             </View>
           )}

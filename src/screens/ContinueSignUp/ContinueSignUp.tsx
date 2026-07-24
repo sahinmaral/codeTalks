@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react';
-import { ActivityIndicator, Image, SafeAreaView, TouchableOpacity, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { Image, SafeAreaView, View } from 'react-native';
 import PhoneInput from 'react-native-phone-number-input';
 import { showMessage } from 'react-native-flash-message';
 import { Formik } from 'formik';
@@ -26,6 +27,7 @@ interface ContinueSignUpProps {
 }
 
 function ContinueSignUp({ navigation, route }: ContinueSignUpProps) {
+  const { t } = useTranslation();
   const styles = useThemedStyles(makeStyles);
   const [loading, setLoading] = useState(false);
   const phoneInputRef = useRef<PhoneInput>(null);
@@ -45,15 +47,15 @@ function ContinueSignUp({ navigation, route }: ContinueSignUpProps) {
         ...user,
         middleName: user.middleName ?? undefined,
       });
-      showMessage({ message: 'Başarıyla kaydınız gerçekleşti', type: 'info' });
+      showMessage({ message: t('auth.signUpSuccess'), type: 'info' });
       navigation.navigate('Login');
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
-        showMessage({ message: 'Please enter remaining inputs', type: 'warning' });
+        showMessage({ message: t('auth.enterRemainingInputs'), type: 'warning' });
       } else if (error instanceof AxiosError) {
         showMessage({ message: getApiErrorMessage(error), type: 'danger' });
       } else {
-        showMessage({ message: 'Bir hata oluştu', type: 'danger' });
+        showMessage({ message: t('common.errorOccurred'), type: 'danger' });
       }
     }
   };
@@ -63,7 +65,11 @@ function ContinueSignUp({ navigation, route }: ContinueSignUpProps) {
       await validationSchema.validate(values, { abortEarly: false });
       await handleSignUp(values);
     } catch (exception) {
-      showMessage({ message: String(exception), type: 'danger' });
+      if (exception instanceof Yup.ValidationError) {
+        showMessage({ message: t(exception.errors[0]), type: 'warning' });
+      } else {
+        showMessage({ message: t('common.errorOccurred'), type: 'danger' });
+      }
     }
   };
 
@@ -91,9 +97,9 @@ function ContinueSignUp({ navigation, route }: ContinueSignUpProps) {
         <View style={styles.formContainer}>
           <View style={styles.description}>
             <Text size="large" fontWeight="800">
-              Personal Details
+              {t('auth.personalDetailsTitle')}
             </Text>
-            <Text size="medium">Complete your profile to join the Codetalks community.</Text>
+            <Text size="medium">{t('auth.personalDetailsSubtitle')}</Text>
           </View>
 
           <View style={styles.formInputsContainer}>
@@ -102,21 +108,21 @@ function ContinueSignUp({ navigation, route }: ContinueSignUpProps) {
                 <View style={{ flex: 1 }}>
                   <View style={styles.inputGroup}>
                     <Input
-                      label="First Name"
+                      label={t('auth.firstNameLabel')}
                       placeholder="John"
                       onChangeText={handleChange('firstName')}
                       onBlur={handleBlur('firstName')}
                       value={values.firstName}
                     />
                     <Input
-                      label="Middle Name (optional)"
+                      label={t('auth.middleNameLabel')}
                       placeholder="Jae"
                       onChangeText={handleChange('middleName')}
                       onBlur={handleBlur('middleName')}
                       value={values.middleName ?? ''}
                     />
                     <Input
-                      label="Last Name"
+                      label={t('auth.lastNameLabel')}
                       placeholder="Doe"
                       onChangeText={handleChange('lastName')}
                       onBlur={handleBlur('lastName')}
@@ -125,9 +131,13 @@ function ContinueSignUp({ navigation, route }: ContinueSignUpProps) {
                   </View>
 
                   <View style={styles.buttonGroup}>
-                    <Button title="Create Account" theme="primary" onPress={formikSubmit} />
                     <Button
-                      title="Back"
+                      title={t('auth.createAccountTitle')}
+                      theme="primary"
+                      onPress={formikSubmit}
+                    />
+                    <Button
+                      title={t('auth.backButton')}
                       icon="arrow-left-line"
                       theme="primary-outline"
                       onPress={() => navigation.goBack()}

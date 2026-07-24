@@ -5,6 +5,7 @@ import colors from '@/styles/colors';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-remix-icon';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -19,6 +20,7 @@ const TAB_ICONS: Record<string, { active: string; inactive: string }> = {
 const HIDDEN_ON_ROUTES = ['ChannelMessagesList'];
 
 const CustomBottomTab: React.FC<BottomTabBarProps> = ({ state, descriptors, navigation }) => {
+  const { t } = useTranslation();
   const styles = useThemedStyles(makeStyles);
   const theme = useTheme();
   const totalUnreadCount = useAppSelector(state => state.app.totalUnreadCount);
@@ -36,12 +38,13 @@ const CustomBottomTab: React.FC<BottomTabBarProps> = ({ state, descriptors, navi
         const { options } = descriptors[route.key];
         const isFocused = state.index === index;
         const icons = TAB_ICONS[route.name] ?? { active: 'circle-fill', inactive: 'circle-line' };
-        const label =
+        const fallbackLabel =
           options.tabBarLabel !== undefined
             ? String(options.tabBarLabel)
             : options.title !== undefined
               ? options.title
               : route.name;
+        const label = t(`tabs.${route.name}`, { defaultValue: fallbackLabel });
 
         const onPress = () => {
           const event = navigation.emit({

@@ -1,3 +1,4 @@
+import i18n from '@/localization/i18n';
 import { clearUser, setUser } from '@/redux/reducers/appReducer';
 import { store } from '@/redux/store';
 import axios, { AxiosRequestConfig } from 'axios';
@@ -13,6 +14,7 @@ axiosInstance.interceptors.request.use(config => {
   if (accessToken) {
     config.headers.Authorization = `Bearer ${accessToken}`;
   }
+  config.headers['Accept-Language'] = i18n.language;
   return config;
 });
 

@@ -1,5 +1,6 @@
 import LottieView from 'lottie-react-native';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { View, Text, Dimensions, ViewStyle, TextStyle } from 'react-native';
 
 interface CheckInternetStyles {
@@ -12,6 +13,7 @@ interface CheckInternetProps {
 }
 
 function CheckInternet({ styles }: CheckInternetProps) {
+  const { t } = useTranslation();
   return (
     <View style={[{ flex: 1, flexDirection: 'column', alignItems: 'center' }, styles.container]}>
       <LottieView
@@ -23,7 +25,7 @@ function CheckInternet({ styles }: CheckInternetProps) {
       <Text
         style={[{ flex: 2, fontSize: 30, textAlign: 'center', fontWeight: 'bold' }, styles.text]}
       >
-        Uygulamayı kullanabilmeniz için internet bağlantınızın olması gerekmektedir.
+        {t('common.noInternet')}
       </Text>
     </View>
   );

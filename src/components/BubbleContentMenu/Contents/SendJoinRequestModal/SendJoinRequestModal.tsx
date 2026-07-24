@@ -11,12 +11,14 @@ import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { AxiosError } from 'axios';
 import { Formik } from 'formik';
 import React, { useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import * as Yup from 'yup';
 import makeStyles from './SendJoinRequestModal.styles';
 
 function SendJoinRequestModal() {
+  const { t } = useTranslation();
   const styles = useThemedStyles(makeStyles);
   const theme = useTheme();
   const initialValues = { inviteCode: '' };
@@ -29,7 +31,7 @@ function SendJoinRequestModal() {
   const handleJoinChannel = async ({ inviteCode }: typeof initialValues) => {
     if (inviteCode.length === 0) {
       showMessage({
-        message: 'Lütfen katılmak istediğiniz kanalın istek kodunu giriniz',
+        message: t('components.enterInviteCode'),
         type: 'danger',
       });
       return;
@@ -43,17 +45,17 @@ function SendJoinRequestModal() {
       showMessage({
         message:
           data.status === ChannelUserStatus.Accepted
-            ? 'Kanala başarıyla katıldınız'
-            : 'İsteğiniz başarıyla gönderildi',
+            ? t('components.joinedSuccess')
+            : t('components.requestSentSuccess'),
         type: 'success',
       });
     } catch (exception) {
       if (exception instanceof Yup.ValidationError) {
-        showMessage({ message: exception.errors[0], type: 'warning' });
+        showMessage({ message: t(exception.errors[0]), type: 'warning' });
       } else if (exception instanceof AxiosError) {
         showMessage({ message: getApiErrorMessage(exception), type: 'danger' });
       } else {
-        showMessage({ message: 'An error occurred', type: 'danger' });
+        showMessage({ message: t('common.errorOccurred'), type: 'danger' });
       }
     } finally {
       setLoading(false);
@@ -64,14 +66,13 @@ function SendJoinRequestModal() {
     <View>
       <View style={styles.header}>
         <Text fontWeight="800" size="xlarge">
-          Join a Channel
+          {t('components.joinChannelTitle')}
         </Text>
       </View>
 
       <View style={styles.description}>
         <Text size="medium" color={theme.text.secondary}>
-          Enter the invite code of the channel you want to join. You'll join open channels right
-          away, or send a request that admins review for channels that require approval.
+          {t('components.joinChannelLongDescription')}
         </Text>
       </View>
 
@@ -84,13 +85,13 @@ function SendJoinRequestModal() {
                 groupYPositions.current[0] = e.nativeEvent.layout.y;
               }}
             >
-              <Text fontWeight="600">Invite Code</Text>
+              <Text fontWeight="600">{t('components.inviteCodeLabel')}</Text>
               <BottomSheetTextInput
                 onChangeText={handleChange('inviteCode')}
                 onBlur={handleBlur('inviteCode')}
                 onFocus={() => scrollTo(groupYPositions.current[0] ?? 0)}
                 value={values.inviteCode}
-                placeholder="# Paste Invite Code here"
+                placeholder={t('components.inviteCodePlaceholder')}
                 placeholderTextColor={theme.text.tertiary}
                 style={styles.input}
               />
@@ -98,7 +99,7 @@ function SendJoinRequestModal() {
             </View>
 
             <Button
-              title={loading ? 'Sending request...' : 'Send Join Request'}
+              title={loading ? t('components.sendingRequest') : t('components.sendJoinRequest')}
               loading={loading}
               disabled={loading}
               style={styles.button}

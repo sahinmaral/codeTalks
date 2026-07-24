@@ -1,5 +1,6 @@
-import { ActivityIndicator, TextInput, TouchableOpacity, View } from 'react-native';
+import { TextInput, TouchableOpacity, View } from 'react-native';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Icon from 'react-native-remix-icon';
 import makeStyles from './ChannelMessagesList.styles';
 import useTheme from '@/hooks/useTheme';
@@ -23,6 +24,7 @@ const SendMessageInput = ({
   message,
   onMessageChange,
 }: SendMessageInputProps) => {
+  const { t } = useTranslation();
   const styles = useThemedStyles(makeStyles);
   const theme = useTheme();
   const [isLoading, setLoading] = useState(false);
@@ -37,7 +39,7 @@ const SendMessageInput = ({
       await fetchCreateMessage({ userId, channelId, content: message });
       onMessageChange('');
     } catch {
-      showMessage({ message: 'Error during sending message', type: 'danger' });
+      showMessage({ message: t('channels.errorSendingMessage'), type: 'danger' });
     } finally {
       setLoading(false);
     }
@@ -58,7 +60,7 @@ const SendMessageInput = ({
           style={styles.textInput}
           value={message}
           onChangeText={onMessageChange}
-          placeholder={`Message ${channelName}`}
+          placeholder={t('channels.messagePlaceholder', { channel: channelName })}
           placeholderTextColor={theme.text.tertiary}
           multiline
         />

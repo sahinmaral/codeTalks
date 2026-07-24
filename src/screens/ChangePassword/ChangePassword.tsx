@@ -12,6 +12,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AxiosError } from 'axios';
 import { Formik } from 'formik';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import * as Yup from 'yup';
@@ -39,6 +40,7 @@ type ChangePasswordProps = {
 };
 
 function ChangePassword({ navigation }: ChangePasswordProps) {
+  const { t } = useTranslation();
   const styles = useThemedStyles(makeStyles);
   const theme = useTheme();
   const [loading, setLoading] = useState(false);
@@ -51,15 +53,15 @@ function ChangePassword({ navigation }: ChangePasswordProps) {
         currentPassword: values.currentPassword,
         newPassword: values.newPassword,
       });
-      showMessage({ message: 'Password changed successfully', type: 'success' });
+      showMessage({ message: t('profile.passwordChanged'), type: 'success' });
       navigation.goBack();
     } catch (exception) {
       if (exception instanceof Yup.ValidationError) {
-        showMessage({ message: exception.errors[0], type: 'warning' });
+        showMessage({ message: t(exception.errors[0]), type: 'warning' });
       } else if (exception instanceof AxiosError) {
         showMessage({ message: getApiErrorMessage(exception), type: 'danger' });
       } else {
-        showMessage({ message: 'An error occurred', type: 'danger' });
+        showMessage({ message: t('common.errorOccurred'), type: 'danger' });
       }
     } finally {
       setLoading(false);
@@ -68,7 +70,7 @@ function ChangePassword({ navigation }: ChangePasswordProps) {
 
   return (
     <View style={styles.container}>
-      <Header title="Change Password" onBackPress={() => navigation.goBack()} />
+      <Header title={t('profile.changePasswordTitle')} onBackPress={() => navigation.goBack()} />
 
       <Formik initialValues={initialFormValues} onSubmit={handleSubmit}>
         {({ handleChange, handleBlur, handleSubmit: formikSubmit, values }) => (
@@ -84,12 +86,12 @@ function ChangePassword({ navigation }: ChangePasswordProps) {
             >
               <View style={styles.description}>
                 <Text size="medium" color={theme.text.secondary}>
-                  Keep your account secure with a strong password.
+                  {t('profile.changePasswordDescription')}
                 </Text>
               </View>
 
               <Input
-                label="Current Password"
+                label={t('profile.currentPasswordLabel')}
                 placeholder="********"
                 isSecure
                 onChangeText={handleChange('currentPassword')}
@@ -98,7 +100,7 @@ function ChangePassword({ navigation }: ChangePasswordProps) {
               />
 
               <Input
-                label="New Password"
+                label={t('profile.newPasswordLabel')}
                 placeholder="********"
                 isSecure
                 onChangeText={handleChange('newPassword')}
@@ -107,7 +109,7 @@ function ChangePassword({ navigation }: ChangePasswordProps) {
               />
 
               <Input
-                label="Confirm New Password"
+                label={t('profile.confirmNewPasswordLabel')}
                 placeholder="********"
                 isSecure
                 onChangeText={handleChange('newPasswordRepeat')}
@@ -120,7 +122,7 @@ function ChangePassword({ navigation }: ChangePasswordProps) {
               />
 
               <Button
-                title={loading ? 'Saving password...' : 'Save Password'}
+                title={loading ? t('profile.savingPassword') : t('profile.savePassword')}
                 disabled={loading}
                 loading={loading}
                 onPress={formikSubmit}

@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Image, SafeAreaView, TouchableOpacity, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { showMessage } from 'react-native-flash-message';
@@ -28,6 +29,7 @@ const initialValues = {
 };
 
 function SignUp({ navigation }: SignUpProps) {
+  const { t } = useTranslation();
   const styles = useThemedStyles(makeStyles);
   const { isKeyboardVisible } = useKeyboardVisible();
 
@@ -41,7 +43,7 @@ function SignUp({ navigation }: SignUpProps) {
       });
     } catch (exception) {
       if (exception instanceof ValidationError) {
-        showMessage({ message: exception.errors[0], type: 'warning' });
+        showMessage({ message: t(exception.errors[0]), type: 'warning' });
       }
     }
   };
@@ -69,9 +71,9 @@ function SignUp({ navigation }: SignUpProps) {
         <View style={styles.formContainer}>
           <View style={styles.description}>
             <Text size="large" fontWeight="800">
-              Create Account
+              {t('auth.createAccountTitle')}
             </Text>
-            <Text size="medium">Join the community and start your journey.</Text>
+            <Text size="medium">{t('auth.createAccountSubtitle')}</Text>
           </View>
 
           <Formik initialValues={initialValues} onSubmit={handleSubmit}>
@@ -79,7 +81,7 @@ function SignUp({ navigation }: SignUpProps) {
               <View style={styles.formInputsContainer}>
                 <View style={styles.inputGroup}>
                   <Input
-                    label="E-mail Address"
+                    label={t('auth.emailLabel')}
                     placeholder="name@example.com"
                     onChangeText={handleChange('email')}
                     onBlur={handleBlur('email')}
@@ -87,7 +89,7 @@ function SignUp({ navigation }: SignUpProps) {
                     icon="mail-line"
                   />
                   <Input
-                    label="Username"
+                    label={t('auth.usernameLabel')}
                     placeholder="name.example"
                     onChangeText={handleChange('username')}
                     onBlur={handleBlur('username')}
@@ -95,7 +97,7 @@ function SignUp({ navigation }: SignUpProps) {
                     icon="user-line"
                   />
                   <Input
-                    label="Password"
+                    label={t('auth.passwordLabel')}
                     placeholder="********"
                     onChangeText={handleChange('password')}
                     onBlur={handleBlur('password')}
@@ -104,7 +106,7 @@ function SignUp({ navigation }: SignUpProps) {
                     icon="lock-line"
                   />
                   <Input
-                    label="Confirm Password"
+                    label={t('auth.confirmPasswordLabel')}
                     placeholder="********"
                     onChangeText={handleChange('passwordConfirm')}
                     onBlur={handleBlur('passwordConfirm')}
@@ -116,16 +118,16 @@ function SignUp({ navigation }: SignUpProps) {
 
                 <View style={styles.buttonGroup}>
                   <Button
-                    title="Next"
+                    title={t('auth.nextButton')}
                     icon="arrow-right-line"
                     theme="primary"
                     onPress={formikSubmit}
                   />
                   <View style={styles.signInOptionContainer}>
-                    <Text>Already have an account? </Text>
+                    <Text>{t('auth.alreadyHaveAccount')}</Text>
                     <TouchableOpacity onPress={() => navigation.goBack()}>
                       <Text color={colors.orange[500]} fontWeight="700">
-                        Sign In
+                        {t('auth.signInButton')}
                       </Text>
                     </TouchableOpacity>
                   </View>

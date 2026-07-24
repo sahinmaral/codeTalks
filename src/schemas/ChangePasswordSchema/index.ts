@@ -1,17 +1,17 @@
 import * as Yup from 'yup';
 
 const validationSchema = Yup.object().shape({
-  currentPassword: Yup.string().required('Mevcut şifrenizi giriniz'),
+  currentPassword: Yup.string().required('validation.currentPasswordRequired'),
   newPassword: Yup.string()
-    .required('Yeni şifrenizi giriniz')
-    .min(6, 'Şifre minimum 6 karakter olmalıdır')
-    .matches(/[a-z]/, 'Şifre en az bir küçük harf içermelidir')
-    .matches(/[A-Z]/, 'Şifre en az bir büyük harf içermelidir')
-    .matches(/[^A-Za-z0-9]/, 'Şifre en az bir özel karakter içermelidir')
-    .notOneOf([Yup.ref('currentPassword')], 'Yeni şifre mevcut şifre ile aynı olamaz'),
+    .required('validation.newPasswordRequired')
+    .min(6, 'validation.passwordMin6')
+    .matches(/[a-z]/, 'validation.passwordLowercase')
+    .matches(/[A-Z]/, 'validation.passwordUppercase')
+    .matches(/[^A-Za-z0-9]/, 'validation.passwordSpecialChar')
+    .notOneOf([Yup.ref('currentPassword')], 'validation.newPasswordNotSameAsCurrent'),
   newPasswordRepeat: Yup.string()
-    .required('Yeni şifrenizi tekrar giriniz')
-    .oneOf([Yup.ref('newPassword')], 'Şifreler eşleşmiyor'),
+    .required('validation.newPasswordRepeatRequired')
+    .oneOf([Yup.ref('newPassword')], 'validation.passwordsDoNotMatch'),
 });
 
 export default validationSchema;

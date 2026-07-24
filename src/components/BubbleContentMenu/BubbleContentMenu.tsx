@@ -4,6 +4,7 @@ import BottomSheet, {
   BottomSheetScrollView,
 } from '@gorhom/bottom-sheet';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Dimensions, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import useThemedStyles from '@/hooks/useThemedStyles';
@@ -23,6 +24,7 @@ interface BubbleContentMenuProps {
 }
 
 function BubbleContentMenu({ children, onClose }: BubbleContentMenuProps) {
+  const { t } = useTranslation();
   const styles = useThemedStyles(makeStyles);
   const bottomSheetRef = useRef<BottomSheet>(null);
   const scrollViewRef = useRef<ScrollView>(null);
@@ -51,7 +53,7 @@ function BubbleContentMenu({ children, onClose }: BubbleContentMenuProps) {
   );
 
   const cancelButton = (
-    <Button title="Cancel" theme="primary-outline" onPress={() => onClose?.()} />
+    <Button title={t('components.cancel')} theme="primary-outline" onPress={() => onClose?.()} />
   );
 
   return (

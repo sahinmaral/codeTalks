@@ -4,6 +4,7 @@ import { useAppDispatch } from '@/redux/hooks';
 import { clearUser } from '@/redux/reducers/appReducer';
 import useThemedStyles from '@/hooks/useThemedStyles';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Image, View } from 'react-native';
 import makeStyles from './Error.styles';
 
@@ -13,7 +14,8 @@ interface ErrorProps {
   onRetry?: () => void;
 }
 
-function Error({ description, title = 'Something went wrong', onRetry }: ErrorProps) {
+function Error({ description, title, onRetry }: ErrorProps) {
+  const { t } = useTranslation();
   const styles = useThemedStyles(makeStyles);
   const dispatch = useAppDispatch();
 
@@ -33,20 +35,20 @@ function Error({ description, title = 'Something went wrong', onRetry }: ErrorPr
       </View>
       <View style={styles.errorSection}>
         <Text size="large" fontWeight="800" style={styles.errorText}>
-          {title}
+          {title ?? t('errorScreen.defaultTitle')}
         </Text>
         <Text style={styles.errorTextDescription}>{description}</Text>
         <View style={styles.buttonGroup}>
           {onRetry && (
             <Button
-              title={'Try Again'}
+              title={t('errorScreen.tryAgain')}
               icon="ri-restart-line"
               style={styles.button}
               onPress={onRetry}
             />
           )}
           <Button
-            title={'Go To Login'}
+            title={t('errorScreen.goToLogin')}
             theme="primary-outline"
             style={styles.button}
             onPress={handleGoToLogin}

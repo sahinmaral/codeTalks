@@ -1,7 +1,8 @@
 import React, { useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Button from '@/components/Button';
 import Text from '@/components/Text';
-import { ActivityIndicator, View } from 'react-native';
+import { View } from 'react-native';
 import { useBubbleContentMenuScroll } from '@/components/BubbleContentMenu/BubbleContentMenu.context';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import makeStyles from './UpdateChannelNameModal.styles';
@@ -17,6 +18,7 @@ import { useBubbleContentMenu } from '@/components/BubbleContentMenu/BubbleConte
 import translateErrorMessage from '@/helpers/apiErrorTranslation';
 
 function UpdateChannelNameModal() {
+  const { t } = useTranslation();
   const styles = useThemedStyles(makeStyles);
   const theme = useTheme();
   const currentChannel = useAppSelector(state => state.activeChannel.channel);
@@ -36,7 +38,7 @@ function UpdateChannelNameModal() {
 
   const handleUpdateChannelName = async ({ channelName }: typeof initialValues) => {
     if (channelName.length === 0) {
-      setError('Lütfen herhangi bir kanal adı giriniz');
+      setError(t('components.enterChannelName'));
       return;
     }
 
@@ -45,7 +47,7 @@ function UpdateChannelNameModal() {
       await fetchPatchChannel(selectedChannelId, { name: channelName });
       dispatch(setActiveChannelName(channelName));
       hide();
-      showMessage({ message: 'Kanal adı başarıyla güncellendi', type: 'success' });
+      showMessage({ message: t('components.channelNameUpdated'), type: 'success' });
     } catch (err: any) {
       const errorResult = err?.response?.data;
       showMessage({
@@ -61,7 +63,7 @@ function UpdateChannelNameModal() {
     <View>
       <View style={styles.header}>
         <Text fontWeight="800" size="xlarge">
-          Edit Channel Name
+          {t('components.editChannelNameTitle')}
         </Text>
       </View>
 
@@ -74,11 +76,11 @@ function UpdateChannelNameModal() {
                 groupYPositions.current[0] = e.nativeEvent.layout.y;
               }}
             >
-              <Text fontWeight="600">Channel Name</Text>
+              <Text fontWeight="600">{t('components.channelNameLabel')}</Text>
               <BottomSheetTextInput
                 onChangeText={handleChange('channelName')}
                 value={values.channelName}
-                placeholder="Enter channel name here"
+                placeholder={t('components.channelNamePlaceholder')}
                 placeholderTextColor={theme.text.tertiary}
                 style={[styles.input, isFocused && styles.inputFocused]}
                 onFocus={() => {
@@ -92,12 +94,12 @@ function UpdateChannelNameModal() {
               />
               {errors.channelName && <Text style={styles.inputError}>* {errors.channelName}</Text>}
               <Text size="small" color={theme.text.secondary}>
-                Use lowercase letters, numbers and hypens only
+                {t('components.channelNameHelper')}
               </Text>
             </View>
 
             <Button
-              title={loading ? 'Saving changes...' : 'Save Changes'}
+              title={loading ? t('components.savingChanges') : t('components.saveChanges')}
               loading={loading}
               disabled={loading}
               style={styles.button}

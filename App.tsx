@@ -9,9 +9,12 @@ import ChangePassword from '@/screens/ChangePassword';
 import ChannelBannedMembersList from '@/screens/ChannelBannedMembersList';
 import ChannelMembersList from '@/screens/ChannelMembersList';
 import ChannelPendingJoinRequestsList from '@/screens/ChannelPendingJoinRequestsList';
+import EditProfile from '@/screens/EditProfile';
 import MyProfile from '@/screens/MyProfile';
+import PrivacyPolicy from '@/screens/PrivacyPolicy';
 import RemoveMemberFromChannel from '@/screens/RemoveMemberFromChannel';
 import Settings from '@/screens/Settings';
+import TermsOfService from '@/screens/TermsOfService';
 import { fetchGetUnreadCount } from '@/services/apiServices/notifications';
 import { navigationRef } from '@/utils/navigationRef';
 import {
@@ -39,6 +42,7 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import useCheckInternet from './src/hooks/useCheckInternet';
+import useLanguage from './src/hooks/useLanguage';
 import useTheme from './src/hooks/useTheme';
 import { useAppDispatch, useAppSelector } from './src/redux/hooks';
 import ChannelDetail from './src/screens/ChannelDetail';
@@ -88,8 +92,11 @@ const ExploreStack = () => (
 const ProfileStack = () => (
   <ProfileStackNav.Navigator initialRouteName="MyProfile" screenOptions={{ headerShown: false }}>
     <ProfileStackNav.Screen name="MyProfile" component={MyProfile} />
+    <ProfileStackNav.Screen name="EditProfile" component={EditProfile} />
     <ProfileStackNav.Screen name="Settings" component={Settings} />
     <ProfileStackNav.Screen name="ChangePassword" component={ChangePassword} />
+    <ProfileStackNav.Screen name="TermsOfService" component={TermsOfService} />
+    <ProfileStackNav.Screen name="PrivacyPolicy" component={PrivacyPolicy} />
   </ProfileStackNav.Navigator>
 );
 
@@ -109,11 +116,12 @@ function App() {
   const dispatch = useAppDispatch();
 
   usePushNotifications(user?.id);
-  useNotificationHub(user != null);
+  useNotificationHub(user !== null);
   useNotificationHandler();
 
   const { isConnected } = useCheckInternet();
   const theme = useTheme();
+  useLanguage();
   const [fontsLoaded] = useFonts({
     Montserrat_100: Montserrat_100Thin,
     Montserrat_200: Montserrat_200ExtraLight,
@@ -133,7 +141,7 @@ function App() {
   }, [fontsLoaded]);
 
   useEffect(() => {
-    if (!user) return;
+    if (user === null) return;
 
     fetchGetUnreadCount().then(({ data }) => {
       dispatch(setTotalUnreadCount(data));
@@ -171,7 +179,7 @@ function App() {
       <ConfirmationDialogProvider>
         <NavigationContainer ref={navigationRef} theme={navigationTheme}>
           <BubbleContentMenuProvider>
-            {!user ? <AuthStack /> : <MainStack />}
+            {user === null ? <AuthStack /> : <MainStack />}
           </BubbleContentMenuProvider>
         </NavigationContainer>
       </ConfirmationDialogProvider>

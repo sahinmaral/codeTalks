@@ -11,6 +11,7 @@ import useThemedStyles from '@/hooks/useThemedStyles';
 import colors from '@/styles/colors';
 import { Channel, PaginatedResult } from '@/types';
 import React, { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
   NativeScrollEvent,
@@ -24,6 +25,7 @@ import makeStyles from '../ChannelList.styles';
 const PAGE_SIZE = 10;
 
 function AllChannelList() {
+  const { t } = useTranslation();
   const styles = useThemedStyles(makeStyles);
   const theme = useTheme();
   const [channels, setChannels] = useState<Channel[]>([]);
@@ -117,13 +119,13 @@ function AllChannelList() {
   };
 
   if (loading && !hasLoaded) {
-    return <Loading text="Kanallar yüklenirken lütfen bekleyiniz ..." />;
+    return <Loading text={t('channels.loadingChannels')} />;
   }
 
   if (error && channels.length === 0) {
     return (
       <ErrorScreen
-        description="Kanallar yüklenemedi. Lütfen tekrar deneyiniz ..."
+        description={t('channels.channelsLoadFailedRetry')}
         onRetry={() => {
           setLoading(true);
           setHasLoaded(false);
@@ -142,12 +144,12 @@ function AllChannelList() {
 
   return (
     <View style={styles.container}>
-      <Header title="Explore" description="Discover and join new channels" />
+      <Header title={t('channels.exploreTitle')} description={t('channels.exploreDescription')} />
 
       <View style={styles.searchContainer}>
         <Input
           icon="ri-search-line"
-          placeholder="Search channels..."
+          placeholder={t('channels.searchChannels')}
           value={search}
           onChangeText={setSearch}
         />
@@ -177,12 +179,12 @@ function AllChannelList() {
         {channels.length === 0 && (
           <View style={styles.emptyContainer}>
             <Text size="large" fontWeight="700" style={{ textAlign: 'center' }}>
-              No Channels Found
+              {t('channels.noChannelsFound')}
             </Text>
             <Text color={theme.text.secondary} size="medium" style={{ textAlign: 'center' }}>
               {debouncedSearch
-                ? `"${debouncedSearch}" ile eşleşen kanal bulunamadı.`
-                : 'Try searching with a different keyword.'}
+                ? t('channels.noChannelsMatchSearch', { query: debouncedSearch })
+                : t('channels.tryDifferentKeyword')}
             </Text>
           </View>
         )}

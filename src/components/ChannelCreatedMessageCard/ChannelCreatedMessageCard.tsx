@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 import makeStyles from './ChannelCreatedMessageCard.styles';
 import Icon from 'react-native-remix-icon';
@@ -19,9 +20,10 @@ function ChannelCreatedMessageCard({
   channelCreatedAt,
   onPress,
 }: ChannelCreatedMessageCardProps) {
+  const { t, i18n } = useTranslation();
   const styles = useThemedStyles(makeStyles);
   const theme = useTheme();
-  const formattedCreatedAt = new Date(channelCreatedAt).toLocaleDateString('en-US', {
+  const formattedCreatedAt = new Date(channelCreatedAt).toLocaleDateString(i18n.language, {
     month: 'long',
     year: 'numeric',
   });
@@ -34,23 +36,26 @@ function ChannelCreatedMessageCard({
       <View style={styles.contentContainer}>
         <View style={styles.header}>
           <Text fontWeight="700" size="large" style={styles.text}>
-            {channelName} was created
+            {t('components.channelCreatedHeading', { channel: channelName })}
           </Text>
         </View>
         <View style={styles.description}>
           <Text color={theme.text.tertiary} style={styles.text}>
-            This is the very beginning of {channelName}. Share code, ask questions and collaborate
-            with fellow developers!
+            {t('components.channelBeginning', { channel: channelName })}
           </Text>
         </View>
         <View style={styles.channelCreatedAtContainer}>
           <View style={styles.channelCreatedAtPillContainer}>
             <Icon name="ri-calendar-line" size={24} color={theme.text.secondary} />
-            <Text>Created {formattedCreatedAt}</Text>
+            <Text>{t('components.createdOn', { date: formattedCreatedAt })}</Text>
           </View>
         </View>
         <View>
-          <Button title="Say Hello 👋" style={{ paddingVertical: 10 }} onPress={onPress} />
+          <Button
+            title={t('components.sayHello')}
+            style={{ paddingVertical: 10 }}
+            onPress={onPress}
+          />
         </View>
       </View>
     </View>

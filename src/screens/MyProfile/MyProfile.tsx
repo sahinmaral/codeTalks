@@ -22,6 +22,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AxiosError } from 'axios';
 import { useCallback, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { TouchableOpacity, View } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import Icon from 'react-native-remix-icon';
@@ -44,6 +45,7 @@ const userPresenceStatuses: UserStatusOption[] = userStatusesData.map(item => ({
 }));
 
 function MyProfile({ navigation }: MyProfileProps) {
+  const { t, i18n } = useTranslation();
   const styles = useThemedStyles(makeStyles);
   const theme = useTheme();
   const [isLoading, setLoading] = useState(false);
@@ -60,7 +62,9 @@ function MyProfile({ navigation }: MyProfileProps) {
   }, [profile?.userStatus]);
 
   const formatMonthYear = (date: string | Date) =>
-    new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric' }).format(new Date(date));
+    new Intl.DateTimeFormat(i18n.language, { month: 'short', year: 'numeric' }).format(
+      new Date(date),
+    );
 
   const userFullname = useMemo(() => (user ? getFullName(user) : null), [user]);
 
@@ -74,7 +78,7 @@ function MyProfile({ navigation }: MyProfileProps) {
       if (exception instanceof AxiosError) {
         showMessage({ message: getApiErrorMessage(exception), type: 'danger' });
       } else {
-        showMessage({ message: 'An error occurred', type: 'danger' });
+        showMessage({ message: t('common.errorOccurred'), type: 'danger' });
       }
     } finally {
       setLoading(false);
@@ -95,7 +99,7 @@ function MyProfile({ navigation }: MyProfileProps) {
   );
 
   if (isLoading && !profile) {
-    return <Loading text="Kullanıcı bilgileri yüklenirken lütfen bekleyiniz ..." />;
+    return <Loading text={t('profile.loadingProfile')} />;
   }
 
   if (error && !profile) {
@@ -105,7 +109,7 @@ function MyProfile({ navigation }: MyProfileProps) {
   return (
     <View style={styles.container}>
       <Header
-        title="My Profile"
+        title={t('profile.myProfileTitle')}
         rightIcon="settings-5-line"
         onRightIconPress={() => navigation.navigate('Settings')}
       />
@@ -132,7 +136,12 @@ function MyProfile({ navigation }: MyProfileProps) {
             <Text style={styles.description}>{profile?.bio}</Text>
           </View>
           <View style={styles.editProfileContainer}>
-            <Button theme="primary-outline" title="Edit Profile" style={styles.editProfileButton} />
+            <Button
+              theme="primary-outline"
+              title={t('profile.editProfile')}
+              style={styles.editProfileButton}
+              onPress={() => navigation.navigate('EditProfile')}
+            />
           </View>
         </View>
 
@@ -146,7 +155,7 @@ function MyProfile({ navigation }: MyProfileProps) {
               color={theme.text.secondary}
               fontWeight="400"
             >
-              Channels
+              {t('profile.channels')}
             </Text>
           </View>
           <View style={styles.additionalInformationCard}>
@@ -163,7 +172,7 @@ function MyProfile({ navigation }: MyProfileProps) {
               color={theme.text.secondary}
               fontWeight="400"
             >
-              Joined
+              {t('profile.joined')}
             </Text>
           </View>
         </View>
@@ -187,7 +196,11 @@ function MyProfile({ navigation }: MyProfileProps) {
                 { backgroundColor: currentStatusOption?.color },
               ]}
             ></View>
-            <Text fontWeight="500">{currentStatusOption?.label}</Text>
+            <Text fontWeight="500">
+              {currentStatusOption
+                ? t(`statuses.${currentStatusOption.status.toLowerCase()}.label`)
+                : ''}
+            </Text>
           </View>
           <Icon
             name="arrow-right-s-line"

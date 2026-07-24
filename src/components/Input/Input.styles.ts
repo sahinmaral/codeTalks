@@ -6,6 +6,11 @@ const makeStyles = (theme: Theme) =>
     container: {
       gap: 10,
     },
+    labelRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
     label: {
       fontSize: 16,
       color: theme.text.primary,
@@ -20,6 +25,9 @@ const makeStyles = (theme: Theme) =>
       borderWidth: 1,
       gap: 8,
     },
+    inputContainerMultiline: {
+      alignItems: 'flex-start',
+    },
     inputContainerFocused: {
       borderColor: theme.input.focusedBorder,
     },
@@ -28,6 +36,18 @@ const makeStyles = (theme: Theme) =>
       paddingVertical: 10,
       fontFamily: 'Montserrat_400',
       color: theme.text.primary,
+    },
+    inputMultiline: {
+      minHeight: 100,
+      textAlignVertical: 'top',
+    },
+    footerRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    helperText: {
+      flex: 1,
     },
   });
 

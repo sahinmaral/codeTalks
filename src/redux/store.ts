@@ -3,18 +3,20 @@ import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { persistReducer, persistStore } from 'redux-persist';
 import activeChannelReducer from './reducers/activeChannelReducer';
 import appReducer from './reducers/appReducer';
+import languageReducer from './reducers/languageReducer';
 import themeReducer from './reducers/themeReducer';
 
 const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
-  whitelist: ['app', 'theme'],
+  whitelist: ['app', 'theme', 'language'],
 };
 
 const rootReducer = combineReducers({
   app: appReducer,
   activeChannel: activeChannelReducer,
   theme: themeReducer,
+  language: languageReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
