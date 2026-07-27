@@ -154,6 +154,9 @@
     "channelsLoadFailedServer": "Failed to load channels. Trying to connect to the server ...",
     "channelsLoadFailedRetry": "Failed to load channels. Please try again ...",
     "messagesLoadFailedServer": "Failed to load messages. Trying to connect to the server ...",
+    "membersLoadFailedRetry": "Failed to load members. Please try again ...",
+    "requestsLoadFailedRetry": "Failed to load join requests. Please try again ...",
+    "bannedLoadFailedRetry": "Failed to load banned members. Please try again ...",
     "activeChannelsTitle": "Active Channels",
     "welcomeBack": "Welcome back!",
     "exploreTitle": "Explore",
@@ -249,8 +252,6 @@
     "continueFirstNameMin": "First name must be at least 1 character",
     "continueLastNameRequired": "Please enter your last name",
     "continueLastNameMin": "Last name must be at least 1 character",
-    "phoneInvalid": "Invalid phone number",
-    "phoneRequired": "Please enter a phone number",
     "channelNameRequired": "Please enter a channel name",
     "channelNameMin1": "Channel name must be at least 1 character",
     "channelDescriptionRequired": "Please enter a description",
@@ -263,6 +264,7 @@
   },
   "errorScreen": {
     "defaultTitle": "Something went wrong",
+    "unexpectedErrorDescription": "An unexpected error occurred. Please try again.",
     "tryAgain": "Try Again",
     "goToLogin": "Go To Login"
   },

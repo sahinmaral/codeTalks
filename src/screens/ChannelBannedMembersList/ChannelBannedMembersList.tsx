@@ -27,6 +27,7 @@ import {
 } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import Icon from 'react-native-remix-icon';
+import ErrorScreen from '../Error';
 import Loading from '../Loading';
 import makeStyles from './ChannelBannedMembersList.styles';
 
@@ -49,6 +50,7 @@ const ChannelBannedMembersList = ({ navigation }: ChannelBannedMembersListProps)
   const [loading, setLoading] = useState(true);
   const [hasLoaded, setHasLoaded] = useState(false);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
 
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search.trim(), 400);
@@ -96,9 +98,13 @@ const ChannelBannedMembersList = ({ navigation }: ChannelBannedMembersListProps)
       (async () => {
         try {
           setLoading(true);
+          setError(null);
           setPageIndex(0);
           await fetchPage(0);
-        } catch {
+        } catch (exception) {
+          if (active) {
+            setError(exception instanceof Error ? exception : new Error(String(exception)));
+          }
         } finally {
           if (active) {
             setLoading(false);
@@ -135,8 +141,25 @@ const ChannelBannedMembersList = ({ navigation }: ChannelBannedMembersListProps)
 
   const hasResults = members.length > 0;
 
+  const retry = useCallback(() => {
+    setLoading(true);
+    setError(null);
+    setPageIndex(0);
+    fetchPage(0)
+      .catch(exception =>
+        setError(exception instanceof Error ? exception : new Error(String(exception))),
+      )
+      .finally(() => setLoading(false));
+  }, [fetchPage]);
+
   if (loading && !hasLoaded) {
     return <Loading text={t('channels.loadingBannedMembers')} />;
+  }
+
+  // Without this the screen would render its "no banned users" empty state, which reads as
+  // nobody being banned rather than a failed request.
+  if (error && !hasResults) {
+    return <ErrorScreen description={t('channels.bannedLoadFailedRetry')} onRetry={retry} />;
   }
 
   return (

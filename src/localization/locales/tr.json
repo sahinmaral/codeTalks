@@ -154,6 +154,9 @@
     "channelsLoadFailedServer": "Kanallar yüklenemedi. Sunucuya bağlanmaya çalışılıyor ...",
     "channelsLoadFailedRetry": "Kanallar yüklenemedi. Lütfen tekrar deneyiniz ...",
     "messagesLoadFailedServer": "Mesajlar yüklenemedi. Sunucuya bağlanmaya çalışılıyor ...",
+    "membersLoadFailedRetry": "Üyeler yüklenemedi. Lütfen tekrar deneyin ...",
+    "requestsLoadFailedRetry": "Katılma istekleri yüklenemedi. Lütfen tekrar deneyin ...",
+    "bannedLoadFailedRetry": "Engellenen üyeler yüklenemedi. Lütfen tekrar deneyin ...",
     "activeChannelsTitle": "Aktif Kanallar",
     "welcomeBack": "Tekrar hoş geldiniz!",
     "exploreTitle": "Keşfet",
@@ -249,8 +252,6 @@
     "continueFirstNameMin": "Ad minimum 1 karakter olmalıdır",
     "continueLastNameRequired": "Soyadınızı giriniz",
     "continueLastNameMin": "Soyad minimum 1 karakter olmalıdır",
-    "phoneInvalid": "Geçersiz telefon numarası",
-    "phoneRequired": "Telefon numarası giriniz",
     "channelNameRequired": "Kanal adı giriniz",
     "channelNameMin1": "Kanal adı minimum 1 karakter olmalıdır",
     "channelDescriptionRequired": "Açıklama giriniz",
@@ -263,6 +264,7 @@
   },
   "errorScreen": {
     "defaultTitle": "Bir şeyler ters gitti",
+    "unexpectedErrorDescription": "Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.",
     "tryAgain": "Tekrar Dene",
     "goToLogin": "Girişe Git"
   },

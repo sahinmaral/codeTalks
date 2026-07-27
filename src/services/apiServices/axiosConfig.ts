@@ -1,12 +1,13 @@
 import i18n from '@/localization/i18n';
-import { clearUser, setUser } from '@/redux/reducers/appReducer';
+import { clearUser } from '@/redux/reducers/appReducer';
 import { store } from '@/redux/store';
+import { refreshAccessToken } from '@/utils/tokenManager';
 import axios, { AxiosRequestConfig } from 'axios';
-import { fetchRefreshToken } from './auths';
 
 const axiosInstance = axios.create({
   baseURL: `${process.env.EXPO_PUBLIC_API_BASE_URL}/api`,
   headers: { 'Content-Type': 'application/json' },
+  timeout: 15000,
 });
 
 axiosInstance.interceptors.request.use(config => {
@@ -18,14 +19,6 @@ axiosInstance.interceptors.request.use(config => {
   return config;
 });
 
-let isRefreshing = false;
-let pendingQueue: Array<{ resolve: (token: string) => void; reject: (err: unknown) => void }> = [];
-
-function processQueue(error: unknown, token: string | null) {
-  pendingQueue.forEach(p => (error ? p.reject(error) : p.resolve(token!)));
-  pendingQueue = [];
-}
-
 axiosInstance.interceptors.response.use(
   response => response,
   async error => {
@@ -35,42 +28,50 @@ axiosInstance.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    const refreshToken = store.getState().app.user?.refreshToken;
+    const { accessToken, refreshToken } = store.getState().app.user ?? {};
     if (!refreshToken) {
       store.dispatch(clearUser());
       return Promise.reject(error);
     }
 
-    if (isRefreshing) {
-      return new Promise<string>((resolve, reject) => {
-        pendingQueue.push({ resolve, reject });
-      }).then(token => {
-        originalRequest.headers = { ...originalRequest.headers, Authorization: `Bearer ${token}` };
-        return axiosInstance(originalRequest);
-      });
+    // Marked before awaiting so a request that still 401s with the fresh token is rejected
+    // rather than sent back around for another refresh.
+    originalRequest._retry = true;
+
+    // A burst of requests sent just before expiry all come back 401 together. Once one of
+    // them (or the SignalR factory) has refreshed, the rest only need the newer token —
+    // refreshing again would rotate the credential for nothing.
+    if (accessToken && readAuthorizationHeader(originalRequest) !== `Bearer ${accessToken}`) {
+      return axiosInstance(withAuthorization(originalRequest, accessToken));
     }
 
-    originalRequest._retry = true;
-    isRefreshing = true;
-
     try {
-      const { data } = await fetchRefreshToken(refreshToken);
-      const currentUser = store.getState().app.user!;
-      store.dispatch(setUser({ ...currentUser, ...data }));
-      processQueue(null, data.accessToken);
-      originalRequest.headers = {
-        ...originalRequest.headers,
-        Authorization: `Bearer ${data.accessToken}`,
-      };
-      return axiosInstance(originalRequest);
+      // Shared with the SignalR access-token factory: refreshAccessToken() de-duplicates
+      // concurrent callers, so parallel 401s cause exactly one token exchange.
+      const refreshedAccessToken = await refreshAccessToken();
+      return axiosInstance(withAuthorization(originalRequest, refreshedAccessToken));
     } catch (refreshError) {
-      processQueue(refreshError, null);
-      store.dispatch(clearUser());
+      // refreshAccessToken() clears the session itself when the server rejects the
+      // credential; on a network failure it deliberately leaves the session alone.
       return Promise.reject(refreshError);
-    } finally {
-      isRefreshing = false;
     }
   },
 );
+
+/** Reads the header whether axios handed us an AxiosHeaders instance or a plain object. */
+function readAuthorizationHeader(config: AxiosRequestConfig): string | undefined {
+  const headers = config.headers as
+    | { get?: (name: string) => unknown; Authorization?: unknown }
+    | undefined;
+
+  const value =
+    typeof headers?.get === 'function' ? headers.get('Authorization') : headers?.Authorization;
+
+  return typeof value === 'string' ? value : undefined;
+}
+
+function withAuthorization(config: AxiosRequestConfig, accessToken: string): AxiosRequestConfig {
+  return { ...config, headers: { ...config.headers, Authorization: `Bearer ${accessToken}` } };
+}
 
 export default axiosInstance;

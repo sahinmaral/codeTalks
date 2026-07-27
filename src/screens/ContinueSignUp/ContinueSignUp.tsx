@@ -1,25 +1,24 @@
-import React, { useRef, useState } from 'react';
+import Footer from '@/components/Footer';
+import Text from '@/components/Text';
+import useKeyboardVisible from '@/hooks/useKeyboardVisible';
+import useThemedStyles from '@/hooks/useThemedStyles';
+import { fetchSignUp } from '@/services/apiServices/auths';
+import { getApiErrorMessage } from '@/utils/getApiErrorMessage';
+import { RouteProp } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { AxiosError } from 'axios';
+import { Formik } from 'formik';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, SafeAreaView, View } from 'react-native';
-import PhoneInput from 'react-native-phone-number-input';
 import { showMessage } from 'react-native-flash-message';
-import { Formik } from 'formik';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RouteProp } from '@react-navigation/native';
-import * as Yup from 'yup';
-import Input from '../../components/Input/Input';
-import Button from '../../components/Button';
-import Text from '@/components/Text';
-import Footer from '@/components/Footer';
-import useThemedStyles from '@/hooks/useThemedStyles';
-import makeStyles from './ContinueSignUp.styles';
-import validationSchema from '../../schemas/ContinueSignUpSchema';
-import { fetchSignUp } from '@/services/apiServices/auths';
-import { RootStackParamList } from '../../types';
-import { getApiErrorMessage } from '@/utils/getApiErrorMessage';
-import { AxiosError } from 'axios';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import useKeyboardVisible from '@/hooks/useKeyboardVisible';
+import * as Yup from 'yup';
+import Button from '../../components/Button';
+import Input from '../../components/Input/Input';
+import validationSchema from '../../schemas/ContinueSignUpSchema';
+import { RootStackParamList } from '../../types';
+import makeStyles from './ContinueSignUp.styles';
 
 interface ContinueSignUpProps {
   navigation: NativeStackNavigationProp<RootStackParamList, 'ContinueSignUp'>;
@@ -30,13 +29,12 @@ function ContinueSignUp({ navigation, route }: ContinueSignUpProps) {
   const { t } = useTranslation();
   const styles = useThemedStyles(makeStyles);
   const [loading, setLoading] = useState(false);
-  const phoneInputRef = useRef<PhoneInput>(null);
   const { isKeyboardVisible } = useKeyboardVisible();
 
   const initialValues = {
-    firstName: 'Mehmet',
+    firstName: '',
     middleName: null as string | null,
-    lastName: 'Kesici',
+    lastName: '',
     ...route.params,
   };
 
@@ -132,6 +130,7 @@ function ContinueSignUp({ navigation, route }: ContinueSignUpProps) {
 
                   <View style={styles.buttonGroup}>
                     <Button
+                      loading={loading}
                       title={t('auth.createAccountTitle')}
                       theme="primary"
                       onPress={formikSubmit}

@@ -75,11 +75,12 @@ function MyProfile({ navigation }: MyProfileProps) {
       const response = await fetchMe();
       dispatch(setProfile(response.data));
     } catch (exception) {
-      if (exception instanceof AxiosError) {
-        showMessage({ message: getApiErrorMessage(exception), type: 'danger' });
-      } else {
-        showMessage({ message: t('common.errorOccurred'), type: 'danger' });
-      }
+      const message =
+        exception instanceof AxiosError ? getApiErrorMessage(exception) : t('common.errorOccurred');
+      // Recorded as well as flashed, so a failed load shows the error screen with a retry
+      // instead of an empty profile behind a message that has already faded.
+      setError(message);
+      showMessage({ message, type: 'danger' });
     } finally {
       setLoading(false);
     }
@@ -103,7 +104,7 @@ function MyProfile({ navigation }: MyProfileProps) {
   }
 
   if (error && !profile) {
-    return <Error description={error} />;
+    return <Error description={error} onRetry={fetchUserProfile} />;
   }
 
   return (

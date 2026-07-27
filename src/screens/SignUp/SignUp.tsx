@@ -22,10 +22,10 @@ interface SignUpProps {
 }
 
 const initialValues = {
-  email: 'mehmetkesici@hotmail.com',
-  username: 'mehmetkesici',
-  password: 'Abc1234.',
-  passwordConfirm: 'Abc1234.',
+  email: '',
+  username: '',
+  password: '',
+  passwordConfirm: '',
 };
 
 function SignUp({ navigation }: SignUpProps) {

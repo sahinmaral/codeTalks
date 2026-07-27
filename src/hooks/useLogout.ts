@@ -14,6 +14,7 @@ function useLogout() {
       });
       await fetchRemoveDevice(token.data);
     } catch (e) {
+      console.log(e);
     } finally {
       dispatch(clearUser());
     }

@@ -71,9 +71,10 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
     return channelMuteSettings.find(setting => setting.channelId === activeChannel?.id);
   }, [channelMuteSettings, activeChannel]);
 
-  const [isChannelMuted, setChannelMuted] = useState(
-    currentChannelMuteSetting ? currentChannelMuteSetting.isMuted : false,
-  );
+  // Derived from the store rather than held locally: the mute settings are seeded at login,
+  // updated by the mute menu and cleared by handleUnmuteChannel, so redux is the only source
+  // of truth for whether this channel is muted.
+  const isChannelMuted = currentChannelMuteSetting?.isMuted ?? false;
 
   const channelId = activeChannel?.id ?? '';
   const channelName = activeChannel?.name ?? '';
@@ -100,14 +101,15 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
               role: response.data.role.name as UserRole,
             }),
           );
-          setChannelMuted(true);
         } catch (error) {
           setFetchResult(prev => ({ ...prev, error: error as Error }));
         } finally {
           setFetchResult(prev => ({ ...prev, loading: false }));
         }
       })();
-    }, []),
+      // channelId is a dependency: the active channel can change under a mounted screen
+      // (e.g. a notification tap), and empty deps would keep refetching the first one.
+    }, [channelId, dispatch]),
   );
 
   const handleRemoveFromChannel = async () => {
@@ -142,7 +144,6 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
     try {
       await fetchUnmuteChannel(channelId);
       dispatch(removeChannelMuteSetting(channelId));
-      setChannelMuted(false);
       navigation.navigate('ActiveChannelList');
       showMessage({ message: t('channels.unmutedChannel'), type: 'success' });
     } catch (exception) {
@@ -314,7 +315,12 @@ function ChannelDetail({ navigation }: ChannelDetailProps) {
                       <Icon name="ri-arrow-right-s-line" size={24} color={theme.text.tertiary} />
                     </View>
                   </TouchableOpacity>
-                  <TouchableOpacity style={[styles.row, styles.rowBordered]} onPress={() => {}}>
+                  <TouchableOpacity
+                    style={[styles.row, styles.rowBordered]}
+                    onPress={() => {
+                      show(<UpdateChannelThumbnailPhotoModal />);
+                    }}
+                  >
                     <View style={styles.rowLeading}>
                       <Icon name="ri-image-edit-line" color={theme.text.tertiary} />
                       <Text fontWeight="700">{t('channels.setChangeThumbnail')}</Text>

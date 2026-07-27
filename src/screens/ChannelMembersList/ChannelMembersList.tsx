@@ -23,6 +23,7 @@ import {
   ScrollView,
   View,
 } from 'react-native';
+import ErrorScreen from '../Error';
 import Loading from '../Loading';
 import makeStyles from './ChannelMembersList.styles';
 
@@ -54,6 +55,7 @@ const ChannelMembersList = ({ navigation }: ChannelMembersListProps) => {
   const [loading, setLoading] = useState(true);
   const [hasLoaded, setHasLoaded] = useState(false);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
 
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search.trim(), 400);
@@ -83,9 +85,13 @@ const ChannelMembersList = ({ navigation }: ChannelMembersListProps) => {
       (async () => {
         try {
           setLoading(true);
+          setError(null);
           setPageIndex(0);
           await fetchPage(0);
-        } catch {
+        } catch (exception) {
+          if (active) {
+            setError(exception instanceof Error ? exception : new Error(String(exception)));
+          }
         } finally {
           if (active) {
             setLoading(false);
@@ -139,8 +145,25 @@ const ChannelMembersList = ({ navigation }: ChannelMembersListProps) => {
 
   const hasResults = filteredAdmins.length > 0 || members.length > 0;
 
+  const retry = useCallback(() => {
+    setLoading(true);
+    setError(null);
+    setPageIndex(0);
+    fetchPage(0)
+      .catch(exception =>
+        setError(exception instanceof Error ? exception : new Error(String(exception))),
+      )
+      .finally(() => setLoading(false));
+  }, [fetchPage]);
+
   if (loading && !hasLoaded) {
     return <Loading text={t('channels.loadingMembers')} />;
+  }
+
+  // Without this the screen would render its "no users in this channel" empty state, which
+  // reads as an empty channel rather than a failed request.
+  if (error && !hasResults) {
+    return <ErrorScreen description={t('channels.membersLoadFailedRetry')} onRetry={retry} />;
   }
 
   return (

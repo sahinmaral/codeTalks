@@ -1,4 +1,4 @@
-import { useAppDispatch } from '@/redux/hooks';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import {
   incrementChannelUnreadCount,
   incrementTotalUnreadCount,
@@ -17,6 +17,12 @@ export const useNotificationHub = (isAuthenticated: boolean) => {
   const connectionRef = useRef<SignalR.HubConnection | null>(null);
   const dispatch = useAppDispatch();
 
+  // Held in a ref because the message handler is registered once per connection: reading the
+  // selector directly would capture whichever channel was open when the hub connected.
+  const viewingChannelId = useAppSelector(state => state.activeChannel.viewingChannelId);
+  const viewingChannelIdRef = useRef(viewingChannelId);
+  viewingChannelIdRef.current = viewingChannelId;
+
   useEffect(() => {
     if (!isAuthenticated) return;
 
@@ -28,8 +34,13 @@ export const useNotificationHub = (isAuthenticated: boolean) => {
       .build();
 
     const handleChannelMessage = (payload: ChannelMessagePayload) => {
-      dispatch(incrementTotalUnreadCount());
       const channelId = payload?.channelId;
+
+      // The user is looking at this conversation, so the message is read as it arrives;
+      // counting it would inflate both badges while they read and only settle on re-entry.
+      if (channelId && channelId === viewingChannelIdRef.current) return;
+
+      dispatch(incrementTotalUnreadCount());
       if (channelId) dispatch(incrementChannelUnreadCount(channelId));
     };
 

@@ -37,8 +37,8 @@ interface LoginProps {
 }
 
 const initialValues = {
-  email: 'mehmetkesici@hotmail.com',
-  password: 'Abc1234.',
+  email: '',
+  password: '',
   rememberMe: true,
 };
 

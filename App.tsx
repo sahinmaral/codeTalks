@@ -40,6 +40,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect } from 'react';
+import { StyleSheet, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import useCheckInternet from './src/hooks/useCheckInternet';
 import useLanguage from './src/hooks/useLanguage';
@@ -143,9 +144,12 @@ function App() {
   useEffect(() => {
     if (user === null) return;
 
-    fetchGetUnreadCount().then(({ data }) => {
-      dispatch(setTotalUnreadCount(data));
-    });
+    fetchGetUnreadCount()
+      .then(({ data }) => {
+        dispatch(setTotalUnreadCount(data));
+      })
+      // The badge is not worth an unhandled rejection; the hub keeps it in sync from here on.
+      .catch(exception => console.log('Could not load the unread count', exception));
   }, [user]);
 
   const navigationTheme: NavigationTheme = {
@@ -162,17 +166,6 @@ function App() {
 
   if (!fontsLoaded) return null;
 
-  if (!isConnected) {
-    return (
-      <CheckInternet
-        styles={{
-          container: { backgroundColor: theme.primary },
-          text: { color: colors.white },
-        }}
-      />
-    );
-  }
-
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <StatusBar style={theme.mode === 'dark' ? 'light' : 'dark'} />
@@ -183,6 +176,20 @@ function App() {
           </BubbleContentMenuProvider>
         </NavigationContainer>
       </ConfirmationDialogProvider>
+
+      {/* Covers the app rather than replacing it: unmounting the NavigationContainer would
+          throw away the navigation state, so losing signal for a moment used to drop the
+          user back at the stack root once the connection returned. */}
+      {!isConnected && (
+        <View style={StyleSheet.absoluteFill}>
+          <CheckInternet
+            styles={{
+              container: { backgroundColor: theme.primary },
+              text: { color: colors.white },
+            }}
+          />
+        </View>
+      )}
     </GestureHandlerRootView>
   );
 }

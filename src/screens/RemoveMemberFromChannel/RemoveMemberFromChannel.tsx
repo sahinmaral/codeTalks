@@ -8,7 +8,10 @@ import { UserRole } from '@/enums/UserRole';
 import getFullName from '@/helpers/getFullName';
 import useDebounce from '@/hooks/useDebounce';
 import { useAppSelector } from '@/redux/hooks';
-import { fetchGetUsersByChannelId, fetchRemoveMemberFromChannel } from '@/services/apiServices/channels';
+import {
+  fetchGetUsersByChannelId,
+  fetchRemoveMemberFromChannel,
+} from '@/services/apiServices/channels';
 import useTheme from '@/hooks/useTheme';
 import useThemedStyles from '@/hooks/useThemedStyles';
 import colors from '@/styles/colors';
@@ -27,6 +30,7 @@ import {
   View,
 } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
+import ErrorScreen from '../Error';
 import Loading from '../Loading';
 import makeStyles from './RemoveMemberFromChannel.styles';
 
@@ -59,6 +63,7 @@ const RemoveMemberFromChannel = ({ navigation }: RemoveMemberFromChannelProps) =
   const [loading, setLoading] = useState(true);
   const [hasLoaded, setHasLoaded] = useState(false);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
 
   const { confirm } = useConfirmationDialog();
 
@@ -107,9 +112,13 @@ const RemoveMemberFromChannel = ({ navigation }: RemoveMemberFromChannelProps) =
       (async () => {
         try {
           setLoading(true);
+          setError(null);
           setPageIndex(0);
           await fetchPage(0);
-        } catch {
+        } catch (exception) {
+          if (active) {
+            setError(exception instanceof Error ? exception : new Error(String(exception)));
+          }
         } finally {
           if (active) {
             setLoading(false);
@@ -151,8 +160,25 @@ const RemoveMemberFromChannel = ({ navigation }: RemoveMemberFromChannelProps) =
 
   const hasResults = filteredAdmins.length > 0 || members.length > 0;
 
+  const retry = useCallback(() => {
+    setLoading(true);
+    setError(null);
+    setPageIndex(0);
+    fetchPage(0)
+      .catch(exception =>
+        setError(exception instanceof Error ? exception : new Error(String(exception))),
+      )
+      .finally(() => setLoading(false));
+  }, [fetchPage]);
+
   if (loading && !hasLoaded) {
     return <Loading text={t('channels.loadingMembers')} />;
+  }
+
+  // Without this the screen would render its "no users in this channel" empty state, which
+  // reads as an empty channel rather than a failed request.
+  if (error && !hasResults) {
+    return <ErrorScreen description={t('channels.membersLoadFailedRetry')} onRetry={retry} />;
   }
 
   return (

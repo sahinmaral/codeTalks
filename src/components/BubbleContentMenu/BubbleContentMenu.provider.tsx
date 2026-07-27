@@ -38,9 +38,7 @@ export function BubbleContentMenuProvider({ children }: BubbleContentMenuProvide
   return (
     <BubbleContentMenuManagerContext.Provider value={{ show, hide, visible }}>
       {children}
-      {visible && (
-        <BubbleContentMenu onClose={hide}>{content}</BubbleContentMenu>
-      )}
+      {visible && <BubbleContentMenu onClose={hide}>{content}</BubbleContentMenu>}
     </BubbleContentMenuManagerContext.Provider>
   );
 }

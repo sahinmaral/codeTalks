@@ -6,13 +6,25 @@
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_API_BASE_URL": "TODO_SET_DEVELOPMENT_API_URL",
+        "EXPO_PUBLIC_SENTRY_DSN": "TODO_SET_SENTRY_DSN"
+      }
     },
     "preview": {
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_API_BASE_URL": "TODO_SET_PREVIEW_API_URL",
+        "EXPO_PUBLIC_SENTRY_DSN": "TODO_SET_SENTRY_DSN"
+      }
     },
     "production": {
-      "autoIncrement": true
+      "autoIncrement": true,
+      "env": {
+        "EXPO_PUBLIC_API_BASE_URL": "TODO_SET_PRODUCTION_API_URL",
+        "EXPO_PUBLIC_SENTRY_DSN": "TODO_SET_SENTRY_DSN"
+      }
     }
   },
   "submit": {

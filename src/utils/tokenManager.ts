@@ -1,6 +1,7 @@
 import { clearUser, setUser } from '@/redux/reducers/appReducer';
 import { store } from '@/redux/store';
 import { fetchRefreshToken } from '@/services/apiServices/auths';
+import { AxiosError } from 'axios';
 
 let refreshPromise: Promise<string> | null = null;
 
@@ -17,12 +18,31 @@ export async function getValidAccessToken(): Promise<string> {
     return '';
   }
 
+  return refreshAccessToken().catch(() => '');
+}
+
+/**
+ * Exchanges the stored refresh token for a new pair, de-duplicating concurrent
+ * callers so a proactive refresh (SignalR) and a reactive one (an axios 401)
+ * can never spend the same rotating refresh token twice and log the user out.
+ * Every refresh in the app must go through here.
+ */
+export async function refreshAccessToken(): Promise<string> {
+  const { user } = store.getState().app;
+  if (!user?.refreshToken) {
+    store.dispatch(clearUser());
+    throw new Error('No refresh token available');
+  }
+
   if (!refreshPromise) {
     refreshPromise = doRefresh(user.refreshToken)
       .catch(error => {
-        // Refresh is the last resort; if it fails the session is dead, so log
-        // the user off rather than leaving them with an unusable token.
-        store.dispatch(clearUser());
+        // Only end the session when the server actually rejects the credential. A network
+        // error or a 5xx says nothing about the refresh token, and logging the user out
+        // over a dropped connection would lose a session that is still perfectly valid.
+        if (isCredentialRejection(error)) {
+          store.dispatch(clearUser());
+        }
         throw error;
       })
       .finally(() => {
@@ -30,7 +50,13 @@ export async function getValidAccessToken(): Promise<string> {
       });
   }
 
-  return refreshPromise.catch(() => '');
+  return refreshPromise;
+}
+
+function isCredentialRejection(error: unknown): boolean {
+  if (!(error instanceof AxiosError)) return false;
+  const status = error.response?.status;
+  return status === 400 || status === 401 || status === 403;
 }
 
 async function doRefresh(refreshToken: string): Promise<string> {

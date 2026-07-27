@@ -25,7 +25,7 @@ export function getApiErrorMessage(error: AxiosError): string {
       return data.detail;
     }
 
-    const validationMessage = data.errors?.find((e) => e?.errorMessage)?.errorMessage;
+    const validationMessage = data.errors?.find(e => e?.errorMessage)?.errorMessage;
     if (validationMessage) {
       return validationMessage;
     }

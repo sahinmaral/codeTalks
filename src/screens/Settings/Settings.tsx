@@ -49,10 +49,11 @@ const Settings = ({ navigation }: SettingsProps) => {
   const themeMode = useAppSelector(state => state.theme.mode);
   const languageMode = useAppSelector(state => state.language.mode);
   const notificationSetting = useAppSelector(state => state.app.notificationSettings);
-  const [settingValues, setSettingValues] = useState({
-    showMessageNotification: notificationSetting ? notificationSetting.isEnabled : true,
-    alertSound: notificationSetting ? notificationSetting.isSoundEnabled : false,
-  });
+
+  // Derived from the store instead of copied into local state: keeping a second copy is what
+  // previously let the screen and redux disagree about the sound setting.
+  const isMessageNotificationEnabled = notificationSetting?.isEnabled ?? true;
+  const isAlertSoundEnabled = notificationSetting?.isSoundEnabled ?? false;
 
   const [loading, setLoading] = useState(false);
 
@@ -65,16 +66,16 @@ const Settings = ({ navigation }: SettingsProps) => {
   };
 
   const handleUpdateNotificationSetting = async () => {
+    const nextIsSoundEnabled = !isAlertSoundEnabled;
     try {
       setLoading(true);
-      await fetchUpdateUserNotificationSettings({ isSoundEnabled: !settingValues.alertSound });
+      await fetchUpdateUserNotificationSettings({ isSoundEnabled: nextIsSoundEnabled });
       dispatch(
         setNotificationSettings({
-          isEnabled: settingValues.showMessageNotification,
-          isSoundEnabled: settingValues.alertSound,
+          isEnabled: isMessageNotificationEnabled,
+          isSoundEnabled: nextIsSoundEnabled,
         }),
       );
-      setSettingValues({ ...settingValues, alertSound: !settingValues.alertSound });
     } catch (exception) {
       if (exception instanceof AxiosError) {
         showMessage({ message: getApiErrorMessage(exception), type: 'danger' });
@@ -117,9 +118,11 @@ const Settings = ({ navigation }: SettingsProps) => {
                 <Text fontWeight="700">{t('settings.messageNotification')}</Text>
               </View>
               <View style={styles.listItemOptionContainer}>
+                {/* Read-only until the API accepts `isEnabled`; today it only takes
+                    `isSoundEnabled`, so there is nothing to save this toggle to. */}
                 <CustomToggleSwitch
                   disabled={true}
-                  value={settingValues.showMessageNotification}
+                  value={isMessageNotificationEnabled}
                   onValueChange={() => {}}
                 />
               </View>
@@ -131,7 +134,7 @@ const Settings = ({ navigation }: SettingsProps) => {
               <View style={styles.listItemOptionContainer}>
                 <CustomToggleSwitch
                   disabled={loading}
-                  value={settingValues.alertSound}
+                  value={isAlertSoundEnabled}
                   onValueChange={() => {
                     handleUpdateNotificationSetting();
                   }}

@@ -15,10 +15,18 @@ export interface ActiveChannel {
 
 interface ActiveChannelState {
   channel: ActiveChannel | null;
+  /**
+   * The channel whose message list is on screen right now, as opposed to `channel`, which
+   * stays set after navigating away. Messages arriving for it are already being read, so the
+   * notification hub must not count them as unread. Deliberately part of this slice because
+   * it is not persisted — a stale value would silently suppress badges after a restart.
+   */
+  viewingChannelId: string | null;
 }
 
 const initialState: ActiveChannelState = {
   channel: null,
+  viewingChannelId: null,
 };
 
 export const activeChannelSlice = createSlice({
@@ -48,6 +56,9 @@ export const activeChannelSlice = createSlice({
         state.channel.role = action.payload;
       }
     },
+    setViewingChannelId: (state, action: PayloadAction<string | null>) => {
+      state.viewingChannelId = action.payload;
+    },
   },
 });
 
@@ -57,6 +68,7 @@ export const {
   setActiveChannelDescription,
   setActiveChannelJoinPolicy,
   setRoleOfCurrentUser,
+  setViewingChannelId,
 } = activeChannelSlice.actions;
 
 export default activeChannelSlice.reducer;

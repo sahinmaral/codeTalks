@@ -21,7 +21,11 @@ import { useBubbleContentMenu } from '../../BubbleContentMenu.provider';
 import makeStyles from './ChannelCreateModal.styles';
 
 const JOIN_POLICIES = [
-  { labelKey: 'components.policyRequest', value: ChannelJoinPolicy.Request, icon: 'mail-send-line' },
+  {
+    labelKey: 'components.policyRequest',
+    value: ChannelJoinPolicy.Request,
+    icon: 'mail-send-line',
+  },
   { labelKey: 'components.policyOpen', value: ChannelJoinPolicy.Open, icon: 'global-line' },
 ];
 
@@ -100,79 +104,80 @@ function CreateChannelModal() {
         {({ handleChange, handleBlur, handleSubmit: formikSubmit, setFieldValue, values }) => {
           submitRef.current = formikSubmit;
           return (
-          <View
-            style={styles.formContainer}
-            onLayout={e => {
-              formContainerScrollY.current = e.nativeEvent.layout.y;
-            }}
-          >
             <View
-              style={styles.formGroup}
+              style={styles.formContainer}
               onLayout={e => {
-                groupYPositions.current[0] = formContainerScrollY.current + e.nativeEvent.layout.y;
+                formContainerScrollY.current = e.nativeEvent.layout.y;
               }}
             >
-              <Text fontWeight="600">{t('components.channelNameLabel')}</Text>
-              <BottomSheetTextInput
-                onChangeText={handleChange('name')}
-                onBlur={handleBlur('name')}
-                onFocus={() => scrollTo(groupYPositions.current[0] ?? 0)}
-                value={values.name}
-                placeholder={t('components.channelNamePlaceholderExample')}
-                placeholderTextColor={theme.text.tertiary}
-                style={styles.input}
-              />
-            </View>
+              <View
+                style={styles.formGroup}
+                onLayout={e => {
+                  groupYPositions.current[0] =
+                    formContainerScrollY.current + e.nativeEvent.layout.y;
+                }}
+              >
+                <Text fontWeight="600">{t('components.channelNameLabel')}</Text>
+                <BottomSheetTextInput
+                  onChangeText={handleChange('name')}
+                  onBlur={handleBlur('name')}
+                  onFocus={() => scrollTo(groupYPositions.current[0] ?? 0)}
+                  value={values.name}
+                  placeholder={t('components.channelNamePlaceholderExample')}
+                  placeholderTextColor={theme.text.tertiary}
+                  style={styles.input}
+                />
+              </View>
 
-            <View
-              key={1}
-              style={styles.formGroup}
-              onLayout={e => {
-                const { y, height } = e.nativeEvent.layout;
-                groupYPositions.current[1] = formContainerScrollY.current + y;
-                // Size the scroll area to end at the bottom of the Description
-                // input; the sheet adds the pinned footer + handle on top, and
-                // Join Policy becomes reachable by scrolling.
-                setSheetHeight(formContainerScrollY.current + y + height);
-              }}
-            >
-              <Text fontWeight="600">{t('components.descriptionLabel')}</Text>
-              <BottomSheetTextInput
-                multiline={true}
-                numberOfLines={4}
-                placeholder={t('components.channelNamePlaceholderExample')}
-                placeholderTextColor={theme.text.tertiary}
-                onChangeText={handleChange('description')}
-                onBlur={handleBlur('description')}
-                onFocus={() => scrollTo(groupYPositions.current[1] ?? 0)}
-                value={values.description}
-                style={styles.textArea}
-              />
-            </View>
+              <View
+                key={1}
+                style={styles.formGroup}
+                onLayout={e => {
+                  const { y, height } = e.nativeEvent.layout;
+                  groupYPositions.current[1] = formContainerScrollY.current + y;
+                  // Size the scroll area to end at the bottom of the Description
+                  // input; the sheet adds the pinned footer + handle on top, and
+                  // Join Policy becomes reachable by scrolling.
+                  setSheetHeight(formContainerScrollY.current + y + height);
+                }}
+              >
+                <Text fontWeight="600">{t('components.descriptionLabel')}</Text>
+                <BottomSheetTextInput
+                  multiline={true}
+                  numberOfLines={4}
+                  placeholder={t('components.channelNamePlaceholderExample')}
+                  placeholderTextColor={theme.text.tertiary}
+                  onChangeText={handleChange('description')}
+                  onBlur={handleBlur('description')}
+                  onFocus={() => scrollTo(groupYPositions.current[1] ?? 0)}
+                  value={values.description}
+                  style={styles.textArea}
+                />
+              </View>
 
-            <View style={styles.formGroup}>
-              <Text fontWeight="600">{t('components.joinPolicyLabel')}</Text>
-              <View style={styles.segmentContainer}>
-                {JOIN_POLICIES.map(policy => {
-                  const isActive = values.joinPolicy === policy.value;
-                  const activeColor = isActive ? colors.orange[500] : theme.text.secondary;
-                  return (
-                    <TouchableOpacity
-                      key={policy.value}
-                      activeOpacity={0.8}
-                      style={[styles.segment, isActive && styles.segmentActive]}
-                      onPress={() => setFieldValue('joinPolicy', policy.value)}
-                    >
-                      <Icon name={policy.icon} size={16} color={activeColor} />
-                      <Text fontWeight={isActive ? '600' : '400'} color={activeColor}>
-                        {t(policy.labelKey)}
-                      </Text>
-                    </TouchableOpacity>
-                  );
-                })}
+              <View style={styles.formGroup}>
+                <Text fontWeight="600">{t('components.joinPolicyLabel')}</Text>
+                <View style={styles.segmentContainer}>
+                  {JOIN_POLICIES.map(policy => {
+                    const isActive = values.joinPolicy === policy.value;
+                    const activeColor = isActive ? colors.orange[500] : theme.text.secondary;
+                    return (
+                      <TouchableOpacity
+                        key={policy.value}
+                        activeOpacity={0.8}
+                        style={[styles.segment, isActive && styles.segmentActive]}
+                        onPress={() => setFieldValue('joinPolicy', policy.value)}
+                      >
+                        <Icon name={policy.icon} size={16} color={activeColor} />
+                        <Text fontWeight={isActive ? '600' : '400'} color={activeColor}>
+                          {t(policy.labelKey)}
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
               </View>
             </View>
-          </View>
           );
         }}
       </Formik>

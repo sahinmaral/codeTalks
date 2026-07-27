@@ -38,31 +38,41 @@ export const useNotificationHandler = () => {
   const responseListener = useRef<EventSubscription>();
   const dispatch = useAppDispatch();
 
+  // Runs from notification callbacks, so a rejection here has nothing to catch it: an offline
+  // cold start or a deleted channel would surface as an unhandled rejection. Failing quietly
+  // leaves the user on whatever screen they opened, which is the sane fallback.
   const handleNotificationResponse = async (response: Notifications.NotificationResponse) => {
     const { channelId } = response.notification.request.content.data;
-    const { data: channel } = await fetchGetChannelById(channelId);
 
-    dispatch(
-      setActiveChannel({
-        id: channel.id,
-        name: channel.name,
-        description: channel.description,
-        createdAt: channel.createdAt,
-        inviteCode: channel.inviteCode,
-        joinPolicy: channel.joinPolicy,
-        role: channel.role?.name as UserRole,
-      }),
-    );
+    try {
+      const { data: channel } = await fetchGetChannelById(channelId);
 
-    if (navigationRef.isReady()) {
-      navigationRef.navigate('ChannelMessagesList');
+      dispatch(
+        setActiveChannel({
+          id: channel.id,
+          name: channel.name,
+          description: channel.description,
+          createdAt: channel.createdAt,
+          inviteCode: channel.inviteCode,
+          joinPolicy: channel.joinPolicy,
+          role: channel.role?.name as UserRole,
+        }),
+      );
+
+      if (navigationRef.isReady()) {
+        navigationRef.navigate('ChannelMessagesList');
+      }
+    } catch (exception) {
+      console.log('Could not open the channel from a notification', exception);
     }
   };
 
   useEffect(() => {
-    Notifications.getLastNotificationResponseAsync().then(response => {
-      if (response) handleNotificationResponse(response);
-    });
+    Notifications.getLastNotificationResponseAsync()
+      .then(response => {
+        if (response) handleNotificationResponse(response);
+      })
+      .catch(exception => console.log('Could not read the last notification', exception));
 
     responseListener.current = Notifications.addNotificationResponseReceivedListener(
       handleNotificationResponse,

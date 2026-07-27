@@ -1,6 +1,9 @@
 import { getValidAccessToken } from '@/utils/tokenManager';
 import * as SignalR from '@microsoft/signalr';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { AppState } from 'react-native';
+
+const POLL_INTERVAL_MS = 1000;
 
 interface UseSignalRConnectionOptions {
   receiveEvent: string;
@@ -63,6 +66,12 @@ function useSignalRConnection<T>({
       }
     };
 
+    const startPolling = () => {
+      clearInterval(intervalId);
+      poll();
+      intervalId = setInterval(poll, POLL_INTERVAL_MS);
+    };
+
     const start = async () => {
       // Make re-entry (onclose retry / manual retry) idempotent so we never
       // leak a polling interval, stack timers, or double-poll.
@@ -77,8 +86,7 @@ function useSignalRConnection<T>({
 
         setError(null);
         setConnectionState(connection.state);
-        poll();
-        intervalId = setInterval(poll, 1000);
+        startPolling();
       } catch (err) {
         console.error('SignalR connection error:', err);
         if (cancelled) return;
@@ -109,6 +117,19 @@ function useSignalRConnection<T>({
       if (!cancelled) retryTimeoutId = setTimeout(start, 2000);
     });
 
+    // Nothing on screen is worth a request per second while the app is in the background —
+    // that is a whole poll per mounted screen, draining battery and data for a UI nobody is
+    // looking at. Unread counts keep arriving over the notifications hub regardless.
+    const appStateSubscription = AppState.addEventListener('change', nextAppState => {
+      if (cancelled) return;
+
+      if (nextAppState === 'active') {
+        if (connection.state === SignalR.HubConnectionState.Connected) startPolling();
+      } else {
+        clearInterval(intervalId);
+      }
+    });
+
     startRef.current = start;
     start();
 
@@ -116,6 +137,7 @@ function useSignalRConnection<T>({
       cancelled = true;
       clearInterval(intervalId);
       clearTimeout(retryTimeoutId);
+      appStateSubscription.remove();
       connection.off(receiveEvent, handler);
     };
   }, [connection, receiveEvent, sendMethod, serializedArgs]);

@@ -20,7 +20,11 @@ import * as Yup from 'yup';
 import makeStyles from './UpdateChannelJoinPolicyModal.styles';
 
 const JOIN_POLICIES = [
-  { labelKey: 'components.policyRequest', value: ChannelJoinPolicy.Request, icon: 'mail-send-line' },
+  {
+    labelKey: 'components.policyRequest',
+    value: ChannelJoinPolicy.Request,
+    icon: 'mail-send-line',
+  },
   { labelKey: 'components.policyOpen', value: ChannelJoinPolicy.Open, icon: 'global-line' },
 ];
 

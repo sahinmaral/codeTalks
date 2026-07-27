@@ -116,7 +116,9 @@ function MembersActionList({ selectedUser, onActionComplete }: MembersActionList
         <Text color={theme.text.tertiary}>@{selectedUser.userName}</Text>
         <View>
           <Text size="small" color={theme.text.tertiary}>
-            {t('components.joinedRelative', { time: formatRelativeTime(selectedUser.statusCreatedAt) })}
+            {t('components.joinedRelative', {
+              time: formatRelativeTime(selectedUser.statusCreatedAt),
+            })}
           </Text>
         </View>
         <View style={[styles.rolePillContainer, pillStyleByRoleName]}>

@@ -3,6 +3,10 @@
     "name": "codeTalks",
     "slug": "codetalks",
     "version": "1.0.0",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "newArchEnabled": false,
     "orientation": "portrait",
     "icon": "./assets/images/logo.png",
     "userInterfaceStyle": "automatic",

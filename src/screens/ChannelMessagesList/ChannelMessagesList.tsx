@@ -1,6 +1,7 @@
 import Header from '@/components/Header';
 import useTheme from '@/hooks/useTheme';
 import useThemedStyles from '@/hooks/useThemedStyles';
+import { setViewingChannelId } from '@/redux/reducers/activeChannelReducer';
 import { resetChannelUnreadCount, setTotalUnreadCount } from '@/redux/reducers/appReducer';
 import {
   fetchGetUnreadCount,
@@ -77,6 +78,11 @@ function ChannelMessagesList({ navigation }: ChannelMessagesListProps) {
   const [isFetchingMore, setIsFetchingMore] = useState(false);
 
   const lastMessageIdRef = useRef<string | null>(null);
+  // The hub polls whatever page `invokeArgs` names, so the screen only stays live while that
+  // page is 0. Older history is therefore fetched as a one-off: request page N, merge it,
+  // then go straight back to 0. These refs remember where the next pull should resume.
+  const nextOlderPageRef = useRef(1);
+  const reachedOldestRef = useRef(false);
 
   const pageSize = 30;
 
@@ -89,6 +95,17 @@ function ChannelMessagesList({ navigation }: ChannelMessagesListProps) {
     sendMethod: 'SendMessagesOfChannel',
     invokeArgs: [channelId, pageSize, pageIndex],
   });
+
+  // Tells the notification hub not to count messages for this channel as unread while its
+  // conversation is on screen. Cleared on the way out so badges resume immediately.
+  useEffect(() => {
+    if (!channelId) return;
+
+    dispatch(setViewingChannelId(channelId));
+    return () => {
+      dispatch(setViewingChannelId(null));
+    };
+  }, [channelId, dispatch]);
 
   useEffect(() => {
     if (!channelId) return;
@@ -124,7 +141,17 @@ function ChannelMessagesList({ navigation }: ChannelMessagesListProps) {
     }
 
     if (!hasLoaded) setHasLoaded(true);
-    setHasMore(messages.items.length === pageSize);
+
+    if (pageIndex > 0) {
+      // A short page means there is no more history behind it.
+      if (messages.items.length < pageSize) reachedOldestRef.current = true;
+      nextOlderPageRef.current = pageIndex + 1;
+      // Back to the newest page, otherwise the poll would sit on this older one and no new
+      // message would ever reach the screen again.
+      setPageIndex(0);
+    }
+
+    setHasMore(!reachedOldestRef.current && messages.items.length === pageSize);
     setIsFetchingMore(false);
   }, [messages]);
 
@@ -132,7 +159,7 @@ function ChannelMessagesList({ navigation }: ChannelMessagesListProps) {
     const { contentOffset } = event.nativeEvent;
     if (contentOffset.y <= 0 && hasMore && !isFetchingMore) {
       setIsFetchingMore(true);
-      setPageIndex(prev => prev + 1);
+      setPageIndex(nextOlderPageRef.current);
     }
   };
 
