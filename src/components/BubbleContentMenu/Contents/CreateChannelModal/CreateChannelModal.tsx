@@ -145,7 +145,7 @@ function CreateChannelModal() {
                 <BottomSheetTextInput
                   multiline={true}
                   numberOfLines={4}
-                  placeholder={t('components.channelNamePlaceholderExample')}
+                  placeholder={t('components.channelDescriptionPlaceholderExample')}
                   placeholderTextColor={theme.text.tertiary}
                   onChangeText={handleChange('description')}
                   onBlur={handleBlur('description')}

@@ -6,6 +6,23 @@
 
 The backend lives in [codeTalks.Backend](https://github.com/sahinmaral/codeTalks.Backend).
 
+## Screenshots
+
+<table>
+  <tr>
+    <td align="center" width="33%"><img src="docs/screenshots/channels/messages-list.png" alt="Channel messages" width="240"><br><sub><b>Real-time messaging</b><br>SignalR chat with paged history</sub></td>
+    <td align="center" width="33%"><img src="docs/screenshots/channels/active-list.png" alt="Active channels" width="240"><br><sub><b>Your channels</b><br>Unread counts, custom tab bar</sub></td>
+    <td align="center" width="33%"><img src="docs/screenshots/channels/detail-owner.png" alt="Channel detail as owner" width="240"><br><sub><b>Channel detail</b><br>Admin panel shown per role</sub></td>
+  </tr>
+  <tr>
+    <td align="center" width="33%"><img src="docs/screenshots/channels/explore.png" alt="Explore channels" width="240"><br><sub><b>Discovery</b><br>Search and join policies</sub></td>
+    <td align="center" width="33%"><img src="docs/screenshots/profile/settings-dark.png" alt="Settings in dark mode" width="240"><br><sub><b>Dark theme</b><br>Light / dark / system</sub></td>
+    <td align="center" width="33%"><img src="docs/screenshots/profile/settings-light-tr.png" alt="Settings in Turkish, light mode" width="240"><br><sub><b>Turkish locale</b><br>Same screen, other language</sub></td>
+  </tr>
+</table>
+
+The last two are the same screen — theme and language are both switchable at runtime.
+
 ## Tech stack
 
 | Concern | Choice |

@@ -11,8 +11,13 @@ const makeStyles = (theme: Theme) =>
     scrollContent: {
       flexGrow: 1,
     },
+    // Absorbs the leftover vertical space rather than being a fixed height, so the form sheet below
+    // can hug its content instead of stretching and leaving white space under the buttons. This
+    // form is the tallest of the three auth screens, so minHeight is low: on a short device the
+    // header gives up its space to the sheet rather than pushing content off-screen.
     headerContainer: {
-      height: 140,
+      flex: 1,
+      minHeight: 100,
       justifyContent: 'flex-end',
       alignItems: 'center',
       backgroundColor: colors.orange[500],
@@ -31,7 +36,6 @@ const makeStyles = (theme: Theme) =>
       height: 80,
     },
     formContainer: {
-      flexGrow: 1,
       backgroundColor: theme.background.primary,
       borderTopStartRadius: 20,
       borderTopEndRadius: 20,

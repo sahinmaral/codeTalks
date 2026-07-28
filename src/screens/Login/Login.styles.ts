@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
-import { Theme } from '../../styles/themes';
 import colors from '../../styles/colors';
+import { Theme } from '../../styles/themes';
 
 const makeStyles = (theme: Theme) =>
   StyleSheet.create({
@@ -12,7 +12,8 @@ const makeStyles = (theme: Theme) =>
       flexGrow: 1,
     },
     headerContainer: {
-      height: 200,
+      flex: 1,
+      minHeight: 160,
       justifyContent: 'flex-end',
       alignItems: 'center',
     },
@@ -30,7 +31,6 @@ const makeStyles = (theme: Theme) =>
       height: 80,
     },
     formContainer: {
-      flexGrow: 1,
       backgroundColor: theme.background.primary,
       borderTopStartRadius: 20,
       borderTopEndRadius: 20,
@@ -43,8 +43,6 @@ const makeStyles = (theme: Theme) =>
       gap: 5,
     },
     formInputsContainer: {
-      flex: 1,
-      justifyContent: 'space-between',
       gap: 32,
     },
     inputGroup: {

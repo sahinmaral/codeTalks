@@ -24,7 +24,15 @@ axiosInstance.interceptors.response.use(
   async error => {
     const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
 
-    if (error.response?.status !== 401 || originalRequest._retry) {
+    // The refresh call goes out on this same instance, so its own 401 must be passed
+    // straight through. Sending it back around would await the refresh promise that is
+    // itself waiting on this very request, deadlocking every 401 in the burst and leaving
+    // the session neither refreshed nor cleared.
+    if (
+      error.response?.status !== 401 ||
+      originalRequest._retry ||
+      isRefreshRequest(originalRequest)
+    ) {
       return Promise.reject(error);
     }
 
@@ -57,6 +65,11 @@ axiosInstance.interceptors.response.use(
     }
   },
 );
+
+/** Matches the endpoint fetchRefreshToken() posts to, relative or absolute. */
+function isRefreshRequest(config: AxiosRequestConfig): boolean {
+  return config.url?.includes('/auth/refresh') ?? false;
+}
 
 /** Reads the header whether axios handed us an AxiosHeaders instance or a plain object. */
 function readAuthorizationHeader(config: AxiosRequestConfig): string | undefined {

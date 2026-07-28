@@ -10,9 +10,10 @@ import { AxiosError } from 'axios';
 import { Formik } from 'formik';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Image, SafeAreaView, View } from 'react-native';
+import { Image, View } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Yup from 'yup';
 import Button from '../../components/Button';
 import Input from '../../components/Input/Input';
@@ -28,6 +29,7 @@ interface ContinueSignUpProps {
 function ContinueSignUp({ navigation, route }: ContinueSignUpProps) {
   const { t } = useTranslation();
   const styles = useThemedStyles(makeStyles);
+  const insets = useSafeAreaInsets();
   const [loading, setLoading] = useState(false);
   const { isKeyboardVisible } = useKeyboardVisible();
 
@@ -72,7 +74,7 @@ function ContinueSignUp({ navigation, route }: ContinueSignUpProps) {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <KeyboardAwareScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
@@ -92,7 +94,7 @@ function ContinueSignUp({ navigation, route }: ContinueSignUpProps) {
           </View>
         </View>
 
-        <View style={styles.formContainer}>
+        <View style={[styles.formContainer, { paddingBottom: Math.max(20, insets.bottom) }]}>
           <View style={styles.description}>
             <Text size="large" fontWeight="800">
               {t('auth.personalDetailsTitle')}
@@ -103,7 +105,7 @@ function ContinueSignUp({ navigation, route }: ContinueSignUpProps) {
           <View style={styles.formInputsContainer}>
             <Formik initialValues={initialValues} onSubmit={handleSubmit}>
               {({ handleChange, handleBlur, handleSubmit: formikSubmit, values }) => (
-                <View style={{ flex: 1 }}>
+                <View>
                   <View style={styles.inputGroup}>
                     <Input
                       label={t('auth.firstNameLabel')}

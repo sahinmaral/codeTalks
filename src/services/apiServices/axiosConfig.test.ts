@@ -46,12 +46,18 @@ function readAuthorization(config: AxiosRequestConfig): string | undefined {
   return typeof value === 'string' ? value : undefined;
 }
 
+// A real AxiosError instance, because tokenManager decides whether to end the session with
+// `instanceof AxiosError`; a look-alike carrying `isAxiosError` would skip that branch here
+// while production takes it.
 function unauthorized(config: AxiosRequestConfig) {
-  return Object.assign(new Error('Unauthorized'), {
-    isAxiosError: true,
-    config,
-    response: { status: 401, data: {}, statusText: 'Unauthorized', headers: {}, config },
-  });
+  const response = { status: 401, data: {}, statusText: 'Unauthorized', headers: {}, config };
+  return new AxiosError(
+    'Unauthorized',
+    AxiosError.ERR_BAD_REQUEST,
+    config as never,
+    undefined,
+    response as never,
+  );
 }
 
 /**
@@ -276,5 +282,27 @@ describe('axiosInstance 401 handling', () => {
     });
     expect(mockFetchRefreshToken).toHaveBeenCalledTimes(1);
     expect(calls).toHaveLength(2);
+  });
+
+  // The refresh call travels on the same instance as everything else, so its own 401 comes
+  // back through this interceptor. Until the refresh endpoint was exempted, that second pass
+  // awaited the very refresh promise that was waiting on it: nothing ever settled, so the
+  // session was neither renewed nor cleared and the app sat on its loading screen forever.
+  it('clears the session instead of hanging when the refresh request itself 401s', async () => {
+    const { adapter, calls } = makeAdapter();
+    axiosInstance.defaults.adapter = adapter;
+
+    // Faithful to production, where fetchRefreshToken posts through this same instance.
+    mockFetchRefreshToken.mockImplementation((refreshToken: string) =>
+      axiosInstance.post('/auth/refresh', { refreshToken }),
+    );
+
+    await expect(axiosInstance.get('/channels')).rejects.toMatchObject({
+      response: { status: 401 },
+    });
+    expect(store.getState().app.user).toBeNull();
+    // The original request and one refresh attempt — no second trip round the loop.
+    expect(calls).toHaveLength(2);
+    expect(mockFetchRefreshToken).toHaveBeenCalledTimes(1);
   });
 });

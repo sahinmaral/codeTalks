@@ -1,7 +1,8 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Image, SafeAreaView, TouchableOpacity, View } from 'react-native';
+import { Image, TouchableOpacity, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { showMessage } from 'react-native-flash-message';
 import { Formik } from 'formik';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -31,6 +32,7 @@ const initialValues = {
 function SignUp({ navigation }: SignUpProps) {
   const { t } = useTranslation();
   const styles = useThemedStyles(makeStyles);
+  const insets = useSafeAreaInsets();
   const { isKeyboardVisible } = useKeyboardVisible();
 
   const handleSubmit = async (values: typeof initialValues) => {
@@ -49,7 +51,7 @@ function SignUp({ navigation }: SignUpProps) {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <KeyboardAwareScrollView
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
@@ -68,7 +70,7 @@ function SignUp({ navigation }: SignUpProps) {
           </View>
         </View>
 
-        <View style={styles.formContainer}>
+        <View style={[styles.formContainer, { paddingBottom: Math.max(20, insets.bottom) }]}>
           <View style={styles.description}>
             <Text size="large" fontWeight="800">
               {t('auth.createAccountTitle')}

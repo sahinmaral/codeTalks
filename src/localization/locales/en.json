@@ -37,10 +37,22 @@
     "alreadyInChannel": "You are already a member of this channel"
   },
   "statuses": {
-    "online": { "label": "Online", "description": "Available and active" },
-    "away": { "label": "Away", "description": "Not available" },
-    "busy": { "label": "Busy", "description": "Do not disturb" },
-    "invisible": { "label": "Invisible", "description": "Not visible to others" }
+    "online": {
+      "label": "Online",
+      "description": "Available and active"
+    },
+    "away": {
+      "label": "Away",
+      "description": "Not available"
+    },
+    "busy": {
+      "label": "Busy",
+      "description": "Do not disturb"
+    },
+    "invisible": {
+      "label": "Invisible",
+      "description": "Not visible to others"
+    }
   },
   "components": {
     "cancel": "Cancel",
@@ -73,6 +85,7 @@
     "creatingChannel": "Creating channel...",
     "channelNameLabel": "Channel Name",
     "channelNamePlaceholderExample": "e.g. ui-ux-design",
+    "channelDescriptionPlaceholderExample": "e.g. Design critiques, Figma tips and UI patterns",
     "descriptionLabel": "Description",
     "joinPolicyLabel": "Join Policy",
     "channelCreatedSuccess": "Channel created successfully",

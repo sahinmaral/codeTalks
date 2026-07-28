@@ -37,10 +37,22 @@
     "alreadyInChannel": "Zaten bu kanalda yer almaktasınız"
   },
   "statuses": {
-    "online": { "label": "Çevrimiçi", "description": "Müsait ve aktif" },
-    "away": { "label": "Uzakta", "description": "Müsait değil" },
-    "busy": { "label": "Meşgul", "description": "Rahatsız etmeyin" },
-    "invisible": { "label": "Görünmez", "description": "Diğerlerine görünmez" }
+    "online": {
+      "label": "Çevrimiçi",
+      "description": "Müsait ve aktif"
+    },
+    "away": {
+      "label": "Uzakta",
+      "description": "Müsait değil"
+    },
+    "busy": {
+      "label": "Meşgul",
+      "description": "Rahatsız etmeyin"
+    },
+    "invisible": {
+      "label": "Görünmez",
+      "description": "Diğerlerine görünmez"
+    }
   },
   "components": {
     "cancel": "İptal",
@@ -73,6 +85,7 @@
     "creatingChannel": "Kanal oluşturuluyor...",
     "channelNameLabel": "Kanal Adı",
     "channelNamePlaceholderExample": "örn. ui-ux-design",
+    "channelDescriptionPlaceholderExample": "örn. Tasarım incelemeleri, Figma ipuçları ve arayüz desenleri",
     "descriptionLabel": "Açıklama",
     "joinPolicyLabel": "Katılım Politikası",
     "channelCreatedSuccess": "Kanal başarıyla oluşturuldu",

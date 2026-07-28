@@ -9,6 +9,7 @@ import { fetchGetChannelUnreadCount } from '@/services/apiServices/notifications
 import colors from '@/styles/colors';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-remix-icon';
 import { Channel, RootStackParamList } from '../../types';
@@ -21,6 +22,7 @@ interface ActiveChannelCardProps {
 }
 
 function ActiveChannelCard({ navigation, channel }: ActiveChannelCardProps) {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const styles = useThemedStyles(makeStyles);
   const theme = useTheme();
@@ -82,7 +84,7 @@ function ActiveChannelCard({ navigation, channel }: ActiveChannelCardProps) {
             <View style={styles.memberContainer}>
               <Icon name="ri-group-line" color={theme.text.tertiary} size={18} />
               <Text size="medium" fontWeight="300" color={theme.text.secondary}>
-                {channel.memberCount} members
+                {t('components.membersCount', { count: channel.memberCount })}
               </Text>
             </View>
           </View>

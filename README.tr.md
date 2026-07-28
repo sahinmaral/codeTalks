@@ -6,6 +6,23 @@
 
 Back-end tarafı [codeTalks.Backend](https://github.com/sahinmaral/codeTalks.Backend) deposunda yer alır.
 
+## Ekran görüntüleri
+
+<table>
+  <tr>
+    <td align="center" width="33%"><img src="docs/screenshots/channels/messages-list.png" alt="Kanal mesajları" width="240"><br><sub><b>Gerçek zamanlı mesajlaşma</b><br>SignalR sohbeti, sayfalanmış geçmiş</sub></td>
+    <td align="center" width="33%"><img src="docs/screenshots/channels/active-list.png" alt="Aktif kanallar" width="240"><br><sub><b>Kanallarınız</b><br>Okunmamış sayaçları, özel tab bar</sub></td>
+    <td align="center" width="33%"><img src="docs/screenshots/channels/detail-owner.png" alt="Kanal sahibi olarak kanal detayı" width="240"><br><sub><b>Kanal detayı</b><br>Role göre görünen yönetim paneli</sub></td>
+  </tr>
+  <tr>
+    <td align="center" width="33%"><img src="docs/screenshots/channels/explore.png" alt="Kanalları keşfet" width="240"><br><sub><b>Keşfet</b><br>Arama ve katılım politikaları</sub></td>
+    <td align="center" width="33%"><img src="docs/screenshots/profile/settings-dark.png" alt="Koyu temada ayarlar" width="240"><br><sub><b>Koyu tema</b><br>Açık / koyu / sistem</sub></td>
+    <td align="center" width="33%"><img src="docs/screenshots/profile/settings-light-tr.png" alt="Açık temada Türkçe ayarlar" width="240"><br><sub><b>Türkçe dil desteği</b><br>Aynı ekran, farklı dil</sub></td>
+  </tr>
+</table>
+
+Son iki görsel aynı ekran — tema ve dil çalışma anında değiştirilebiliyor.
+
 ## Teknolojiler
 
 | Konu | Tercih |

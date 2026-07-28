@@ -14,8 +14,12 @@ const makeStyles = (theme: Theme) =>
     scrollContent: {
       flexGrow: 1,
     },
+    // Absorbs the leftover vertical space rather than being a fixed height, so the form sheet below
+    // can hug its content instead of stretching and leaving white space under the buttons.
+    // minHeight keeps the logo from being crushed on short devices, where the sheet needs the room.
     headerContainer: {
-      height: 200,
+      flex: 1,
+      minHeight: 140,
       justifyContent: 'flex-end',
       alignItems: 'center',
     },
@@ -33,7 +37,6 @@ const makeStyles = (theme: Theme) =>
       height: 80,
     },
     formContainer: {
-      flexGrow: 1,
       backgroundColor: theme.background.primary,
       borderTopStartRadius: 20,
       borderTopEndRadius: 20,
@@ -46,8 +49,7 @@ const makeStyles = (theme: Theme) =>
       gap: 5,
     },
     formInputsContainer: {
-      flex: 1,
-      justifyContent: 'space-between',
+      gap: 32,
     },
     inputGroup: {
       gap: 20,

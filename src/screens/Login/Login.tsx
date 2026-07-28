@@ -26,9 +26,10 @@ import { AxiosError } from 'axios';
 import { Formik } from 'formik';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Image, SafeAreaView, TouchableOpacity, View } from 'react-native';
+import { Image, TouchableOpacity, View } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Yup from 'yup';
 import makeStyles from './Login.styles';
 
@@ -48,6 +49,7 @@ function Login({ navigation }: LoginProps) {
   const [loading, setLoading] = useState(false);
   const dispatch = useAppDispatch();
   const { isKeyboardVisible } = useKeyboardVisible();
+  const insets = useSafeAreaInsets();
 
   const handleLogin = async (values: typeof initialValues) => {
     setLoading(true);
@@ -89,8 +91,12 @@ function Login({ navigation }: LoginProps) {
     }
   };
 
+  // Only the top inset is applied to the SafeAreaView: letting it reserve the bottom one too would
+  // stop the form sheet short of the screen edge and leave a strip of the orange container showing
+  // under it. The bottom inset is added as padding inside the sheet instead, so the white
+  // background runs to the edge while the buttons still clear the home indicator.
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <KeyboardAwareScrollView
         contentContainerStyle={styles.scrollContent}
         scrollEnabled={isKeyboardVisible}
@@ -109,7 +115,7 @@ function Login({ navigation }: LoginProps) {
           </View>
         </View>
 
-        <View style={styles.formContainer}>
+        <View style={[styles.formContainer, { paddingBottom: Math.max(20, insets.bottom) }]}>
           <View style={styles.description}>
             <Text size="large" fontWeight="800">
               {t('auth.signInTitle')}
